@@ -6,6 +6,7 @@ import { PageHead } from './components';
 import { HrProgress } from './pages/hr/Progress';
 import { HrConsistency } from './pages/hr/Consistency';
 import { HrPersonDetail } from './pages/hr/PersonDetail';
+import { HrActivity } from './pages/hr/Activity';
 import { openFlagCount } from '../domain/flags';
 import type { DemoState } from '../domain/types';
 import { ManagerTeam } from './pages/manager/Team';
@@ -50,6 +51,7 @@ export function routeFor(path: string, role: Role, userId: string): { navKey: st
     if (pm) return { navKey: '/hr/consistency', element: <HrPersonDetail personId={pm[1]} /> };
     if (key === '/hr/progress') return { navKey: key, element: <HrProgress /> };
     if (key === '/hr/consistency') return { navKey: key, element: <HrConsistency /> };
+    if (key === '/hr/activity') return { navKey: key, element: <HrActivity /> };
     return { navKey: key, element: placeholder(key) };
   }
   if (role === 'manager') {

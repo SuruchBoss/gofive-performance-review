@@ -235,3 +235,18 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - On phones, cells with two lines laid out side by side. Fixed by wrapping them.
   - The dialog close button wrapped under the title. Fixed with `nowrap`.
   - The radio labels inherited the bold field-label style. Fixed.
+
+## Commit 10 — Activity log screen
+
+- **Done:**
+  - HR Activity log, grouped by day with the newest first.
+  - An icon and a type label on each entry, and the actor's name ("System" for automatic escalations).
+  - Filter tabs: reminders and extensions, escalations, removals, flags and release.
+- **Tests:** 85 passed.
+  - New: each of reminder, extension, removal and flag review writes exactly one entry dated on the demo day.
+  - Escalation writes one entry per case.
+  - A refused action writes nothing.
+  - Log ids stay unique.
+- **Browser run:** +1 day twice, then Activity log shows 3 escalations under Mon 14 Dec. Width 390 on a phone. No errors.
+- **Who decided:** PO set the requirement for the log. The developer chose the grouping and the filters.
+- **What went wrong:** Nothing.
