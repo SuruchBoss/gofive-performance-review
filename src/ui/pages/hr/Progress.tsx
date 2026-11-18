@@ -1,47 +1,103 @@
+import { useState } from 'react';
+import { caseInfo } from '../../../domain/deadlines';
 import { formatDate } from '../../../domain/dates';
-import { managerReviewOf, person, selfReviewOf, teamName } from '../../../domain/selectors';
+import { person, selfReviewOf, teamName } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
-import { PageHead, Panel, PersonCell } from '../../components';
-import { ReviewBadge, SelfReviewBadge } from '../../status';
+import { Empty, PageHead, Panel, PersonCell, Stat } from '../../components';
+import { IconCheck } from '../../icons';
+import { ExtendDialog, RemindDialog } from '../../shared/CaseDialogs';
+import { CaseBadge, SelfReviewBadge } from '../../status';
+
+type Filter = 'action' | 'all' | 'submitted';
 
 export function HrProgress() {
   const { state } = useStore();
-  const rows = state.participants;
+  const [filter, setFilter] = useState<Filter>('action');
+  const [dialog, setDialog] = useState<{ kind: 'remind' | 'extend'; personId: string }>();
+
+  const rows = state.participants.map((p) => ({ p, c: caseInfo(state, p.personId), who: person(state, p.personId) }));
+  const active = rows.filter((r) => r.c.status !== 'removed');
+  const submitted = active.filter((r) => r.c.status === 'submitted').length;
+  const overdue = active.filter((r) => r.c.status === 'overdue').length;
+  const escalated = active.filter((r) => r.c.status === 'escalated').length;
+  const selfMissing = active.filter((r) => selfReviewOf(state, r.p.personId).status !== 'submitted').length;
+  const needsAction = (r: (typeof rows)[number]) => r.c.status === 'overdue' || r.c.status === 'escalated' || r.c.status === 'due';
+
+  const shown = rows.filter((r) => (filter === 'all' ? true : filter === 'submitted' ? r.c.status === 'submitted' : needsAction(r)));
+
   return (
     <>
       <PageHead
         title="Progress"
-        sub={`Everyone in ${state.cycle.name}. Manager reviews were due ${formatDate(state.cycle.managerDeadline)}.`}
+        sub={`Manager reviews were due ${formatDate(state.cycle.managerDeadline)}. Open reviews escalate to the manager's own manager 3 days after their deadline.`}
       />
-      <Panel bodyClass="table-wrap">
-        <table className="data stack-on-phone">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Team</th>
-              <th>Reviewer</th>
-              <th>Self-review</th>
-              <th>Manager review</th>
-              <th>Due</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((p) => {
-              const who = person(state, p.personId);
-              return (
-                <tr key={p.personId}>
-                  <td className="cell-primary"><PersonCell name={who.name} sub={who.title} size="sm" /></td>
-                  <td data-label="Team">{teamName(state, who.teamId)}</td>
-                  <td data-label="Reviewer">{person(state, p.reviewerId).name}</td>
-                  <td data-label="Self-review"><SelfReviewBadge r={selfReviewOf(state, p.personId)} /></td>
-                  <td data-label="Manager review"><ReviewBadge r={managerReviewOf(state, p.personId)} /></td>
-                  <td data-label="Due" className="num nowrap">{formatDate(state.cycle.managerDeadline, true)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="grid-4">
+        <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
+        <Stat label="Overdue" value={overdue} sub="Past deadline, not escalated yet" />
+        <Stat label="Escalated" value={escalated} sub="Moved to the next manager up" />
+        <Stat label="Self-reviews missing" value={selfMissing} sub="Managers can still review" />
+      </div>
+      <div style={{ height: 20 }} />
+      <Panel
+        title={
+          <div className="tabs" role="tablist" aria-label="Filter">
+            {([['action', `Needs action (${rows.filter(needsAction).length})`], ['submitted', `Submitted (${submitted})`], ['all', `Everyone (${rows.length})`]] as [Filter, string][]).map(([k, label]) => (
+              <button key={k} type="button" role="tab" aria-selected={filter === k} onClick={() => setFilter(k)}>{label}</button>
+            ))}
+          </div>
+        }
+        bodyClass="table-wrap"
+      >
+        {shown.length === 0 ? (
+          <Empty icon={<IconCheck size={32} />} title="Nothing needs action">Every manager review in the cycle is submitted.</Empty>
+        ) : (
+          <table className="data stack-on-phone">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Reviewer</th>
+                <th>Self-review</th>
+                <th>Manager review</th>
+                <th>Deadline</th>
+                <th><span className="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {shown.map(({ p, c, who }) => {
+                const open = c.status === 'due' || c.status === 'overdue' || c.status === 'escalated';
+                return (
+                  <tr key={p.personId} className={c.status === 'removed' ? 'is-removed' : undefined}>
+                    <td className="cell-primary">
+                      <PersonCell name={who.name} sub={`${who.title} · ${teamName(state, who.teamId)}`} size="sm" />
+                    </td>
+                    <td data-label="Reviewer">
+                      <div>{person(state, p.reviewerId).name}</div>
+                      {p.escalatedFrom && <div className="xs muted">from {person(state, p.escalatedFrom).name}, {formatDate(p.escalatedOn!, true)}</div>}
+                    </td>
+                    <td data-label="Self-review"><SelfReviewBadge r={selfReviewOf(state, p.personId)} /></td>
+                    <td data-label="Manager review"><CaseBadge c={c} /></td>
+                    <td data-label="Deadline" className="num">
+                      <div className="nowrap">{formatDate(c.deadline, true)}{p.extension && <span className="xs muted"> · extended</span>}</div>
+                      {c.status === 'overdue' && c.escalatesOn && <div className="xs muted nowrap">Escalates {formatDate(c.escalatesOn, true)}</div>}
+                      {p.lastRemindedOn && open && <div className="xs muted nowrap">Reminded {formatDate(p.lastRemindedOn, true)}</div>}
+                    </td>
+                    <td className="actions">
+                      {open && (
+                        <div className="row" style={{ justifyContent: 'flex-end' }}>
+                          <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>Remind</button>
+                          <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'extend', personId: p.personId })}>Extend</button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </Panel>
+      {dialog?.kind === 'remind' && <RemindDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
+      {dialog?.kind === 'extend' && <ExtendDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
     </>
   );
 }

@@ -4,7 +4,9 @@ import type { DemoState, LogEntry, ManagerReview } from './types';
 import { person } from './selectors';
 import { reviewProblems, suggestionFor } from './rating';
 import { daysLate, selfReviewWindow } from './selfReview';
-import type { Rating } from './types';
+import type { IsoDate, Rating } from './types';
+import { applyEscalations, effectiveDeadline } from './deadlines';
+import { formatDate } from './dates';
 
 /**
  * Every change to the demo state goes through `reduce`. It is pure, so the
@@ -20,6 +22,8 @@ export type Action =
   | { type: 'submit_review'; personId: string; actorId: string }
   | { type: 'save_self_review'; personId: string; text?: string; selfRating?: Rating }
   | { type: 'submit_self_review'; personId: string }
+  | { type: 'remind'; personId: string; actorId: string }
+  | { type: 'extend'; personId: string; until: IsoDate; reason: string; actorId: string }
   | { type: 'review_flag'; flagKey: string; note: string; actorId: string; label: string };
 
 export function nextLogId(state: DemoState): string {
@@ -32,7 +36,7 @@ export function withLog(state: DemoState, entry: Omit<LogEntry, 'id' | 'on'> & {
 }
 
 export function applyAutomaticRules(state: DemoState): DemoState {
-  return state;
+  return applyEscalations(state);
 }
 
 function updateReview(state: DemoState, personId: string, fn: (r: ManagerReview) => ManagerReview): DemoState {
@@ -71,6 +75,35 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
         type: 'self_review_late',
         targetId: action.personId,
         detail: `Self-review submitted ${d} day${d === 1 ? '' : 's'} after the deadline.`,
+      });
+    }
+    case 'remind': {
+      const p = state.participants.find((x) => x.personId === action.personId);
+      const r = state.managerReviews.find((x) => x.personId === action.personId);
+      if (!p || p.removed || r?.status === 'submitted') return state;
+      const next = { ...state, participants: state.participants.map((x) => (x === p ? { ...x, lastRemindedOn: state.today } : x)) };
+      return withLog(next, {
+        actorId: action.actorId,
+        type: 'reminder',
+        targetId: action.personId,
+        detail: `Reminded ${person(state, p.reviewerId).name} to review ${person(state, p.personId).name}.`,
+      });
+    }
+    case 'extend': {
+      const p = state.participants.find((x) => x.personId === action.personId);
+      const r = state.managerReviews.find((x) => x.personId === action.personId);
+      const reason = action.reason.trim();
+      if (!p || p.removed || r?.status === 'submitted' || !reason) return state;
+      if (action.until <= state.today || action.until <= effectiveDeadline(state, p)) return state;
+      const next = {
+        ...state,
+        participants: state.participants.map((x) => (x === p ? { ...x, extension: { until: action.until, reason, by: action.actorId } } : x)),
+      };
+      return withLog(next, {
+        actorId: action.actorId,
+        type: 'extension',
+        targetId: action.personId,
+        detail: `Extended the review of ${person(state, p.personId).name} to ${formatDate(action.until)}. Reason: ${reason}`,
       });
     }
     case 'review_flag': {

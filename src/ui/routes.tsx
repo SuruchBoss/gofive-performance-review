@@ -29,7 +29,11 @@ export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] 
     ];
   }
   if (role === 'manager') {
-    return [{ href: '#/manager', label: 'My team', icon: <IconPeople /> }];
+    const isHead = store.state.people.find((p) => p.id === userId)?.kind === 'head';
+    const open = store.state.participants.filter(
+      (p) => p.reviewerId === userId && !p.removed && store.state.managerReviews.find((r) => r.personId === p.personId)?.status !== 'submitted',
+    ).length;
+    return [{ href: '#/manager', label: isHead ? 'Assigned to me' : 'My team', icon: <IconPeople />, count: open, alert: true }];
   }
   return [
     { href: '#/me', label: 'My goals', icon: <IconTarget /> },

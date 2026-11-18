@@ -9,6 +9,7 @@ import { useStore } from '../../../state/store';
 import { go } from '../../../state/router';
 import { Dialog, Notice, PageHead, Panel, RatingScale } from '../../components';
 import { ReviewBadge } from '../../status';
+import { caseInfo } from '../../../domain/deadlines';
 
 export const pct = (v: number) => `${Math.round(v * 100)}%`;
 
@@ -73,6 +74,8 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
   const evidence = needsEvidence(review.overall);
   const problems = locked ? [] : reviewProblems(review, suggested);
   const evidenceLen = review.overallEvidence?.trim().length ?? 0;
+  const c = caseInfo(state, personId);
+  const boss = person(state, userId).managerId;
 
   return (
     <>
@@ -81,6 +84,20 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
         title={<span className="row" style={{ gap: 12 }}>{who.name} <ReviewBadge r={review} /></span>}
         sub={`${who.title} · ${teamName(state, who.teamId)} · ${state.cycle.name}`}
       />
+      {c.status === 'overdue' && (
+        <div className="banner">
+          <Notice tone="warning" title={`Due ${formatDate(c.deadline)} · ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} overdue`}>
+            {boss ? `If not submitted, it moves to ${person(state, boss).name} on ${formatDate(c.escalatesOn!)}.` : 'Please submit as soon as you can.'}
+          </Notice>
+        </div>
+      )}
+      {c.status === 'escalated' && participant.escalatedFrom && (
+        <div className="banner">
+          <Notice tone="danger" title={`Escalated to you on ${formatDate(participant.escalatedOn!)}`}>
+            {person(state, participant.escalatedFrom).name} did not submit this review within 3 days of the deadline. Draft ratings, if any, came with it.
+          </Notice>
+        </div>
+      )}
       <div className="review-layout">
         <div className="stack">
           <Panel

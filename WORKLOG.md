@@ -59,6 +59,9 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **An HR person-detail page (`#/hr/person/:id`)** (commit 6). Not listed in DESIGN.md. Every flag and every chart row links to it, which is how "every score links to where it came from" is met on the HR side.
 - **The self-review uses a narrower reading column, and each own-rating number gets a plain label ("Met expectations")** (commit 7). An employee writing about their year should not face a dashboard-width form.
 - **The Self-review navigation item shows a "1" while the employee still has to act** (commit 7). It is a quiet prompt instead of an email, which is out of scope.
+- **HR Progress opens on a "Needs action" tab, with summary figures on top (submitted, overdue, escalated, self-reviews missing)** (commit 8). HR opens the screen to find what is stuck, not to read all 12 rows.
+- **Overdue cases show "Escalates 14 Dec" under the deadline, and the manager sees the same date in a banner** (commit 8). The automatic rule is visible before it happens, so nobody is surprised by it.
+- **The head of company sees "Assigned to me", with a red banner for escalated cases** (commit 8). The head has no team of their own in this cycle, so "My team" would be misleading.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -183,3 +186,30 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Browser run:** Ying Chen submits late, the badge shows "Submitted late", and Tom's review form then shows her text and own rating. Width 390 on a phone. No errors.
 - **Who decided:** PO set the rule ("can submit late until the manager finishes"). The developer chose the wording.
 - **What went wrong:** The status badge sat far to the right of the narrow form. The header was moved into the same column.
+
+## Commit 8 — Deadline rules and HR actions
+
+- **Done:**
+  - `src/domain/deadlines.ts`: effective deadline, case status (due / overdue / escalated / submitted / removed) and automatic escalation.
+  - Escalation runs after every action. At deadline + 3 days, the review moves to the reviewer's own manager. It happens once only, a draft keeps its ratings, and the log is written by "system" and dated on the escalation day.
+  - Actions `remind` and `extend` (needs a reason and a date later than both today and the current deadline). Both are logged.
+  - HR Progress has summary figures, tabs, and Remind and Extend dialogs.
+  - The manager team page and the review page show overdue and escalated banners. The head of company sees reviews escalated to them.
+- **Tests:** 73 passed. New tests cover:
+  - due on the deadline, overdue the day after;
+  - no escalation at +2, escalation at +3, and only once after 6 days;
+  - an extension before escalation moves the date; one after escalation does not move the review back;
+  - removed and submitted cases never escalate;
+  - reminder rules.
+- **Browser run:**
+  - Extended Ying to 17 Dec and reminded Tom about Orn, then pressed +1 day twice.
+  - Orn and Fah escalated to Anong Rattanakul and Ying did not.
+  - Anong's view lists both, with Orn's draft kept.
+  - Width 390 on a phone. No errors.
+- **Who decided:**
+  - PO set the 3-day escalation to the manager's own manager, and the per-person extension with a reason.
+  - Developer decisions:
+    - calendar days, not working days;
+    - the escalation log is dated on the escalation day, even if the clock jumps;
+    - an extension after escalation gives the new reviewer more time.
+- **What went wrong:** The Remind and Extend buttons wrapped onto two lines in the table. Fixed with `nowrap`. Also note: Fah Inthira (new joiner) escalates on 14 Dec too if HR has not removed her. This is expected and kept; it shows why the removal step matters.

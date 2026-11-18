@@ -719,3 +719,10 @@ table.data tr.is-removed td { color: var(--muted); }
 .rating-chip { min-width: 28px; height: 28px; border-radius: var(--r-md); background: var(--mint-100); color: var(--mint-900); font-weight: 600; display: inline-grid; place-items: center; }
 .narrow { max-width: 760px; }
 .textarea.tall { min-height: 160px; }
+
+/* ---------- Tabs (underline, not pills) ---------- */
+.tabs { display: flex; gap: var(--s4); margin: -12px 0 -13px; overflow-x: auto; scrollbar-width: none; }
+.tabs button { background: none; border: 0; padding: 12px 0; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; font-size: var(--fs-sm); }
+.tabs button[aria-selected='true'] { color: var(--ink); border-bottom-color: var(--mint-700); font-weight: 600; }
+.banner { margin-bottom: var(--s4); }
+table.data td.actions .row { flex-wrap: nowrap; }
