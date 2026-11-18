@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { AboutDialog } from './shared/About';
 import { IconMark } from './icons';
 import { Avatar } from './components';
 
@@ -19,6 +20,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
   aside?: ReactNode;
   children: ReactNode;
 }) {
+  const [about, setAbout] = useState(false);
   return (
     <>
       <div className="demo-strip" role="region" aria-label="Prototype controls">
@@ -32,6 +34,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
             <span className="concept-tag">Concept for empeo</span>
           </div>
           <div className="spacer" />
+          <button type="button" className="link-btn about-link" onClick={() => setAbout(true)}>About this prototype</button>
           <div className="who">
             <div className="who-text" style={{ textAlign: 'right' }}>
               <span className="who-name">{user.name}</span>
@@ -59,6 +62,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
           <div className="main-inner">{children}</div>
         </main>
       </div>
+      {about && <AboutDialog onClose={() => setAbout(false)} />}
     </>
   );
 }

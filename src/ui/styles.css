@@ -881,3 +881,7 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .kv { grid-template-columns: 1fr; gap: 2px; }
   .kv dd { margin-bottom: var(--s2); }
 }
+.about-link { font-weight: 500; margin-right: var(--s3); white-space: nowrap; }
+.about-steps { margin: 0; padding-left: 18px; }
+.about-steps li + li { margin-top: 2px; }
+@media (max-width: 860px) { .about-link { font-size: var(--fs-xs); margin-right: var(--s1); } }

@@ -32,6 +32,42 @@ The guide at the top of the page walks through five steps. Each step ticks itsel
 
 All thresholds are in [`src/domain/config.ts`](src/domain/config.ts). The full design is in [`docs/DESIGN.md`](docs/DESIGN.md).
 
+## How this was built
+
+The Product Owner made the product decisions. An AI coding agent (Claude Code) worked as the developer: it asked questions, proposed options and built the code. Every step is recorded in [`WORKLOG.md`](WORKLOG.md), with what was done, why, who decided and what went wrong.
+
+**Time, from the git history (18 Nov 2026, UTC+7):**
+
+| Step | From → to | What happened |
+|---|---|---|
+| Questions | 21:43 → 21:44 | 5 open questions, each with a recommendation. The brief was saved to `docs/BRIEF.md`. |
+| Design | 21:47 → 21:56 | `docs/DESIGN.md` drafted. The PO approved it with one change. |
+| Plan | 21:56 → 22:01 | `docs/PLAN.md` (17 commits). The PO approved it with two changes. |
+| Build | 22:02 → 22:30 | One concern per commit, each with tests and a browser check at desktop and phone width. |
+| Test | → 22:32 | Browser click-through of every role at 1280 px and 390 px. |
+| Deploy | 22:32 | GitHub Pages workflow added. The first run needed a repository setting (see `WORKLOG.md`). |
+
+From the first commit after the brief (21:43) to the deploy workflow (22:32): **49 minutes**. That includes the time the PO took to answer.
+
+**Who decided what** (each decision is in `WORKLOG.md`):
+
+- **Product Owner:**
+  - format and roles;
+  - the fairness rules and what not to build (no forced distribution, no calibration);
+  - how late, missing and ineligible cases are handled;
+  - v1 scope;
+  - the demo data plan;
+  - the main colour and the "no template look" rule;
+  - the thresholds (1.0, 0.75, minimum 3 reviews);
+  - evidence for the overall rating only;
+  - approval of the design and the plan, and the change to the working rules.
+- **AI developer** (proposed, then approved or allowed by the PO):
+  - tech stack and hosting;
+  - the formula that turns goal results into a suggested rating;
+  - demo names and numbers;
+  - the visual system and the design changes beyond `DESIGN.md`, each listed in `WORKLOG.md` with a reason, under the latitude the PO gave;
+  - smaller rule details: calendar days for escalation, flags reopening when their data changes, preset removal reasons.
+
 ## Run it locally
 
 ```bash

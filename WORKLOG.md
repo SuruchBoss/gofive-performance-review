@@ -400,3 +400,17 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** GitHub Pages is not switched on for the repository yet. Only the repository owner can do this, in Settings → Pages → Source: "GitHub Actions".
 - **Next:** After the PO enables it, re-run the workflow (Actions → "Test and deploy to GitHub Pages" → Run workflow), or push any commit to `main`.
 - **Who decides:** PO (repository setting).
+
+## Step 5 — "How this was built" (2026-11-18)
+
+- **Done:**
+  - Added a "How this was built" section to `README.md`: the time per step taken from commit timestamps (UTC+7), who decided what, and a link to this log.
+  - Added an "About this prototype" link in the app header that opens a short dialog with the same facts and links to the README section, this log and the design.
+- **Facts used:**
+  - First commit after the brief: 21:43.
+  - Deploy workflow commit: 22:32.
+  - That is 49 minutes, including the PO's answer times.
+  - Steps per the commit list. 97 unit tests.
+- **Not claimed:** The live deploy time. Pages was not yet enabled at the time of writing.
+- **Who decided:** PO asked for it and set the content. The developer wrote it.
+- **What went wrong:** The first wording said "97 rule tests". Some of those tests cover dates and demo data, so it was reworded to "unit tests (rules and demo data)".
