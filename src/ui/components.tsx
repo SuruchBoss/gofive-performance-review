@@ -150,6 +150,11 @@ export function Dialog({ title, sub, children, onClose, footer }: { title: strin
   );
 }
 
+/** One short line that explains a term where it appears. */
+export function Explain({ children }: { children: ReactNode }) {
+  return <span className="explain-line">{children}</span>;
+}
+
 export function Empty({ icon, title, children }: { icon?: ReactNode; title: string; children?: ReactNode }) {
   return (
     <div className="empty">

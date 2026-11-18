@@ -9,6 +9,7 @@ import { useStore } from '../../../state/store';
 import { Badge, Empty, Notice, PageHead, Panel, PersonCell } from '../../components';
 import { IconCheck } from '../../icons';
 import { Dumbbell } from '../../shared/Dumbbell';
+import { TERMS } from '../../glossary';
 import { FlagReviewDialog } from '../../shared/FlagReviewDialog';
 
 const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
@@ -39,7 +40,7 @@ export function HrConsistency() {
     <>
       <PageHead
         title="Consistency check"
-        sub={`Each manager's ratings are compared with the measured goal results of their own team. A gap of ${CONFIG.MANAGER_GAP_FLAG} or more is flagged for you to check before release. Nothing is changed automatically.`}
+        sub={`Manager gap: ${TERMS.gap} Check each flag before release. Nothing is changed automatically.`}
       />
 
       <div className="grid-3">
@@ -95,7 +96,7 @@ export function HrConsistency() {
       <div style={{ height: 24 }} />
       <Panel
         title="Ratings far from results"
-        actions={<span className="small muted">{CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more from the suggestion</span>}
+        actions={<span className="small muted">{TERMS.far}</span>}
         bodyClass=""
       >
         {far.length === 0 ? (

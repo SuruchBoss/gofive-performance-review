@@ -443,3 +443,20 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - After the PO enabled Pages, run #3 (a re-run) deployed successfully.
   - Run #4 (commit `ff38156`, these fixes) succeeded: tests, build and deploy.
   - The live site https://suruchboss.github.io/gofive-performance-review/ serves the new build. Checked at 1366 px and 390 px: dates "27 Nov 2026 / 11 Dec 2026", the tabs fit, no sideways scroll, no console errors.
+
+## Plan 2 approved (2026-11-18)
+
+- **PO decision:** `docs/PLAN-2.md` approved with one change. The calibration branch is deployed as a second build under `/calibration/` on the same Pages site, labelled "requirement change from question 2". The About dialog on `main` links to it, and `main` stays the main link. A, B and C run without stops unless something blocks.
+- **Assumptions (the PO did not answer these, so the developer's recommendations are used):**
+  - HR runs the calibration session on behalf of the managers, since there is no real login.
+  - After release, employees see "Calibrated from X to Y" with the reason.
+  - Q3 in `docs/ANSWERS.md` is left for the PO to write. The TikTok example is not inserted.
+
+## U1 — Explain terms where they appear
+
+- **Done:**
+  - `src/ui/glossary.ts` holds one-line explanations for suggested rating, far from results, manager gap, escalated, behaviour score, goal results score and anchors. A shared `Explain` component shows them in muted text under the label.
+  - Used on: the review form (suggestion box, behaviours); Consistency (page intro, the far-from-results list); Progress (the Escalated figure); the person detail and result tiles; the map intro (now says what a dot and the axes mean).
+- **Why:** PO rule: "Explain terms like 'suggested rating' or 'manager gap' in one short line where they appear."
+- **Tests:** 97 passed. e2e PASS at desktop and phone.
+- **What went wrong:** A multi-line Python edit failed on a quote inside a triple-quoted string before it ran, so nothing changed. Edits now go through a script file with one replacement per line, which also fails loudly if a target is missing.

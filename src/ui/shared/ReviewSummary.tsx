@@ -4,6 +4,7 @@ import { behaviourScore, suggestionFor } from '../../domain/rating';
 import { goalsOf, managerReviewOf, person, selfReviewOf } from '../../domain/selectors';
 import { useStore } from '../../state/store';
 import { Badge, Notice, Panel } from '../components';
+import { TERMS } from '../glossary';
 import { GoalRow, pct, SuggestionExplainer } from '../pages/manager/Review';
 
 // In-page jumps use scrollIntoView: the URL hash is taken by the router.
@@ -40,21 +41,21 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
           <button type="button" className="score-tile link" onClick={() => jump('goals')}>
             <span className="l">Goal results</span>
             <span className="v num">{suggested.toFixed(1)}</span>
-            <span className="s">{pct(sug.results)} of goal targets, weighted</span>
+            <span className="s">{pct(sug.results)} of goal targets, weighted. {TERMS.results}</span>
           </button>
         </Panel>
         <Panel>
           <button type="button" className="score-tile link" onClick={() => jump('behaviours')}>
             <span className="l">Behaviours</span>
             <span className="v num">{b !== undefined ? b.toFixed(1) : '–'}</span>
-            <span className="s">Average of 4 behaviour ratings</span>
+            <span className="s">{TERMS.behaviour}</span>
           </button>
         </Panel>
       </div>
 
       {audience === 'hr' && flag && (
         <Notice tone={flag.review ? 'brand' : 'warning'} title={`Rated ${flag.direction} results${flag.review ? ' · reviewed by HR' : ''}`}>
-          The overall rating is {Math.abs(flag.overall - flag.suggested).toFixed(1)} from the suggestion. Check the reason below.
+          The overall rating is {Math.abs(flag.overall - flag.suggested).toFixed(1)} from the suggestion. {TERMS.far} Check the reason below.
         </Notice>
       )}
 

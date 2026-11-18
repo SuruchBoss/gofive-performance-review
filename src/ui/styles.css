@@ -931,3 +931,6 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .about-long { display: none; }
   .about-short { display: inline; }
 }
+
+/* ---------- UX pass ---------- */
+.explain-line { display: block; font-size: var(--fs-sm); color: var(--muted); line-height: 1.4; }

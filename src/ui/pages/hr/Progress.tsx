@@ -8,6 +8,7 @@ import { IconCheck } from '../../icons';
 import { ExtendDialog, RemindDialog, RemoveDialog } from '../../shared/CaseDialogs';
 import { eligibilityHint } from '../../../domain/eligibility';
 import { IconAlert } from '../../icons';
+import { TERMS } from '../../glossary';
 import { CaseBadge, SelfReviewBadge } from '../../status';
 
 type Filter = 'action' | 'all' | 'submitted';
@@ -38,7 +39,7 @@ export function HrProgress() {
       <div className="grid-4">
         <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
         <Stat label="Overdue" value={overdue} sub="Past deadline, not escalated yet" />
-        <Stat label="Escalated" value={escalated} sub="Moved to the next manager up" />
+        <Stat label="Escalated" value={escalated} sub={TERMS.escalated} />
         <Stat label="Self-reviews missing" value={selfMissing} sub="Managers can still review" />
       </div>
       <div style={{ height: 20 }} />

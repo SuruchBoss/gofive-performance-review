@@ -7,7 +7,8 @@ import { firstName, goalsOf, managerReviewOf, person, selfReviewOf, teamName } f
 import type { Goal, Rating } from '../../../domain/types';
 import { useStore } from '../../../state/store';
 import { go } from '../../../state/router';
-import { Dialog, Notice, PageHead, Panel, RatingScale } from '../../components';
+import { Dialog, Explain, Notice, PageHead, Panel, RatingScale } from '../../components';
+import { TERMS } from '../../glossary';
 import { ReviewBadge } from '../../status';
 import { caseInfo } from '../../../domain/deadlines';
 
@@ -110,8 +111,9 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                   <div className="suggestion-num num">{Math.round(suggested)}</div>
                   <div>
                     <div className="strong">Suggested overall rating</div>
-                    <div className="small muted num">
-                      {pct(sug.results)} weighted achievement · exact value {suggested.toFixed(2)}
+                    <Explain>{TERMS.suggested}</Explain>
+                    <div className="xs muted num">
+                      {pct(sug.results)} of targets, weighted · exact value {suggested.toFixed(2)}
                     </div>
                   </div>
                 </div>
@@ -142,7 +144,8 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
         </div>
 
         <div className="stack">
-          <Panel title="Behaviours" actions={<span className="small muted">Rate against the written anchors</span>}>
+          <Panel title="Behaviours">
+            <div style={{ marginTop: -4, marginBottom: 16 }}><Explain>{TERMS.anchors}</Explain></div>
             <div className="stack-lg">
               {state.competencies.map((c) => {
                 const b = review.behaviour.find((x) => x.competencyId === c.id)!;

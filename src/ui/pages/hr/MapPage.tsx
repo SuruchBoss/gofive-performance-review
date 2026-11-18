@@ -20,7 +20,7 @@ export function MapPage({ reviewerId }: { reviewerId?: string }) {
     <>
       <PageHead
         title={reviewerId ? 'Team map' : 'Results map'}
-        sub="Measured goal results against the manager's behaviour ratings. The two scores come from different sources, so people who are strong (or weak) on both stand out, and so do ratings that do not match the results."
+        sub="Each dot is one person: goal results across, the manager's behaviour rating up. Strong and weak performers stand out in the shaded corners. Click a dot to see where the scores came from."
       />
       {!reviewerId && (
         <div className="tabs filter-row" role="tablist" aria-label="Team">
