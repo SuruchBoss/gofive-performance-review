@@ -1,38 +1,62 @@
 import './ui/styles.css';
-import { Shell } from './ui/Shell';
-import { Badge, PageHead, Panel, Stat } from './ui/components';
-import { IconCycle, IconPeople } from './ui/icons';
+import { useEffect } from 'react';
+import { person } from './domain/selectors';
+import { StoreProvider, useStore, type Role } from './state/store';
+import { go, useHashPath } from './state/router';
+import { Shell, type NavItem } from './ui/Shell';
+import { DemoStrip, HOME } from './ui/DemoStrip';
+import { IconCheck } from './ui/icons';
+import { navFor, routeFor } from './ui/routes';
 
-/** Static shell. Wired to the store in the next commit. */
+function roleOfPath(path: string): Role | undefined {
+  if (path.startsWith('/hr')) return 'hr';
+  if (path.startsWith('/manager')) return 'manager';
+  if (path.startsWith('/me')) return 'employee';
+  return undefined;
+}
+
+function Frame() {
+  const store = useStore();
+  const { state, view, setView, toast } = store;
+  const path = useHashPath();
+
+  // Keep the role switcher and the URL in step (for example after a shared link).
+  const pathRole = roleOfPath(path);
+  useEffect(() => {
+    if (!pathRole) go(HOME[view.role]);
+    else if (pathRole !== view.role) setView({ role: pathRole });
+  }, [pathRole, view.role, setView]);
+
+  const role = pathRole ?? view.role;
+  const userId = role === 'hr' ? 'hr' : role === 'manager' ? view.managerId : view.employeeId;
+  const user = person(state, userId);
+  const nav: NavItem[] = navFor(role, store, userId);
+  const route = routeFor(path, role, userId);
+
+  return (
+    <>
+      <Shell
+        demoStrip={<DemoStrip />}
+        user={{ name: user.name, role: user.title }}
+        navTitle={role === 'hr' ? 'HR' : role === 'manager' ? 'Manager' : 'My review'}
+        nav={nav}
+        current={`#${route.navKey}`}
+      >
+        {route.element}
+      </Shell>
+      {toast && (
+        <div className="toast" role="status">
+          <IconCheck size={16} /> {toast}
+        </div>
+      )}
+    </>
+  );
+}
+
 export function App() {
   return (
-    <Shell
-      demoStrip={<span className="demo-label">Prototype controls</span>}
-      user={{ name: 'Pim Chaiyaporn', role: 'HR Business Partner' }}
-      navTitle="HR"
-      nav={[
-        { href: '#/hr/cycle', label: 'Cycle', icon: <IconCycle /> },
-        { href: '#/hr/progress', label: 'Progress', icon: <IconPeople /> },
-      ]}
-      current="#/hr/cycle"
-    >
-      <PageHead title="Annual Review 2026" sub="Riverside Supply Co. Demo data only." />
-      <div className="grid-4">
-        <Stat label="Participants" value={12} />
-        <Stat label="Reviews submitted" value="9 / 12" meter={0.75} />
-        <Stat label="Overdue" value={3} />
-        <Stat label="Open flags" value={4} />
-      </div>
-      <div style={{ height: 16 }} />
-      <Panel title="Status colours">
-        <div className="row">
-          <Badge tone="success">Submitted</Badge>
-          <Badge tone="warning">Overdue</Badge>
-          <Badge tone="danger">Escalated</Badge>
-          <Badge tone="brand">In progress</Badge>
-          <Badge>Not started</Badge>
-        </div>
-      </Panel>
-    </Shell>
+    <StoreProvider>
+      <Frame />
+    </StoreProvider>
   );
 }

@@ -96,3 +96,16 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** The PO asked for the visual system early, so every screen is built to it.
 - **Who decided:** Developer, under the PO's design latitude. Design changes are listed in the "Design changes" section above.
 - **What went wrong:** On a phone, the shell grid stretched the navigation row and left an empty band. Fixed by switching the shell to block layout on narrow screens. Checked with a 390 px screenshot.
+
+## Commit 3b — State store, demo clock and role switcher
+
+- **Done:**
+  - Pure reducer (`src/domain/actions.ts`) with a hook for automatic rules after every action.
+  - Date helpers, with tests.
+  - React store that saves the demo state and the view (role, chosen person, intro hidden) in `localStorage`, and falls back to the seed if storage is missing or old.
+  - Hash router and the demo strip: view-as switch, person picker, demo date, +1 day, and Reset with a confirmation step.
+  - Placeholder pages for every role.
+- **Tests:** 14 passed (seed 7, dates 4, reducer 3). A browser click-through of role switch → +1 day → reset showed the correct dates and no console errors.
+- **Who decided:** Developer, per the plan.
+- **Design change:** Reset asks for confirmation. One stray click would otherwise wipe a reviewer's progress through the guided path.
+- **What went wrong:** At 390 px the demo strip was wider than the screen and scrolled sideways. Fixed by dropping the labels on phones and letting the person picker shrink. Measured `scrollWidth` = 390 afterwards.

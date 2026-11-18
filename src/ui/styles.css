@@ -573,8 +573,14 @@ table.data tr.is-removed td { color: var(--muted); }
   .app-header-inner { padding: var(--s2) var(--s4); min-height: 52px; }
   .brand-sub,
   .who-text { display: none; }
-  .demo-strip-inner { padding: var(--s2) var(--s4); gap: var(--s2) var(--s3); }
-  .demo-label { display: none; }
+  .demo-strip-inner { padding: var(--s2) var(--s4); gap: var(--s2); }
+  .demo-label,
+  .demo-group > span:first-child:not(.demo-date) { display: none; }
+  .demo-strip .spacer { display: none; }
+  .demo-group { width: 100%; min-width: 0; }
+  .demo-group select { flex: 1; min-width: 0; text-overflow: ellipsis; }
+  .seg button { padding: 4px 10px; }
+  .demo-date { margin-right: auto; }
   .page-head { margin-bottom: var(--s4); }
   h1 { font-size: var(--fs-xl); }
   .input,
