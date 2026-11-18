@@ -439,3 +439,7 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **What went wrong:**
   - The first try (short labels only) still overflowed by 14 px at 390 px. Tighter tab padding fixed it.
   - The 320 px header overlap was caught in this check, not reported by the PO.
+- **Deploy:**
+  - After the PO enabled Pages, run #3 (a re-run) deployed successfully.
+  - Run #4 (commit `ff38156`, these fixes) succeeded: tests, build and deploy.
+  - The live site https://suruchboss.github.io/gofive-performance-review/ serves the new build. Checked at 1366 px and 390 px: dates "27 Nov 2026 / 11 Dec 2026", the tabs fit, no sideways scroll, no console errors.
