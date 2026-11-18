@@ -50,6 +50,9 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **IBM Plex Sans as the typeface** (commit 3). A sober enterprise face with tabular figures and a matching Thai family. It avoids the default "Inter" look of generated UIs.
 - **Rating scale as five joined squares, with a small tick under the suggested value** (commit 3). It is compact, reads as a scale rather than as pill buttons, and keeps the suggestion visible without choosing for the manager.
 - **Square-cornered badges with a status dot, and 6 px button corners** (commit 3). This follows the "no pills everywhere" rule.
+- **The manager's goal results are a two-line list, not a table** (commit 4). A four-column table squeezed the goal names into three lines in the half-width column.
+- **The anchor text for the chosen level appears under each behaviour** (commit 4). The manager reads what the number means at the moment of choosing, instead of opening a separate guide.
+- **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
 
@@ -109,3 +112,18 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Who decided:** Developer, per the plan.
 - **Design change:** Reset asks for confirmation. One stray click would otherwise wipe a reviewer's progress through the guided path.
 - **What went wrong:** At 390 px the demo strip was wider than the screen and scrolled sideways. Fixed by dropping the labels on phones and letting the person picker shrink. Measured `scrollWidth` = 390 afterwards.
+
+## Commit 4 — First end-to-end flow
+
+- **Done:**
+  - Reducer actions `save_review` and `submit_review`. Submitting records the date, records whether the self-review was missing, and writes a log entry.
+  - Manager "My team" and the review form: goal results, self-review, 4 behaviours with anchors, overall rating, comment.
+  - HR "Progress" table, which becomes cards on a phone.
+  - Employee "My result" in its locked state.
+- **Tests:** 17 passed. Browser run: as Tom Wattana, start the review for Ying Chen, rate everything 3, submit, switch to HR → Progress. The row shows "Submitted". No console errors. Page width 390 at phone size.
+- **Who decided:** Developer, per the plan.
+- **What went wrong:**
+  1. The goals table was too cramped in a half-width column. Replaced it with a list.
+  2. The overall rating scale stretched to the full width. Fixed with `align-self`.
+  3. The selected rating lost its colour on hover. Fixed.
+  4. The sticky evidence column was dropped, because it cut off long content.
