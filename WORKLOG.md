@@ -593,3 +593,16 @@ Working notes for the Product Owner. Newest entry at the bottom.
     - the bar text;
     - no sideways scroll, no errors.
 - **Who decided:** PO asked for the blind test and for fixes. The developer chose the fixes.
+
+## Final deploy check (Plan 2 done)
+
+- **Runs:**
+  - #10 on `main` (blind-test fixes): success.
+  - The trigger on `calibration` (the merge): success.
+  - #11 (rebuild of both builds): success.
+- **Live check** in a real browser at 1366 px and 390 px:
+  - Main: https://suruchboss.github.io/gofive-performance-review/ has no calibration label, three actionable blockers, no sideways scroll and no console errors.
+  - Calibration: https://suruchboss.github.io/gofive-performance-review/calibration/ shows the "Requirement change from question 2" label and three blockers, with no sideways scroll and no console errors.
+- **Branches:**
+  - `main` = `prototype` (`f01fbff` plus this log entry).
+  - `calibration` = `6fa8319`. It contains `main` up to the blind-test fixes and is not merged into `main`.
