@@ -232,16 +232,19 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
               The review is locked. HR checks it before results are released.
             </Notice>
           ) : (
-            <div className="submit-bar">
-              {problems.length > 0 ? (
-                <ul className="todo" aria-label="Before you can submit">
-                  {problems.map((p) => <li key={p.field}>{p.message}</li>)}
-                </ul>
-              ) : (
-                <span className="small muted">Ready to submit. Drafts are saved automatically.</span>
-              )}
+            <>
+            {problems.length > 0 && (
+              <ul className="todo" aria-label="Before you can submit">
+                {problems.map((p) => <li key={p.field}>{p.message}</li>)}
+              </ul>
+            )}
+            <div className="submit-bar action-bar">
+              <span className="small muted">
+                {problems.length > 0 ? `${problems.length} thing${problems.length === 1 ? '' : 's'} left before you can submit (listed above).` : 'Ready to submit. Drafts save automatically.'}
+              </span>
               <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>Submit review</button>
             </div>
+            </>
           )}
         </div>
       </div>

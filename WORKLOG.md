@@ -512,3 +512,15 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** PO rule: "Every locked, empty or blocked state says why, and what to do next."
 - **Tests:** 97 passed. e2e PASS at desktop and phone (with `pipefail`). Browser check: Tom after +2 days sees both moved reviews, the moved-review notice and the Extend hint.
 - **What went wrong:** The first version of the Extend hint computed the earliest date in a roundabout way. It now uses the dialog's own minimum date.
+
+## U5 — Main action within thumb reach on phones
+
+- **Done:**
+  - Below 860 px, the main action of three screens sits in a bar fixed to the bottom of the screen: **Submit review**, **Submit self-review** and **Release results**. The bar has a 44 px button and a one-line status ("2 things left before you can submit (listed above)" / "7 items left before release"). On desktop the bar stays inline.
+  - The page gets bottom padding so the bar never covers content, and toasts move above it.
+  - On the review form, the to-do list now sits above the bar instead of inside it.
+  - The Cycle overview's three summary figures sit in one compact row on phones instead of a tall column.
+- **Why:** PO rule: "On a phone, the main action is easy to reach with one thumb, and nothing needs sideways scrolling."
+- **Checked:** At 390×844 the Submit button is at y = 788 (bottom of the screen) without scrolling. At 1366 px it stays in the page. 97 tests passed. e2e PASS at desktop and phone.
+- **Who decided:** Developer, under the PO's UX rules and design latitude.
+- **What went wrong:** Nothing new.

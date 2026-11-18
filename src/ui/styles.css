@@ -976,3 +976,31 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   table.data.stack-on-phone td.cell-primary { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
 .foot-hint { margin-right: auto; align-self: center; font-size: var(--fs-sm); color: var(--muted); }
+
+/* ---------- Thumb-reach action bar on phones ---------- */
+@media (max-width: 860px) {
+  .action-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 25;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 16px rgba(22, 33, 30, 0.08);
+    padding: var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .action-bar > span { flex: 1; min-width: 0; font-size: var(--fs-xs); line-height: 1.35; }
+  .action-bar .btn { min-height: 44px; padding: 0 18px; flex: none; }
+  .main:has(.action-bar) { padding-bottom: 104px; }
+  body:has(.action-bar) .toast { bottom: 88px; }
+}
+@media (max-width: 860px) {
+  .grid-3.stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s2); }
+  .stats-row .stat { padding: var(--s3); }
+  .stats-row .stat-label { font-size: var(--fs-xs); line-height: 1.3; }
+  .stats-row .stat-value { font-size: var(--fs-xl); }
+  .stats-row .stat-sub { font-size: var(--fs-xs); }
+}

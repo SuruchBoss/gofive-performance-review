@@ -75,7 +75,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
         )}
 
         {editable && (
-          <div className="submit-bar">
+          <div className="submit-bar action-bar">
             <span className="small muted">{ready ? 'Drafts are saved automatically.' : 'Write a few lines and choose a rating to submit.'}</span>
             <button
               type="button"

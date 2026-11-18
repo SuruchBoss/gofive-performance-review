@@ -90,7 +90,7 @@ export function HrCycle() {
       />
       <Panel bodyClass="panel-body timeline-wrap"><Timeline /></Panel>
       <div style={{ height: 16 }} />
-      <div className="grid-3">
+      <div className="grid-3 stats-row">
         <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
         <Stat label="Late or escalated" value={late} sub={<a href="#/hr/progress">See progress</a>} />
         <Stat label="Flags reviewed" value={`${reviewedFlags} / ${flags.length}`} sub={<a href="#/hr/consistency">Check consistency</a>} />
@@ -129,7 +129,7 @@ export function HrCycle() {
                   </div>
                 </li>
               </ul>
-              <div className="submit-bar">
+              <div className="submit-bar action-bar">
                 <span className="small muted">
                   {ready ? 'Ready. Everyone in the cycle sees their result at the same time.' : `${blockers.length} item${blockers.length === 1 ? '' : 's'} left before release.`}
                 </span>
