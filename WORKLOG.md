@@ -535,3 +535,28 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** PO change to PLAN-2: reviewers should be able to click the calibration version, while `main` stays the main link.
 - **Who decided:** PO set what to deploy. The developer chose the mechanism: one workflow on `main` builds both, plus a trigger.
 - **Note:** Both builds share one browser origin. The calibration build therefore uses its own storage keys (see C1), so its demo state cannot mix with the main build's.
+
+## C1 — Calibration rules and tests (branch `calibration`)
+
+- **Done:**
+  - **New types:** `Calibration` (not_started → in_session → locked), `AgendaItem` and `CalibrationChange`. `ManagerReview` gets `calibratedOverall` and `calibrationReason`. The manager's own rating is never overwritten.
+  - **`src/domain/calibration.ts`:**
+    - `finalRating`.
+    - Start rules: every review submitted, at least 2 attendees.
+    - The agenda is every flag at the moment the session starts, frozen then.
+    - Lock rule: every agenda item resolved with a note.
+    - Per-team average before and after calibration, against what results suggest.
+  - **Reducer actions:**
+    - `start_calibration`.
+    - `calibrate_rating`: needs a reason, records from/to, is logged. Changing back to the manager's rating clears the calibrated value but keeps the history.
+    - `resolve_item`: needs a note.
+    - `lock_calibration`.
+  - Removing people is blocked once calibration has started.
+  - **Release gate:** every review submitted **and** calibration locked. HR flag notes are no longer a gate on their own, because the flags become the calibration agenda.
+  - Separate storage keys (`pr-cal:*`), so this build never shares demo state with the main build on the same site.
+- **Tests:** 106 passed.
+  - The release tests were rewritten for the new rule. For example: "all flags noted but calibration not locked" is still blocked.
+  - 11 new calibration tests: start rules, a 4-item agenda, a change with reason and log, reverting a change, Sales average 4.0 → 3.5 after two changes, lock rules, and no change after lock.
+  - Shared test steps moved to `src/domain/testing.ts`.
+- **Who decided:** PO set the requirement (exam Q2) and approved the plan. Developer assumptions, logged earlier: HR records the session for the group; the agenda is frozen at start.
+- **What went wrong:** The first version imported test helpers from a test file. That made its tests run twice (112 counted). The helpers were moved to a plain module.

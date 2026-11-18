@@ -88,6 +88,9 @@ export interface ManagerReview {
   deviationReason?: string;
   comment?: string;
   suggestedAtSubmit?: number;
+  /** Overall rating after cross-team calibration, if it was changed there. */
+  calibratedOverall?: Rating;
+  calibrationReason?: string;
   selfReviewMissing: boolean;
   submittedOn?: IsoDate;
 }
@@ -110,6 +113,10 @@ export type LogType =
   | 'review_submitted'
   | 'flag_reviewed'
   | 'deadline_change'
+  | 'calibration_started'
+  | 'calibration_change'
+  | 'calibration_item'
+  | 'calibration_locked'
   | 'release';
 
 export interface LogEntry {
@@ -119,6 +126,34 @@ export interface LogEntry {
   type: LogType;
   targetId?: string;
   detail: string;
+}
+
+/** A case discussed in the calibration session. Frozen when the session starts. */
+export interface AgendaItem {
+  key: string;
+  kind: 'far' | 'gap';
+  label: string;
+  personId?: string;
+  reviewerId?: string;
+  resolution?: { note: string; on: IsoDate; by: string };
+}
+
+export interface CalibrationChange {
+  personId: string;
+  from: Rating;
+  to: Rating;
+  reason: string;
+  on: IsoDate;
+  by: string;
+}
+
+export interface Calibration {
+  status: 'not_started' | 'in_session' | 'locked';
+  startedOn?: IsoDate;
+  lockedOn?: IsoDate;
+  attendees: string[];
+  agenda: AgendaItem[];
+  changes: CalibrationChange[];
 }
 
 export interface DemoState {
@@ -134,5 +169,6 @@ export interface DemoState {
   selfReviews: SelfReview[];
   managerReviews: ManagerReview[];
   flagReviews: FlagReview[];
+  calibration: Calibration;
   log: LogEntry[];
 }

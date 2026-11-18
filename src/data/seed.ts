@@ -297,6 +297,7 @@ export function createSeed(): DemoState {
     selfReviews,
     managerReviews,
     flagReviews: [],
+    calibration: { status: 'not_started', attendees: [], agenda: [], changes: [] },
     log: [
       { id: 'l1', on: '2026-11-02', actorId: 'hr', type: 'cycle_opened', detail: 'Opened Annual Review 2026 for 12 people.' },
       { id: 'l2', on: '2026-11-29', actorId: 'e04', type: 'self_review_late', targetId: 'e04', detail: 'Self-review submitted 2 days after the deadline.' },

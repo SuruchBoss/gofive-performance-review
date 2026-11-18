@@ -3,8 +3,10 @@ import { createSeed, SEED_VERSION } from '../data/seed';
 import { reduce, type Action } from '../domain/actions';
 import type { DemoState } from '../domain/types';
 
-const STATE_KEY = 'pr-demo:state';
-const VIEW_KEY = 'pr-demo:view';
+// The calibration build lives on the same site as the main build, so it keeps
+// its own storage keys and the two demos never share state.
+const STATE_KEY = 'pr-cal:state';
+const VIEW_KEY = 'pr-cal:view';
 
 export type Role = 'hr' | 'manager' | 'employee';
 

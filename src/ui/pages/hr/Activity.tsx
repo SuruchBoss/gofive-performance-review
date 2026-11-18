@@ -3,7 +3,7 @@ import { formatDate, weekday } from '../../../domain/dates';
 import type { LogEntry, LogType } from '../../../domain/types';
 import { useStore } from '../../../state/store';
 import { Empty, PageHead, Panel } from '../../components';
-import { IconArrowUp, IconBell, IconCheck, IconClock, IconCycle, IconFlag, IconLog, IconPen, IconUserX } from '../../icons';
+import { IconArrowUp, IconBell, IconCheck, IconClock, IconCycle, IconFlag, IconLock, IconLog, IconPen, IconScale, IconUserX } from '../../icons';
 
 const META: Record<LogType, { label: string; icon: ReactNode; tone: string }> = {
   cycle_opened: { label: 'Cycle opened', icon: <IconCycle size={15} />, tone: 'brand' },
@@ -15,6 +15,10 @@ const META: Record<LogType, { label: string; icon: ReactNode; tone: string }> = 
   review_submitted: { label: 'Review submitted', icon: <IconCheck size={15} />, tone: 'success' },
   flag_reviewed: { label: 'Flag reviewed', icon: <IconFlag size={15} />, tone: 'neutral' },
   deadline_change: { label: 'Deadline change', icon: <IconClock size={15} />, tone: 'neutral' },
+  calibration_started: { label: 'Calibration started', icon: <IconScale size={15} />, tone: 'brand' },
+  calibration_change: { label: 'Calibrated rating', icon: <IconScale size={15} />, tone: 'warning' },
+  calibration_item: { label: 'Agreed in calibration', icon: <IconCheck size={15} />, tone: 'neutral' },
+  calibration_locked: { label: 'Calibration locked', icon: <IconLock size={15} />, tone: 'brand' },
   release: { label: 'Results released', icon: <IconCheck size={15} />, tone: 'brand' },
 };
 
@@ -23,6 +27,7 @@ const FILTERS: { key: string; label: string; types?: LogType[] }[] = [
   { key: 'deadlines', label: 'Reminders and extensions', types: ['reminder', 'extension', 'deadline_change'] },
   { key: 'escalation', label: 'Escalations', types: ['escalation'] },
   { key: 'removal', label: 'Removals', types: ['removal'] },
+  { key: 'calibration', label: 'Calibration', types: ['calibration_started', 'calibration_change', 'calibration_item', 'calibration_locked'] },
   { key: 'flags', label: 'Flags and release', types: ['flag_reviewed', 'release'] },
 ];
 

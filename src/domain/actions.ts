@@ -8,6 +8,7 @@ import type { IsoDate, Rating } from './types';
 import { applyEscalations, effectiveDeadline } from './deadlines';
 import { formatDate } from './dates';
 import { canRelease } from './release';
+import { buildAgenda, canLockCalibration, canStartCalibration, finalRating } from './calibration';
 
 /**
  * Every change to the demo state goes through `reduce`. It is pure, so the
@@ -27,6 +28,10 @@ export type Action =
   | { type: 'extend'; personId: string; until: IsoDate; reason: string; actorId: string }
   | { type: 'remove'; personId: string; reason: string; actorId: string }
   | { type: 'release'; actorId: string }
+  | { type: 'start_calibration'; attendees: string[]; actorId: string }
+  | { type: 'calibrate_rating'; personId: string; to: Rating; reason: string; actorId: string }
+  | { type: 'resolve_item'; key: string; note: string; actorId: string }
+  | { type: 'lock_calibration'; actorId: string }
   | { type: 'change_deadline'; field: 'selfReviewDeadline' | 'managerDeadline'; date: IsoDate; actorId: string }
   | { type: 'review_flag'; flagKey: string; note: string; actorId: string; label: string };
 
@@ -115,7 +120,7 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
     case 'remove': {
       const p = state.participants.find((x) => x.personId === action.personId);
       const reason = action.reason.trim();
-      if (!p || p.removed || !reason || state.cycle.status === 'released') return state;
+      if (!p || p.removed || !reason || state.cycle.status === 'released' || state.calibration.status !== 'not_started') return state;
       const next = {
         ...state,
         participants: state.participants.map((x) => (x === p ? { ...x, removed: { on: state.today, reason, by: action.actorId } } : x)),
@@ -126,6 +131,59 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
         targetId: action.personId,
         detail: `Removed ${person(state, p.personId).name} from the cycle. Reason: ${reason}`,
       });
+    }
+    case 'start_calibration': {
+      if (!canStartCalibration(state) || action.attendees.length < 2) return state;
+      const agenda = buildAgenda(state);
+      const next = { ...state, calibration: { status: 'in_session' as const, startedOn: state.today, attendees: action.attendees, agenda, changes: [] } };
+      const names = action.attendees.map((id) => person(state, id).name).join(', ');
+      return withLog(next, { actorId: action.actorId, type: 'calibration_started', detail: `Calibration session started with ${names}. ${agenda.length} cases on the agenda.` });
+    }
+    case 'calibrate_rating': {
+      const r = state.managerReviews.find((x) => x.personId === action.personId);
+      const reason = action.reason.trim();
+      if (state.calibration.status !== 'in_session' || !r || r.status !== 'submitted' || !reason) return state;
+      const from = finalRating(r)!;
+      if (from === action.to) return state;
+      const next = {
+        ...state,
+        managerReviews: state.managerReviews.map((x) =>
+          x === r
+            ? action.to === r.overall
+              ? { ...x, calibratedOverall: undefined, calibrationReason: undefined }
+              : { ...x, calibratedOverall: action.to, calibrationReason: reason }
+            : x,
+        ),
+        calibration: {
+          ...state.calibration,
+          changes: [...state.calibration.changes, { personId: action.personId, from, to: action.to, reason, on: state.today, by: action.actorId }],
+        },
+      };
+      return withLog(next, {
+        actorId: action.actorId,
+        type: 'calibration_change',
+        targetId: action.personId,
+        detail: `Calibrated ${person(state, action.personId).name} from ${from} to ${action.to}. Reason: ${reason}`,
+      });
+    }
+    case 'resolve_item': {
+      const note = action.note.trim();
+      const item = state.calibration.agenda.find((a) => a.key === action.key);
+      if (state.calibration.status !== 'in_session' || !item || item.resolution || !note) return state;
+      const next = {
+        ...state,
+        calibration: {
+          ...state.calibration,
+          agenda: state.calibration.agenda.map((a) => (a === item ? { ...a, resolution: { note, on: state.today, by: action.actorId } } : a)),
+        },
+      };
+      return withLog(next, { actorId: action.actorId, type: 'calibration_item', detail: `Agreed in calibration: ${item.label}. Note: ${note}` });
+    }
+    case 'lock_calibration': {
+      if (!canLockCalibration(state)) return state;
+      const n = state.calibration.changes.length;
+      const next = { ...state, calibration: { ...state.calibration, status: 'locked' as const, lockedOn: state.today } };
+      return withLog(next, { actorId: action.actorId, type: 'calibration_locked', detail: `Calibration locked with ${n} rating change${n === 1 ? '' : 's'}.` });
     }
     case 'release': {
       if (!canRelease(state)) return state;
