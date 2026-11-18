@@ -393,3 +393,10 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Who decided:** Developer drafted. The PO decides the final wording.
 - **Also:** Replaced the gendered pronouns used for fictional people in earlier entries of this log with names.
 - **Deploy:** `main` was moved up to `prototype` (fast-forward from the initial commit). The first Actions run was in progress at the time of this entry.
+
+## Deploy status (2026-11-18)
+
+- **First Actions run (#1):** The build job passed (`npm ci`, 97 tests, build). The deploy job failed with `404 ... Ensure GitHub Pages has been enabled`.
+- **Why:** GitHub Pages is not switched on for the repository yet. Only the repository owner can do this, in Settings → Pages → Source: "GitHub Actions".
+- **Next:** After the PO enables it, re-run the workflow (Actions → "Test and deploy to GitHub Pages" → Run workflow), or push any commit to `main`.
+- **Who decides:** PO (repository setting).
