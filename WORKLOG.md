@@ -546,3 +546,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - what was not done: a real multi-person session.
 - **Why on `main`:** The answers document is the submission, and the calibration branch is never merged.
 - **Not claimed:** The time of the PO's approval. It is a chat message, not in git.
+
+## Q3 answer: the PO's final wording (on `main`)
+
+- **Done:** Replaced the candidate list under question 3 in `docs/ANSWERS.md` with the PO's text, exactly as written. The status line now says Q1 and Q2 are drafts and Q3 is the PO's final wording. The document title was left unchanged, because Q1 and Q2 are still drafts.
+- **Who decided:** PO (wording). Developer: placement only.

@@ -1,6 +1,6 @@
 # Part 2 — Answers (draft for the PO to edit)
 
-Status: **draft.** Q1 and Q2 were drafted by the developer from `docs/DESIGN.md` and `WORKLOG.md`. Q3 is about the PO's own experience, so it lists candidate examples only; the PO writes the final answer.
+Status: Q1 and Q2 are **drafts**, written by the developer from `docs/DESIGN.md` and `WORKLOG.md` for the PO to edit. Q3 is the PO's final wording.
 
 ---
 
@@ -114,10 +114,6 @@ That is about **8 minutes** of build time from branch to last commit, for 4 comm
 
 ## 3. Working with AI: an example of disagreeing or reworking
 
-*For the PO to write. Candidate examples from this build (see `WORKLOG.md`):*
+In a recent take-home case for a marketing agency, I built a tool that finds social media creators for a brand. The AI checked the first version against the brief line by line and reported every requirement as covered. That was technically true. But when I looked at it as the marketing team who would use it, it failed them: it ran from a command line they could not use, and the Facebook input they gave never visibly affected the result.
 
-- **Evidence on every behaviour rating (changed by the PO).** The developer's first design asked for evidence on any behaviour or overall rating of 1, 2 or 5. The PO limited it to the overall rating. Evidence on four behaviours per person would add a lot of writing for managers, and the fairness benefit sits mainly on the final rating.
-- **The relayed instructions.** The developer (AI) would not apply a change to the working rules that came through another AI session until the PO confirmed it directly. A small example of keeping the human as the decision-maker.
-- **The "≥ 1.0" edge case.** The AI flagged that "1.0 or more" is strict when the suggestion is exactly 3.0, because ratings 2 and 4 then both need a reason. The PO kept the stricter rule on purpose.
-- **Escalation of the new joiner.** The demo data made the new joiner escalate too if HR did not remove them first. It was kept as realistic rather than "fixed" away.
-- **Design latitude.** The PO allowed visual changes but held scope and rules fixed, so the AI could not widen the feature through the UI. For example, it added a per-manager chart, but no cross-team comparison.
+The AI was checking against the spec, and I was checking against the user. I delayed the submission and we reworked it into a simple web app that shows how each input shapes the result. Since then, when AI tells me something is done, I also check it from the user's side. In this exam, that is why the first screen guides a reviewer who knows nothing about the product.
