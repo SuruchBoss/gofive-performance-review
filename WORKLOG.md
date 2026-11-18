@@ -62,3 +62,18 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Who decided:** Developer, per the approved plan.
 - **Notes:** Newer majors exist (Vite 8, React 19). The older versions were chosen because they are mature and their behaviour is well known; a demo gains nothing from the newest majors. `base: './'` makes the build work under the Pages sub-path.
 - **What went wrong:** Nothing. Test: 1 passed. Build: OK.
+
+## Commit 2 — Domain types, config and demo data
+
+- **Done:**
+  - `src/domain/types.ts` and `src/domain/config.ts`, which holds every threshold in one place.
+  - `src/data/seed.ts`: fictional company Riverside Supply Co. with 17 people, 4 behaviours with written anchors for each level, and 36 goals, each with its source.
+  - 7 seed tests.
+- **Why:** Approved design, sections 3 and 5.
+- **Who decided:** Developer chose the names, goals and numbers. The patterns follow the PO's demo data plan.
+- **Numbers:** Worked out by hand before writing, so each pattern lands where the design says. Commit 5 tests check them against the real formulas.
+  - Sales: gap about +0.9, with Nida Phrom far above her suggestion.
+  - Support: gap about −0.9, with Mai Tran far below her suggestion.
+  - Operations: 2 submitted reviews (gap about +0.1). The gap is not assessed until a 3rd review is in. This is a side effect of the "minimum 3" rule and makes a good demo step.
+- **Note:** Fah Inthira (joined 3 Oct) has an open review, so she will also escalate on 14 Dec unless HR removes her first. That is realistic, so it was left in.
+- **What went wrong:** Nothing.
