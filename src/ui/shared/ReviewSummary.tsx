@@ -3,12 +3,11 @@ import { farFlags } from '../../domain/flags';
 import { behaviourScore, suggestionFor } from '../../domain/rating';
 import { goalsOf, managerReviewOf, person, selfReviewOf } from '../../domain/selectors';
 import { useStore } from '../../state/store';
-import { Badge, Notice, Panel } from '../components';
+import { useState } from 'react';
+import { Badge, Notice, Panel, Section } from '../components';
 import { TERMS } from '../glossary';
 import { GoalRow, pct, SuggestionExplainer } from '../pages/manager/Review';
 
-// In-page jumps use scrollIntoView: the URL hash is taken by the router.
-const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
 /**
  * Read-only breakdown of one person's review. Every score shows where it came from:
@@ -24,6 +23,14 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
   const b = behaviourScore(review);
   const flag = farFlags(state).find((f) => f.personId === personId);
   const submitted = review.status === 'submitted';
+  const goals = goalsOf(state, personId);
+  const [open, setOpen] = useState({ goals: false, behaviours: false, self: false });
+  const toggle = (k: keyof typeof open) => setOpen((o) => ({ ...o, [k]: !o[k] }));
+  // A score tile opens its section and scrolls to it (the URL hash belongs to the router).
+  const jump = (k: 'goals' | 'behaviours') => {
+    setOpen((o) => ({ ...o, [k]: true }));
+    requestAnimationFrame(() => document.getElementById(k)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  };
 
   return (
     <div className="stack">
@@ -41,7 +48,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
           <button type="button" className="score-tile link" onClick={() => jump('goals')}>
             <span className="l">Goal results</span>
             <span className="v num">{suggested.toFixed(1)}</span>
-            <span className="s">{pct(sug.results)} of goal targets, weighted. {TERMS.results}</span>
+            <span className="s">{pct(sug.results)} of targets, weighted. 100% of target is a 3.</span>
           </button>
         </Panel>
         <Panel>
@@ -55,7 +62,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
 
       {audience === 'hr' && flag && (
         <Notice tone={flag.review ? 'brand' : 'warning'} title={`Rated ${flag.direction} results${flag.review ? ' · reviewed by HR' : ''}`}>
-          The overall rating is {Math.abs(flag.overall - flag.suggested).toFixed(1)} from the suggestion. {TERMS.far} Check the reason below.
+          The overall rating is {Math.abs(flag.overall - flag.suggested).toFixed(1)} away from what the goal results suggest (the limit is 1.0). Check the manager’s reason below.
         </Notice>
       )}
 
@@ -70,32 +77,49 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
         </Panel>
       )}
 
-      <div className="grid-2">
-        <Panel title="Goal results" bodyClass="goals" id="goals" foot={<SuggestionExplainer />}>
-          {goalsOf(state, personId).map((g) => <GoalRow key={g.id} g={g} />)}
-        </Panel>
-        <Panel title="Behaviours" id="behaviours">
-          <div className="stack">
-            {state.competencies.map((c) => {
-              const r = review.behaviour.find((x) => x.competencyId === c.id)?.rating;
-              return (
-                <div key={c.id} className="stack-sm">
-                  <div className="row-between">
-                    <span className="strong">{c.name}</span>
-                    <span className="rating-chip num">{r ?? '–'}</span>
-                  </div>
-                  {r && <div className="anchor">{c.anchors[r]}</div>}
+      <Section
+        id="goals"
+        title="Goal results"
+        summary={`${goals.length} goals · ${pct(sug.results)} of targets`}
+        open={open.goals}
+        onToggle={() => toggle('goals')}
+        bodyClass="goals"
+        foot={<SuggestionExplainer />}
+      >
+        {goals.map((g) => <GoalRow key={g.id} g={g} />)}
+      </Section>
+      <Section
+        id="behaviours"
+        title="Behaviours"
+        summary={b !== undefined ? `Average ${b.toFixed(1)} of 5` : 'Not rated yet'}
+        open={open.behaviours}
+        onToggle={() => toggle('behaviours')}
+      >
+        <div className="stack">
+          {state.competencies.map((c) => {
+            const r = review.behaviour.find((x) => x.competencyId === c.id)?.rating;
+            return (
+              <div key={c.id} className="stack-sm">
+                <div className="row-between">
+                  <span className="strong">{c.name}</span>
+                  <span className="rating-chip num">{r ?? '–'}</span>
                 </div>
-              );
-            })}
-          </div>
-        </Panel>
-      </div>
-
+                {r && <div className="anchor">{c.anchors[r]}</div>}
+              </div>
+            );
+          })}
+        </div>
+      </Section>
       {audience === 'hr' && (
-        <Panel title="Self-review" actions={self.selfRating ? <span className="small">Own rating <strong>{self.selfRating}</strong></span> : undefined}>
+        <Section
+          id="self"
+          title="Self-review"
+          summary={self.status === 'submitted' ? `Own rating ${self.selfRating}${self.late ? ' · late' : ''}` : 'Not submitted'}
+          open={open.self}
+          onToggle={() => toggle('self')}
+        >
           {self.status === 'submitted' ? <p className="quote">{self.text}</p> : <span className="muted">Not submitted.</span>}
-        </Panel>
+        </Section>
       )}
     </div>
   );

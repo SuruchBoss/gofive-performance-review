@@ -7,6 +7,6 @@ export const TERMS = {
   gap: `How far a manager's average rating sits from what their own team's results suggest. ${CONFIG.MANAGER_GAP_FLAG} or more is flagged.`,
   escalated: `Moved to the reviewer's own manager, ${CONFIG.ESCALATION_DAYS} days after a missed deadline.`,
   behaviour: "The average of the manager's four behaviour ratings, each judged against written anchors.",
-  results: 'Goal results turned into a 1–5 score: 100% of target is a 3.',
+  results: 'Goal results as a 1–5 score: 100% of target is a 3.',
   anchors: 'Each level has a written description, so the same number means the same thing for every manager.',
 } as const;

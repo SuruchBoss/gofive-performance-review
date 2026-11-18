@@ -460,3 +460,18 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** PO rule: "Explain terms like 'suggested rating' or 'manager gap' in one short line where they appear."
 - **Tests:** 97 passed. e2e PASS at desktop and phone.
 - **What went wrong:** A multi-line Python edit failed on a quote inside a triple-quoted string before it ran, so nothing changed. Edits now go through a script file with one replacement per line, which also fails loudly if a target is missing.
+
+## U2 — Summary first on HR screens
+
+- **Done:**
+  - **Consistency:**
+    - The page intro now says how many flags are left.
+    - Each manager card shows one status badge, the gap as one large number, and one plain sentence ("Ratings are on average 0.90 higher than the team's results suggest"). The figures and per-person chart open with "Show the 4 people".
+    - "Mark reviewed" is the card's main (filled) button.
+    - Single flags show the person, the badge, and "Rated 5 · results suggest 3.9". The manager's reason opens on click.
+  - **Person detail / employee result:** the score tiles and the manager's assessment come first. Goal results, behaviours and self-review are closed sections with a one-line summary ("3 goals · 123% of targets"). Clicking a score tile opens its section and scrolls to it.
+  - **Cycle overview:** 3 summary figures instead of 4. "Removed from cycle" was dropped; it is visible in Progress and the log.
+  - New shared components: `Disclosure` and `Section`.
+- **Why:** PO rule: "Show the summary first; details open on click."
+- **Tests:** 97 passed. e2e PASS at desktop and phone. Checked by hand at 1366 px and 390 px.
+- **What went wrong:** The flag notice on the person page repeated the glossary line and read awkwardly. It was rewritten as one sentence with the limit in brackets.

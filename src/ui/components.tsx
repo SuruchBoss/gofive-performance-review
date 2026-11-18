@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Rating } from '../domain/types';
 import { IconAlert, IconCalendar, IconCheck, IconClose, IconInfo } from './icons';
 import { formatDate } from '../domain/dates';
@@ -199,5 +199,46 @@ export function DateField({ id, value, min, disabled, onChange, describedBy }: {
         }}
       />
     </div>
+  );
+}
+
+/** "Show more" toggle: details stay hidden until asked for. */
+export function Disclosure({ label, openLabel, children, defaultOpen = false }: { label: string; openLabel?: string; children: ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="disclosure">
+      <button type="button" className="link-btn disclosure-btn" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        <span className="chev" aria-hidden="true">{open ? '▾' : '▸'}</span> {open ? openLabel ?? label : label}
+      </button>
+      {open && <div className="disclosure-body">{children}</div>}
+    </div>
+  );
+}
+
+/** A panel whose body opens on click. Used to keep detail screens short. */
+export function Section({ id, title, summary, open, onToggle, children, bodyClass = 'panel-body', foot }: {
+  id: string;
+  title: string;
+  summary?: ReactNode;
+  open: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+  bodyClass?: string;
+  foot?: ReactNode;
+}) {
+  return (
+    <section className={`panel section${open ? ' is-open' : ''}`} id={id}>
+      <button type="button" className="section-head" aria-expanded={open} aria-controls={`${id}-body`} onClick={onToggle}>
+        <span className="chev" aria-hidden="true">{open ? '▾' : '▸'}</span>
+        <span className="section-title">{title}</span>
+        {summary && <span className="section-summary">{summary}</span>}
+      </button>
+      {open && (
+        <>
+          <div id={`${id}-body`} className={bodyClass}>{children}</div>
+          {foot && <div className="panel-foot">{foot}</div>}
+        </>
+      )}
+    </section>
   );
 }
