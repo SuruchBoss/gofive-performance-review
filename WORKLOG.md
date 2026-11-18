@@ -595,3 +595,21 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Tests:** 106 passed. Checked the label and the locked result at 1366, 390 and 320 px; no sideways scroll.
 - **Who decided:** PO: the label wording. Developer: the placement. Assumption: employees see the calibration change.
 - **What went wrong:** Nothing.
+
+## C4 — Guide and browser test for calibration (branch `calibration`)
+
+- **Done:**
+  - Guide step 5 is now "Calibrate, then release" and opens the Calibration screen. The guide's heading says this is the requirement-change build.
+  - The e2e click-through has these additions:
+    1. It checks the build label.
+    2. After all reviews are in, HR starts calibration, changes Nida 5 → 4 with a reason, agrees every case, and locks.
+    3. HR releases.
+    4. Nida's result shows "Calibrated from 5 to 4".
+  - The old "mark every flag" step was dropped, because flags are now agreed in calibration.
+- **Result:**
+  ```
+  PASS desktop (1280px): guided path complete, 16 screens checked, no sideways scroll, no console errors
+  PASS phone (390px): guided path complete, 16 screens checked, no sideways scroll, no console errors
+  ```
+  Unit tests: 106 passed.
+- **Note:** The `docs/ANSWERS.md` update for Q2 is written on `main`, not on this branch, because that is the document that is submitted. See the next entry on `main`.

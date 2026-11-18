@@ -48,12 +48,12 @@ const STEPS: Step[] = [
     cta: 'Open Activity log',
   },
   {
-    title: 'Release results',
-    body: "Clear what the Cycle overview lists, release, then view as an Employee.",
+    title: 'Calibrate, then release',
+    body: 'Once every review is in, run Calibration across teams: agree each case, lock it, release, then view as an Employee.',
     done: (s) => s.cycle.status === 'released',
     view: { role: 'hr' },
-    path: '/hr',
-    cta: 'Open Cycle overview',
+    path: '/hr/calibration',
+    cta: 'Open Calibration',
   },
 ];
 
@@ -68,7 +68,7 @@ export function Intro() {
     <section className="intro" aria-labelledby="intro-title">
       <div className="intro-head">
         <div>
-          <div className="intro-kicker">Prototype · a concept for empeo</div>
+          <div className="intro-kicker">Prototype · a concept for empeo · requirement change from question 2</div>
           <h2 id="intro-title">Annual performance review, one cycle end to end</h2>
           <p>
             A clickable prototype for a fictional company, {state.company}, with HR, manager and employee views. Demo data only: nothing

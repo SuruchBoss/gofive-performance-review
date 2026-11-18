@@ -53,18 +53,13 @@ async function run(vp) {
     await page.getByRole('button', { name: 'Submit review' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Submit review' }).click();
   };
-  const markAllFlags = async () => {
-    while (await page.getByRole('button', { name: 'Mark reviewed' }).count()) {
-      await page.getByRole('button', { name: 'Mark reviewed' }).first().click();
-      await page.getByLabel('What did you check').fill('Discussed with the manager; reason accepted.');
-      await page.getByRole('dialog').getByRole('button', { name: 'Mark reviewed' }).click();
-    }
-  };
+
 
   await page.goto(BASE);
   await page.evaluate(() => localStorage.clear());
   await page.goto(BASE + '#/hr');
   await page.getByText('Annual performance review, one cycle end to end').waitFor();
+  assert(await page.getByText('Requirement change from question 2').first().isVisible(), 'build label missing');
   await shot('01-hr-cycle-start');
 
   // Step 1: HR removes the new joiner.
@@ -126,9 +121,24 @@ async function run(vp) {
   await open('/manager/review/e12');
   await rate(3);
   await submitReview();
+  // Calibration build: the managers calibrate across teams before release.
   await viewAs('HR');
-  await open('/hr/consistency');
-  await markAllFlags();
+  await open('/hr/calibration');
+  await page.getByRole('button', { name: 'Start calibration session' }).click();
+  await shot('11a-hr-calibration');
+  const first = page.locator('.agenda-item.open');
+  await first.getByRole('button', { name: 'Change rating' }).first().click();
+  await first.getByRole('radiogroup', { name: /Calibrated rating for Nida/ }).getByRole('radio', { name: '4' }).click();
+  await first.getByLabel('Why the group changed it').fill('Peers at similar results are at 4.');
+  await first.getByRole('button', { name: 'Save change' }).click();
+  for (let i = 0; i < 6 && (await page.locator('.agenda-item.open textarea').count()); i++) {
+    const it = page.locator('.agenda-item.open');
+    await it.getByLabel('What did the group agree?').fill('Discussed and agreed.');
+    await it.getByRole('button', { name: 'Mark as agreed' }).click();
+  }
+  await page.getByRole('button', { name: 'Lock calibration' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Lock calibration' }).click();
+  await shot('11b-hr-calibration-locked');
   await open('/hr/map');
   await shot('11-hr-map');
   await open('/hr/person/e05');
@@ -144,6 +154,7 @@ async function run(vp) {
   await viewAs('Employee', 'Nida Phrom');
   await open('/me/result');
   assert(await page.getByText('Manager\'s assessment').isVisible(), 'Nida result not visible');
+  assert(await page.getByText('Calibrated from 5 to 4').first().isVisible(), 'calibrated rating not shown to the employee');
   await shot('14-employee-result');
   await viewAs('Employee', 'Fah Inthira');
   await open('/me/result');
