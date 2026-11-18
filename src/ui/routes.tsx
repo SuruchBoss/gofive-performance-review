@@ -8,6 +8,8 @@ import { HrConsistency } from './pages/hr/Consistency';
 import { HrPersonDetail } from './pages/hr/PersonDetail';
 import { HrActivity } from './pages/hr/Activity';
 import { HrCycle } from './pages/hr/Cycle';
+import { HrCalibration } from './pages/hr/Calibration';
+import { unresolvedItems } from '../domain/calibration';
 import { MapPage } from './pages/hr/MapPage';
 import { openFlagCount } from '../domain/flags';
 import type { DemoState } from '../domain/types';
@@ -27,6 +29,7 @@ export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] 
       { href: '#/hr', label: 'Cycle overview', short: 'Overview', icon: <IconCycle /> },
       { href: '#/hr/progress', label: 'Progress', icon: <IconPeople /> },
       { href: '#/hr/consistency', label: 'Consistency', icon: <IconScale />, count: flags, alert: true },
+      { href: '#/hr/calibration', label: 'Calibration', short: 'Calibrate', icon: <IconScale />, count: store.state.calibration.status === 'in_session' ? unresolvedItems(store.state).length : 0, alert: true },
       { href: '#/hr/map', label: 'Results map', short: 'Map', icon: <IconMap /> },
       { href: '#/hr/activity', label: 'Activity log', short: 'Log', icon: <IconLog /> },
     ];
@@ -50,12 +53,13 @@ export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] 
 export function routeFor(path: string, role: Role, userId: string): { navKey: string; element: ReactNode } {
   const placeholder = (title: string) => <PageHead title={title} sub="This screen is built in a later commit." />;
   if (role === 'hr') {
-    const key = ['/hr/progress', '/hr/consistency', '/hr/map', '/hr/activity'].find((k) => path.startsWith(k)) ?? '/hr';
+    const key = ['/hr/progress', '/hr/consistency', '/hr/calibration', '/hr/map', '/hr/activity'].find((k) => path.startsWith(k)) ?? '/hr';
     const pm = path.match(/^\/hr\/person\/(\w+)/);
     if (pm) return { navKey: '/hr/consistency', element: <HrPersonDetail personId={pm[1]} /> };
     if (key === '/hr/progress') return { navKey: key, element: <HrProgress /> };
     if (key === '/hr/consistency') return { navKey: key, element: <HrConsistency /> };
     if (key === '/hr/activity') return { navKey: key, element: <HrActivity /> };
+    if (key === '/hr/calibration') return { navKey: key, element: <HrCalibration /> };
     if (key === '/hr') return { navKey: key, element: <HrCycle /> };
     if (key === '/hr/map') return { navKey: key, element: <MapPage /> };
     return { navKey: key, element: placeholder(key) };

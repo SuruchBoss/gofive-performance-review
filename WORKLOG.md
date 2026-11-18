@@ -560,3 +560,24 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - Shared test steps moved to `src/domain/testing.ts`.
 - **Who decided:** PO set the requirement (exam Q2) and approved the plan. Developer assumptions, logged earlier: HR records the session for the group; the agenda is frozen at start.
 - **What went wrong:** The first version imported test helpers from a test file. That made its tests run twice (112 counted). The helpers were moved to a plain module.
+
+## C2 — HR calibration screen (branch `calibration`)
+
+- **Done:**
+  - **Navigation:** a new HR tab, "Calibration" ("Calibrate" on phones), with a count of cases still to agree.
+  - **Before the session:** says why it cannot start ("3 reviews are still open… See Progress"), lets HR choose who is in the session, and has one main action, "Start calibration session".
+  - **In session:**
+    - Team cards show the average rating before → after against what results suggest, with the gap.
+    - The agenda lists the frozen flags. The next case to discuss is open. A team case lists the team, and each person has "Change rating" (new rating plus a required reason). "Mark as agreed" needs an outcome note.
+    - "Show all 11 people across teams" lets the group change anyone else.
+    - Main action: "Lock calibration", enabled once every case is agreed, with a confirmation.
+  - **After locking:** the list of agreed changes and "Go to release".
+  - **Cycle overview:** the release checklist now asks for "Calibration across teams locked" instead of "Every flag reviewed by HR", and the third figure shows the calibration status.
+- **Checked in the browser (1366 px and 390 px):**
+  - Started blocked (open reviews). Tom submitted Orn and Ying, and HR removed Fah. Then: start, change Nida 5 → 4 with a reason, agree all 4 cases, lock.
+  - The Sales card showed 4.00 → 3.75.
+  - "Go to release" opened the Cycle overview with Release enabled.
+  - No sideways scroll, no console errors.
+- **Tests:** 106 passed.
+- **Who decided:** Developer, under the approved plan and UX rules.
+- **What went wrong:** On phones the team-card text wrapped into four lines. "Results suggest" was shortened to "Results".

@@ -1005,3 +1005,21 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .stats-row .stat-sub { font-size: var(--fs-xs); }
 }
 .about-cal { border: 1px solid var(--line); border-left: 3px solid var(--mint-700); border-radius: var(--r-md); padding: var(--s3); display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+
+/* ---------- Calibration (requirement change, Q2) ---------- */
+.agenda { list-style: none; margin: 0; padding: 0; }
+.agenda-item { border-bottom: 1px solid var(--line); }
+.agenda-item:last-child { border-bottom: 0; }
+.agenda-head { width: 100%; display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); background: none; border: 0; text-align: left; cursor: pointer; }
+.agenda-head:hover { background: #fafcfb; }
+.agenda-item.open .agenda-head { background: var(--mint-50); }
+.agenda-mark { width: 20px; height: 20px; border-radius: var(--r-sm); border: 2px solid var(--line-strong); display: grid; place-items: center; color: #fff; flex: none; }
+.agenda-item.done .agenda-mark { background: var(--mint-700); border-color: var(--mint-700); }
+.agenda-title { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.agenda-body { padding: var(--s3) var(--s4) var(--s4) calc(var(--s4) + 32px); display: flex; flex-direction: column; gap: var(--s4); }
+.cal-row { display: flex; flex-direction: column; gap: 6px; padding: var(--s2) 0; border-top: 1px dashed var(--line); }
+.cal-row:first-child { border-top: 0; }
+.cal-person { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; }
+.cal-new, .cal-arrow { color: var(--mint-700); }
+.cal-change { display: flex; flex-direction: column; gap: var(--s3); padding: var(--s3); background: var(--canvas); border-radius: var(--r-md); }
+@media (max-width: 640px) { .agenda-body { padding-left: var(--s4); } }

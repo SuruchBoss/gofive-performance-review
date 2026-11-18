@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { caseInfo } from '../../../domain/deadlines';
 import { formatDate, weekday } from '../../../domain/dates';
-import { allFlags } from '../../../domain/flags';
 import { canRelease, releaseBlockers } from '../../../domain/release';
 import { useStore } from '../../../state/store';
 import { Badge, DateField, Dialog, Notice, PageHead, Panel, Stat } from '../../components';
@@ -75,11 +74,10 @@ export function HrCycle() {
   const cases = active.map((p) => caseInfo(state, p.personId));
   const submitted = cases.filter((c) => c.status === 'submitted').length;
   const late = cases.filter((c) => c.status === 'overdue' || c.status === 'escalated').length;
-  const flags = allFlags(state);
-  const reviewedFlags = flags.filter((f) => f.reviewed).length;
   const blockers = releaseBlockers(state);
   const openReviews = blockers.filter((b) => b.kind === 'open_review');
-  const openFlags = blockers.filter((b) => b.kind === 'flag');
+  const calBlock = blockers.filter((b) => b.kind === 'calibration');
+  const cal = state.calibration;
   const ready = canRelease(state);
 
   return (
@@ -93,7 +91,7 @@ export function HrCycle() {
       <div className="grid-3 stats-row">
         <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
         <Stat label="Late or escalated" value={late} sub={<a href="#/hr/progress">See progress</a>} />
-        <Stat label="Flags reviewed" value={`${reviewedFlags} / ${flags.length}`} sub={<a href="#/hr/consistency">Check consistency</a>} />
+        <Stat label="Calibration" value={cal.status === 'locked' ? 'Locked' : cal.status === 'in_session' ? 'In session' : 'Not started'} sub={<a href="#/hr/calibration">Open calibration</a>} />
       </div>
       <div style={{ height: 16 }} />
 
@@ -117,15 +115,15 @@ export function HrCycle() {
                     ) : <div className="small muted">{submitted} of {active.length} submitted.</div>}
                   </div>
                 </li>
-                <li className={openFlags.length ? '' : 'ok'}>
-                  <span className="ck" aria-hidden="true">{openFlags.length ? '' : <IconCheck size={13} />}</span>
+                <li className={calBlock.length ? '' : 'ok'}>
+                  <span className="ck" aria-hidden="true">{calBlock.length ? '' : <IconCheck size={13} />}</span>
                   <div>
-                    <div className="strong">Every flag reviewed by HR</div>
-                    {openFlags.length > 0 ? (
+                    <div className="strong">Calibration across teams locked</div>
+                    {calBlock.length > 0 ? (
                       <ul className="blockers">
-                        {openFlags.map((b) => <li key={b.key}><a href={b.href}>{b.text}</a></li>)}
+                        {calBlock.map((b) => <li key={b.key}><a href={b.href}>{b.text}</a></li>)}
                       </ul>
-                    ) : <div className="small muted">{flags.length ? `${flags.length} of ${flags.length} reviewed.` : 'No flags.'}</div>}
+                    ) : <div className="small muted">Locked {formatDate(cal.lockedOn!)} with {cal.changes.length} change{cal.changes.length === 1 ? '' : 's'}.</div>}
                   </div>
                 </li>
               </ul>
