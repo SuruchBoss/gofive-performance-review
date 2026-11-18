@@ -1,6 +1,6 @@
 # Part 2 — Answers (draft for the PO to edit)
 
-Status: **draft.** Q1 and Q2 were drafted by the developer from `docs/DESIGN.md` and `WORKLOG.md`. Q3 is about the PO's own experience, so it lists candidate examples only; the PO writes the final answer.
+Status: Q1 and Q2 are **drafts**, written by the developer from `docs/DESIGN.md` and `WORKLOG.md` for the PO to edit. Q3 is the PO's final wording.
 
 ---
 
@@ -67,12 +67,53 @@ Status: **draft.** Q1 and Q2 were drafted by the developer from `docs/DESIGN.md`
 | Employee survey: "My rating reflects my results and how I worked" | Rising; split by team to catch unfair teams |
 | Next year: share of last year's top and bottom performers whose results stay in the same band | High, which means the ratings were predictive |
 
+### What happened when it was built
+
+The change was built on the branch `calibration` and never merged into `main`. It is live as a second build: https://suruchboss.github.io/gofive-performance-review/calibration/
+
+**How long it took** (commit timestamps, 18 Nov 2026, UTC+7):
+
+| Step | Time |
+|---|---|
+| Plan written (`docs/PLAN-2.md`) | 22:36 |
+| Plan approved by the PO | in chat; the approval time is not in git |
+| Deploy setup for the second build (on `main`) | 23:36 |
+| Branch created from `main` | 23:36 |
+| Rules and tests (C1) | 23:39 |
+| HR calibration screen (C2) | 23:41 |
+| Manager and employee views, build label (C3) | 23:42 |
+| Guide and browser test (C4) | 23:44 |
+
+That is about **8 minutes** of build time from branch to last commit, for 4 commits. The total does not include writing and approving the plan.
+
+**What changed:** 24 files, +726 / −80 lines in `src/`, plus the work log.
+- **New:**
+  - `src/domain/calibration.ts`: start, agenda, final rating, lock, before/after per team.
+  - `src/domain/calibration.test.ts`: 11 tests.
+  - `src/ui/pages/hr/Calibration.tsx`: the session screen, about 300 lines and the largest single piece.
+- **Changed:**
+  - `types.ts`: calibration state, plus a calibrated rating kept next to the manager's own rating.
+  - `actions.ts`: 4 actions, and no removals once calibration starts.
+  - `release.ts`: the gate now needs "calibration locked" instead of "every flag has an HR note".
+  - `release.test.ts`: rewritten for the new rule.
+  - Small edits in the Cycle overview, manager team and review pages, employee result, map, activity log, guide, and the e2e test.
+- **Outside the app:** the Pages workflow builds both branches into one site, because only `main` may deploy. The calibration build uses its own browser storage keys, because both builds share one web address.
+
+**What the existing design already handled:**
+- **The release gate was one function.** Calibration became one more blocker in it. The employee's locked screen needed only new wording.
+- **Flags became the agenda unchanged.** The agenda is built from the same `managerConsistency` and `farFlags` functions as the consistency check, so there was no new logic for "what to discuss".
+- **The suggested rating was already stored on each review at submit.** So the "before → after against results" view per team came almost for free.
+- **The activity log, the person page, the results map and the review summary were reused as they were.** One helper (`finalRating`) makes them show the calibrated rating.
+- **The prediction above held.** The calibration screen is the consistency view for all teams at once, flags are the agenda, and the per-team measure stays.
+
+**What had to be added or changed:**
+- **A new stage with its own state:** not started → in session → locked. Plus a change history (before, after, reason, date), so the manager's own rating is never overwritten.
+- **One rule changed meaning:** HR's flag notes no longer gate release, because the group now discusses those cases. 4 of the 97 existing tests failed as expected and were rewritten for the new rule. That is the clearest sign of where the requirement change lands.
+- **A new screen for the session,** and status messages for managers and employees.
+- **Not done in the prototype:** a real multi-person session. HR records what the group agrees on everyone's behalf. A real product would need each manager in their own account, plus permissions for who may change whose rating.
+
 ## 3. Working with AI: an example of disagreeing or reworking
 
-*For the PO to write. Candidate examples from this build (see `WORKLOG.md`):*
+In a recent take-home case for a marketing agency, I built a tool that finds social media creators for a brand. The AI checked the first version against the brief line by line and reported every requirement as covered. That was technically true. But when I looked at it as the marketing team who would use it, it failed them: it ran from a command line they could not use, and the Facebook input they gave never visibly affected the result.
 
-- **Evidence on every behaviour rating (changed by the PO).** The developer's first design asked for evidence on any behaviour or overall rating of 1, 2 or 5. The PO limited it to the overall rating. Evidence on four behaviours per person would add a lot of writing for managers, and the fairness benefit sits mainly on the final rating.
-- **The relayed instructions.** The developer (AI) would not apply a change to the working rules that came through another AI session until the PO confirmed it directly. A small example of keeping the human as the decision-maker.
-- **The "≥ 1.0" edge case.** The AI flagged that "1.0 or more" is strict when the suggestion is exactly 3.0, because ratings 2 and 4 then both need a reason. The PO kept the stricter rule on purpose.
-- **Escalation of the new joiner.** The demo data made the new joiner escalate too if HR did not remove them first. It was kept as realistic rather than "fixed" away.
-- **Design latitude.** The PO allowed visual changes but held scope and rules fixed, so the AI could not widen the feature through the UI. For example, it added a per-manager chart, but no cross-team comparison.
+The AI was checking against the spec, and I was checking against the user. I delayed the submission and we reworked it into a simple web app that shows how each input shapes the result. Since then, when AI tells me something is done, I also check it from the user's side. In this exam, that is why the first screen guides a reviewer who knows nothing about the product.

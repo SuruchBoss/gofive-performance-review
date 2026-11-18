@@ -1,6 +1,7 @@
+import { reduce } from '../domain/actions';
 import { useState } from 'react';
 import { addDays, formatDate, weekday } from '../domain/dates';
-import { employeesForPicker, reviewersForPicker } from '../domain/selectors';
+import { employeesForPicker, reviewersForPicker, teamName } from '../domain/selectors';
 import { useStore, type Role } from '../state/store';
 import { go } from '../state/router';
 import { Dialog } from './components';
@@ -13,7 +14,8 @@ export function DemoStrip() {
 
   const switchRole = (role: Role) => {
     setView({ role });
-    go(HOME[role]);
+    // After release, an employee's first question is their result.
+    go(role === 'employee' && state.cycle.status === 'released' ? '/me/result' : HOME[role]);
   };
 
   return (
@@ -31,7 +33,7 @@ export function DemoStrip() {
         {view.role === 'manager' && (
           <select aria-label="Manager" value={view.managerId} onChange={(e) => { setView({ managerId: e.target.value }); go(HOME.manager); }}>
             {reviewersForPicker(state).map((p) => (
-              <option key={p.id} value={p.id}>{p.name} · {p.title}</option>
+              <option key={p.id} value={p.id}>{p.name}{p.teamId ? ` · ${teamName(state, p.teamId)}` : ` · ${p.title}`}</option>
             ))}
           </select>
         )}
@@ -47,7 +49,21 @@ export function DemoStrip() {
       <div className="demo-group">
         <span>Demo date</span>
         <span className="demo-date num">{weekday(state.today)} {formatDate(state.today)}</span>
-        <button type="button" className="demo-btn" onClick={() => { dispatch({ type: 'advance_day' }); notify(`Demo date moved to ${formatDate(addDays(state.today, 1))}`); }}>
+        <button
+          type="button"
+          className="demo-btn"
+          onClick={() => {
+            // Work out what the day change does, so the message can say it (the reducer is pure).
+            const next = reduce(state, { type: 'advance_day' });
+            const moved = next.log.filter((l) => l.type === 'escalation').length - state.log.filter((l) => l.type === 'escalation').length;
+            dispatch({ type: 'advance_day' });
+            notify(
+              moved > 0
+                ? `${formatDate(addDays(state.today, 1))}: ${moved} overdue review${moved === 1 ? '' : 's'} moved to the next manager up. See Progress or the Activity log.`
+                : `Demo date moved to ${formatDate(addDays(state.today, 1))}`,
+            );
+          }}
+        >
           +1 day
         </button>
         {view.introHidden && (

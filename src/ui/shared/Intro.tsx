@@ -17,7 +17,7 @@ interface Step {
 const STEPS: Step[] = [
   {
     title: 'See who is late',
-    body: 'HR → Progress. Two reviews are overdue and Fah, who joined in October, is still in the cycle. Remove Fah with a reason.',
+    body: 'HR → Progress. Three reviews are overdue. One is for Fah, who joined in October and should not be in this cycle: remove Fah with a reason.',
     done: (s) => !!s.participants.find((p) => p.personId === 'e08')?.removed,
     view: { role: 'hr' },
     path: '/hr/progress',
@@ -41,7 +41,7 @@ const STEPS: Step[] = [
   },
   {
     title: 'Let a deadline slip',
-    body: "Press +1 day twice. Ying's open review escalates to the Managing Director; the log records it.",
+    body: "Press +1 day twice. Ying's open review moves to Anong Rattanakul, the Managing Director; the log records it.",
     done: (s) => s.log.some((l) => l.type === 'escalation'),
     view: { role: 'hr' },
     path: '/hr/activity',
@@ -99,7 +99,7 @@ export function Intro() {
         {allSteps ? 'Show only the next step' : `Show all ${STEPS.length} steps`}
       </button>
       <div className="intro-foot small muted">
-        {doneCount} of {STEPS.length} done. Use <strong>View as</strong> to switch roles at any time, and <strong>Reset demo</strong> to start again.
+        {doneCount} of {STEPS.length} done. Switch between <strong>HR</strong>, <strong>Manager</strong> and <strong>Employee</strong> at the top at any time, and <strong>Reset demo</strong> to start again.
       </div>
     </section>
   );

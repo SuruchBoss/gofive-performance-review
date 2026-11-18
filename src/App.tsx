@@ -23,10 +23,15 @@ function Frame() {
 
   // Keep the role switcher and the URL in step (for example after a shared link).
   const pathRole = roleOfPath(path);
+  const asId = path.match(/[?&]as=(\w[\w-]*)/)?.[1];
   useEffect(() => {
     if (!pathRole) go(HOME[view.role]);
     else if (pathRole !== view.role) setView({ role: pathRole });
   }, [pathRole, view.role, setView]);
+  // Links such as "Open as Anong" carry ?as=<person> so the right manager is selected.
+  useEffect(() => {
+    if (pathRole === 'manager' && asId && asId !== view.managerId) setView({ managerId: asId });
+  }, [pathRole, asId, view.managerId, setView]);
 
   const role = pathRole ?? view.role;
   const userId = role === 'hr' ? 'hr' : role === 'manager' ? view.managerId : view.employeeId;

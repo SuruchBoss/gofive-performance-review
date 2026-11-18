@@ -16,7 +16,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
   const mine = state.participants.filter((p) => p.reviewerId === userId && !p.removed).sort((a, b) => rank(a.personId) - rank(b.personId));
   const done = mine.filter((p) => managerReviewOf(state, p.personId).status === 'submitted').length;
   const overdue = mine.filter((p) => caseInfo(state, p.personId).status === 'overdue');
-  const escalatedToMe = mine.filter((p) => p.escalatedFrom);
+  const escalatedToMe = mine.filter((p) => p.escalatedFrom && managerReviewOf(state, p.personId).status !== 'submitted');
   const firstEscalation = overdue.map((p) => caseInfo(state, p.personId).escalatesOn!).sort()[0];
   const boss = me.managerId ? person(state, me.managerId) : undefined;
   // The one main action: the most urgent open review (drafts first, then by name order in the list).

@@ -138,7 +138,7 @@ export function HrConsistency() {
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      onClick={() => setDialog({ key: f.key, label: `${who.name} rated ${f.direction} results`, context: `${who.name} was rated ${f.overall}; results suggest ${f.suggested.toFixed(2)}.` })}
+                      onClick={() => setDialog({ key: f.key, label: `${who.name}'s rating: ${f.direction} results`, context: `${who.name} was rated ${f.overall}; results suggest ${f.suggested.toFixed(2)}.` })}
                     >
                       Mark reviewed
                     </button>

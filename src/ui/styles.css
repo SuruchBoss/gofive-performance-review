@@ -1038,3 +1038,19 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .brand { flex-wrap: wrap; row-gap: 2px; }
   .variant-tag { font-size: 11px; padding: 1px 6px; }
 }
+/* ---------- Blind-test fixes ---------- */
+/* Toasts sit in a corner on desktop and at the top on phones, so they do not cover the rows being worked on. */
+.toast { left: auto; right: var(--s5); bottom: var(--s5); transform: none; max-width: 420px; }
+@media (max-width: 860px) {
+  .toast { left: var(--s3); right: var(--s3); top: var(--s2); bottom: auto; max-width: none; }
+  body:has(.action-bar) .toast { bottom: auto; }
+  /* Person picker on its own full-width row, so names are not cut off. */
+  .demo-strip-inner > .demo-group:first-of-type { flex-wrap: wrap; }
+  .demo-strip-inner > .demo-group:first-of-type select { flex: 1 1 100%; }
+  /* Panel tabs wrap instead of running off the edge. */
+  .panel-head .tabs { flex-wrap: wrap; column-gap: var(--s4); row-gap: 0; }
+  /* Guide: title, next step and controls only. */
+  .intro-head p { display: none; }
+  .intro h2 { font-size: var(--fs-lg); }
+}
+.scale { justify-self: start; width: max-content; }

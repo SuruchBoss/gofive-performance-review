@@ -12,6 +12,12 @@ export function teamName(state: DemoState, teamId?: string): string {
 
 export const firstName = (p: Person) => p.name.split(' ')[0];
 
+/** Name plus title for people outside the teams (the head of company), so "Anong Rattanakul" is never unexplained. */
+export function nameWithRole(state: DemoState, id: string): string {
+  const p = person(state, id);
+  return p.kind === 'head' ? `${p.name} (${p.title})` : p.name;
+}
+
 export function reviewersForPicker(state: DemoState): Person[] {
   return state.people.filter((p) => p.kind === 'manager' || p.kind === 'head');
 }

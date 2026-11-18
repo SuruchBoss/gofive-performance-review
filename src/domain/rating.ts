@@ -64,7 +64,7 @@ export type ReviewProblem =
 export function reviewProblems(review: ManagerReview, suggested: number): ReviewProblem[] {
   const out: ReviewProblem[] = [];
   const missing = review.behaviour.filter((b) => !b.rating).length;
-  if (missing) out.push({ field: 'behaviour', message: `Rate ${missing === 1 ? 'the remaining behaviour' : `all ${missing} remaining behaviours`}.` });
+  if (missing) out.push({ field: 'behaviour', message: `Rate ${missing === 1 ? 'the last behaviour' : `the ${missing} remaining behaviours`}.` });
   if (review.overall === undefined) {
     out.push({ field: 'overall', message: 'Choose an overall rating.' });
     return out;

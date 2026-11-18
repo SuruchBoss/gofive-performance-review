@@ -110,7 +110,7 @@ export function HrCycle() {
                     <div className="strong">Every manager review submitted</div>
                     {openReviews.length > 0 ? (
                       <ul className="blockers">
-                        {openReviews.map((b) => <li key={b.key}><a href={b.href}>{b.text}</a></li>)}
+                        {openReviews.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">{submitted} of {active.length} submitted.</div>}
                   </div>
@@ -121,7 +121,7 @@ export function HrCycle() {
                     <div className="strong">Calibration across teams locked</div>
                     {calBlock.length > 0 ? (
                       <ul className="blockers">
-                        {calBlock.map((b) => <li key={b.key}><a href={b.href}>{b.text}</a></li>)}
+                        {calBlock.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">Locked {formatDate(cal.lockedOn!)} with {cal.changes.length} change{cal.changes.length === 1 ? '' : 's'}.</div>}
                   </div>

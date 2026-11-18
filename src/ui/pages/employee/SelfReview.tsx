@@ -64,7 +64,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
               </div>
               <div className="field">
                 <span className="label" id="own-label">Your own rating</span>
-                <span className="hint">For context only. It does not change the suggestion your manager sees.</span>
+                <span className="hint">For information only. It does not change the rating your manager is suggested.</span>
                 <div className="row" style={{ gap: 12 }}>
                   <RatingScale label="Your own rating" value={self.selfRating} disabled={!editable} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
                   {self.selfRating && <span className="small muted">{OWN_LABELS[self.selfRating]}</span>}
