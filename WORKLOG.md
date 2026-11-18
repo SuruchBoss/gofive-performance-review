@@ -62,6 +62,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **HR Progress opens on a "Needs action" tab, with summary figures on top (submitted, overdue, escalated, self-reviews missing)** (commit 8). HR opens the screen to find what is stuck, not to read all 12 rows.
 - **Overdue cases show "Escalates 14 Dec" under the deadline, and the manager sees the same date in a banner** (commit 8). The automatic rule is visible before it happens, so nobody is surprised by it.
 - **The head of company sees "Assigned to me", with a red banner for escalated cases** (commit 8). The head has no team of their own in this cycle, so "My team" would be misleading.
+- **The Remove dialog offers the two reasons from the brief as choices, plus "Other reason"** (commit 9). HR is the one deciding, but common reasons are worded the same way every time, which keeps the audit log readable.
+- **New joiners get an amber "Joined 3 Oct: under 3 months" note in Progress and appear under "Needs action"** (commit 9). The system only points out the case. HR decides.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -213,3 +215,23 @@ Working notes for the Product Owner. Newest entry at the bottom.
     - the escalation log is dated on the escalation day, even if the clock jumps;
     - an extension after escalation gives the new reviewer more time.
 - **What went wrong:** The Remind and Extend buttons wrapped onto two lines in the table. Fixed with `nowrap`. Also note: Fah Inthira (new joiner) escalates on 14 Dec too if HR has not removed her. This is expected and kept; it shows why the removal step matters.
+
+## Commit 9 — Eligibility hint and removal
+
+- **Done:**
+  - `src/domain/eligibility.ts`: the cut-off is the period end minus 3 months (30 Sep 2026). Anyone who joined after it gets a hint, but nothing happens automatically.
+  - `remove` action: needs a reason, is logged, and is blocked after release.
+  - Remove dialog with preset reasons. Removed rows show the date and reason under "Everyone".
+- **Tests:** 78 passed. New tests cover:
+  - the cut-off date;
+  - a start on 30 Sep gets no hint, a start on 1 Oct does;
+  - the removal log text;
+  - removing Mai drops Support to 2 reviews, so "not enough reviews" and the open flags go from 4 to 2;
+  - a person cannot be removed twice.
+- **Browser run:** removed Fah Inthira with the preset reason. The counts went from 9/12 to 9/11 and the row shows the reason. No errors.
+- **Who decided:** PO set "removal with a reason". The developer chose the preset reasons and the cut-off based on the period end.
+- **Open point for the PO:** Removing someone with a submitted review also removes that review from the consistency check. The test shows Support falls below the 3-review minimum. This is consistent with "left out of all counts", but HR should know it can hide a flag. Removal is therefore offered only for open cases in the UI, not for submitted ones.
+- **What went wrong:**
+  - On phones, cells with two lines laid out side by side. Fixed by wrapping them.
+  - The dialog close button wrapped under the title. Fixed with `nowrap`.
+  - The radio labels inherited the bold field-label style. Fixed.

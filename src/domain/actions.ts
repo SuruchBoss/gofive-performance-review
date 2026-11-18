@@ -24,6 +24,7 @@ export type Action =
   | { type: 'submit_self_review'; personId: string }
   | { type: 'remind'; personId: string; actorId: string }
   | { type: 'extend'; personId: string; until: IsoDate; reason: string; actorId: string }
+  | { type: 'remove'; personId: string; reason: string; actorId: string }
   | { type: 'review_flag'; flagKey: string; note: string; actorId: string; label: string };
 
 export function nextLogId(state: DemoState): string {
@@ -104,6 +105,21 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
         type: 'extension',
         targetId: action.personId,
         detail: `Extended the review of ${person(state, p.personId).name} to ${formatDate(action.until)}. Reason: ${reason}`,
+      });
+    }
+    case 'remove': {
+      const p = state.participants.find((x) => x.personId === action.personId);
+      const reason = action.reason.trim();
+      if (!p || p.removed || !reason || state.cycle.status === 'released') return state;
+      const next = {
+        ...state,
+        participants: state.participants.map((x) => (x === p ? { ...x, removed: { on: state.today, reason, by: action.actorId } } : x)),
+      };
+      return withLog(next, {
+        actorId: action.actorId,
+        type: 'removal',
+        targetId: action.personId,
+        detail: `Removed ${person(state, p.personId).name} from the cycle. Reason: ${reason}`,
       });
     }
     case 'review_flag': {

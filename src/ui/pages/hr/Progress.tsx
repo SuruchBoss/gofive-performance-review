@@ -5,7 +5,9 @@ import { person, selfReviewOf, teamName } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
 import { Empty, PageHead, Panel, PersonCell, Stat } from '../../components';
 import { IconCheck } from '../../icons';
-import { ExtendDialog, RemindDialog } from '../../shared/CaseDialogs';
+import { ExtendDialog, RemindDialog, RemoveDialog } from '../../shared/CaseDialogs';
+import { eligibilityHint } from '../../../domain/eligibility';
+import { IconAlert } from '../../icons';
 import { CaseBadge, SelfReviewBadge } from '../../status';
 
 type Filter = 'action' | 'all' | 'submitted';
@@ -13,7 +15,7 @@ type Filter = 'action' | 'all' | 'submitted';
 export function HrProgress() {
   const { state } = useStore();
   const [filter, setFilter] = useState<Filter>('action');
-  const [dialog, setDialog] = useState<{ kind: 'remind' | 'extend'; personId: string }>();
+  const [dialog, setDialog] = useState<{ kind: 'remind' | 'extend' | 'remove'; personId: string }>();
 
   const rows = state.participants.map((p) => ({ p, c: caseInfo(state, p.personId), who: person(state, p.personId) }));
   const active = rows.filter((r) => r.c.status !== 'removed');
@@ -21,15 +23,17 @@ export function HrProgress() {
   const overdue = active.filter((r) => r.c.status === 'overdue').length;
   const escalated = active.filter((r) => r.c.status === 'escalated').length;
   const selfMissing = active.filter((r) => selfReviewOf(state, r.p.personId).status !== 'submitted').length;
-  const needsAction = (r: (typeof rows)[number]) => r.c.status === 'overdue' || r.c.status === 'escalated' || r.c.status === 'due';
+  const needsAction = (r: (typeof rows)[number]) =>
+    r.c.status === 'overdue' || r.c.status === 'escalated' || r.c.status === 'due' || (r.c.status !== 'removed' && !!eligibilityHint(state, r.who));
 
   const shown = rows.filter((r) => (filter === 'all' ? true : filter === 'submitted' ? r.c.status === 'submitted' : needsAction(r)));
+  const removed = rows.length - active.length;
 
   return (
     <>
       <PageHead
         title="Progress"
-        sub={`Manager reviews were due ${formatDate(state.cycle.managerDeadline)}. Open reviews escalate to the manager's own manager 3 days after their deadline.`}
+        sub={`Manager reviews were due ${formatDate(state.cycle.managerDeadline)}. Open reviews escalate to the manager's own manager 3 days after their deadline.${removed ? ` ${removed} removed from the cycle.` : ''}`}
       />
       <div className="grid-4">
         <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
@@ -69,23 +73,34 @@ export function HrProgress() {
                   <tr key={p.personId} className={c.status === 'removed' ? 'is-removed' : undefined}>
                     <td className="cell-primary">
                       <PersonCell name={who.name} sub={`${who.title} · ${teamName(state, who.teamId)}`} size="sm" />
+                      {c.status !== 'removed' && eligibilityHint(state, who) && (
+                        <div className="hint-tag"><IconAlert size={13} /> Joined {formatDate(who.startDate)}: under 3 months</div>
+                      )}
+                      {p.removed && <div className="xs muted">Removed {formatDate(p.removed.on, true)}: {p.removed.reason}</div>}
                     </td>
                     <td data-label="Reviewer">
-                      <div>{person(state, p.reviewerId).name}</div>
-                      {p.escalatedFrom && <div className="xs muted">from {person(state, p.escalatedFrom).name}, {formatDate(p.escalatedOn!, true)}</div>}
+                      <div>
+                        <div>{person(state, p.reviewerId).name}</div>
+                        {p.escalatedFrom && <div className="xs muted">from {person(state, p.escalatedFrom).name}, {formatDate(p.escalatedOn!, true)}</div>}
+                      </div>
                     </td>
                     <td data-label="Self-review"><SelfReviewBadge r={selfReviewOf(state, p.personId)} /></td>
                     <td data-label="Manager review"><CaseBadge c={c} /></td>
                     <td data-label="Deadline" className="num">
+                      <div>
                       <div className="nowrap">{formatDate(c.deadline, true)}{p.extension && <span className="xs muted"> · extended</span>}</div>
                       {c.status === 'overdue' && c.escalatesOn && <div className="xs muted nowrap">Escalates {formatDate(c.escalatesOn, true)}</div>}
                       {p.lastRemindedOn && open && <div className="xs muted nowrap">Reminded {formatDate(p.lastRemindedOn, true)}</div>}
+                      </div>
                     </td>
                     <td className="actions">
                       {open && (
                         <div className="row" style={{ justifyContent: 'flex-end' }}>
                           <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>Remind</button>
                           <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'extend', personId: p.personId })}>Extend</button>
+                          {state.cycle.status === 'open' && (
+                            <button type="button" className="btn btn-sm btn-danger" onClick={() => setDialog({ kind: 'remove', personId: p.personId })} aria-label={`Remove ${who.name} from the cycle`}>Remove</button>
+                          )}
                         </div>
                       )}
                     </td>
@@ -98,6 +113,7 @@ export function HrProgress() {
       </Panel>
       {dialog?.kind === 'remind' && <RemindDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
       {dialog?.kind === 'extend' && <ExtendDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
+      {dialog?.kind === 'remove' && <RemoveDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
     </>
   );
 }

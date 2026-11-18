@@ -726,3 +726,11 @@ table.data tr.is-removed td { color: var(--muted); }
 .tabs button[aria-selected='true'] { color: var(--ink); border-bottom-color: var(--mint-700); font-weight: 600; }
 .banner { margin-bottom: var(--s4); }
 table.data td.actions .row { flex-wrap: nowrap; }
+.choices { border: 0; padding: 0; margin: 0; gap: var(--s2); }
+.choices legend { margin-bottom: var(--s2); }
+.choice { display: flex; gap: var(--s2); align-items: flex-start; font-size: var(--fs-md); cursor: pointer; }
+.choice input { margin-top: 4px; accent-color: var(--mint-700); }
+.hint-tag { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-xs); color: var(--amber); font-weight: 600; margin-top: 2px; }
+
+.dialog-head.row-between { flex-wrap: nowrap; }
+.field label.choice { font-weight: 400; font-size: var(--fs-md); }

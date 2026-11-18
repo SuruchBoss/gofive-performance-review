@@ -4,6 +4,7 @@ import { effectiveDeadline } from '../../domain/deadlines';
 import { person } from '../../domain/selectors';
 import { useStore } from '../../state/store';
 import { Dialog, Notice } from '../components';
+import { eligibilityHint } from '../../domain/eligibility';
 
 export function RemindDialog({ personId, onClose }: { personId: string; onClose: () => void }) {
   const { state, dispatch, notify } = useStore();
@@ -72,6 +73,53 @@ export function ExtendDialog({ personId, onClose }: { personId: string; onClose:
       <div className="field">
         <label htmlFor="ext-reason">Reason</label>
         <textarea id="ext-reason" className="textarea" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="For example: manager on sick leave until 16 Dec." />
+        <span className="hint">Recorded in the activity log.</span>
+      </div>
+    </Dialog>
+  );
+}
+
+const PRESETS = ['Joined less than 3 months before the period end', 'On long leave during the review period'];
+
+export function RemoveDialog({ personId, onClose }: { personId: string; onClose: () => void }) {
+  const { state, dispatch, notify } = useStore();
+  const who = person(state, personId);
+  const recent = !!eligibilityHint(state, who);
+  const [preset, setPreset] = useState<string>(recent ? PRESETS[0] : 'other');
+  const [detail, setDetail] = useState(recent ? `Started ${formatDate(who.startDate)}.` : '');
+  const reason = preset === 'other' ? detail.trim() : `${preset}. ${detail.trim()}`.trim();
+  const valid = preset === 'other' ? detail.trim().length > 0 : true;
+  return (
+    <Dialog
+      title={`Remove ${who.name} from the cycle?`}
+      sub="They will not be reviewed this cycle and are left out of all counts and flags."
+      onClose={onClose}
+      footer={
+        <>
+          <button type="button" className="btn" onClick={onClose}>Cancel</button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={!valid}
+            onClick={() => { dispatch({ type: 'remove', personId, reason, actorId: 'hr' }); notify(`${who.name} removed from the cycle`); onClose(); }}
+          >
+            Remove from cycle
+          </button>
+        </>
+      }
+    >
+      <fieldset className="field choices">
+        <legend className="label">Reason</legend>
+        {[...PRESETS, 'other'].map((p) => (
+          <label key={p} className="choice">
+            <input type="radio" name="remove-reason" checked={preset === p} onChange={() => setPreset(p)} />
+            <span>{p === 'other' ? 'Other reason' : p}</span>
+          </label>
+        ))}
+      </fieldset>
+      <div className="field">
+        <label htmlFor="remove-detail">{preset === 'other' ? 'Describe the reason' : 'Details (optional)'}</label>
+        <textarea id="remove-detail" className="textarea" value={detail} onChange={(e) => setDetail(e.target.value)} />
         <span className="hint">Recorded in the activity log.</span>
       </div>
     </Dialog>
