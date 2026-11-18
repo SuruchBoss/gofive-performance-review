@@ -4,6 +4,7 @@ import { behaviourScore, suggestionFor } from '../../domain/rating';
 import { goalsOf, managerReviewOf, person, selfReviewOf } from '../../domain/selectors';
 import { useStore } from '../../state/store';
 import { useState } from 'react';
+import { finalRating } from '../../domain/calibration';
 import { Badge, Notice, Panel, Section } from '../components';
 import { TERMS } from '../glossary';
 import { GoalRow, pct, SuggestionExplainer } from '../pages/manager/Review';
@@ -38,9 +39,10 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
         <Panel>
           <div className="score-tile">
             <span className="l">Overall rating</span>
-            <span className="v num">{submitted ? review.overall : '–'}</span>
+            <span className="v num">{submitted ? finalRating(review) : '–'}</span>
             <span className="s">
               {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}</> : 'Not submitted yet'}
+              {review.calibratedOverall && <><br /><strong className="cal-new">Calibrated from {review.overall} to {review.calibratedOverall}</strong> across teams</>}
             </span>
           </div>
         </Panel>
@@ -72,6 +74,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             {review.deviationReason && (<><dt>Why it differs from results</dt><dd>{review.deviationReason}</dd></>)}
             {review.overallEvidence && (<><dt>Example</dt><dd>{review.overallEvidence}</dd></>)}
             {review.comment && (<><dt>Comment</dt><dd>{review.comment}</dd></>)}
+            {review.calibratedOverall && (<><dt>Calibration</dt><dd>Changed from {review.overall} to {review.calibratedOverall} when managers aligned ratings across teams. Reason: {review.calibrationReason}</dd></>)}
             {review.selfReviewMissing && (<><dt>Self-review</dt><dd><Badge tone="warning">Missing when reviewed</Badge></dd></>)}
           </dl>
         </Panel>

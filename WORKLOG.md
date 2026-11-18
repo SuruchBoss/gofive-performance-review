@@ -581,3 +581,17 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Tests:** 106 passed.
 - **Who decided:** Developer, under the approved plan and UX rules.
 - **What went wrong:** On phones the team-card text wrapped into four lines. "Results suggest" was shortened to "Results".
+
+## C3 — Manager and employee views of calibration (branch `calibration`)
+
+- **Done:**
+  - **Manager "My team":** a banner while calibration is in progress or locked ("…any change to your team is shown below with the reason. Nothing to do here"). Changed rows show "Calibrated 5 → 4".
+  - **Manager review page:** a notice "Calibrated from 5 to 4" with the group's reason. The submitted notice now says managers calibrate before release.
+  - **Employee "My result":**
+    - While locked, it names calibration as a step ("Results open after every review is in, the managers have calibrated ratings across teams, and HR releases them") and shows its status (not started / in progress / done).
+    - After release, the overall tile shows the final rating with "Calibrated from 5 to 4 across teams", and the assessment lists the reason (PO assumption: employees see it).
+  - **Results map:** uses the final (calibrated) rating.
+  - **Build label:** a filled header tag "Requirement change from question 2" that links back to the main version, and a page title saying it is the calibration build. The About box says which build this is and links to the main version.
+- **Tests:** 106 passed. Checked the label and the locked result at 1366, 390 and 320 px; no sideways scroll.
+- **Who decided:** PO: the label wording. Developer: the placement. Assumption: employees see the calibration change.
+- **What went wrong:** Nothing.

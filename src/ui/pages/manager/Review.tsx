@@ -228,9 +228,16 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
           </Panel>
 
           {locked ? (
-            <Notice tone="success" title={`Submitted ${review.submittedOn ? formatDate(review.submittedOn) : ''}`}>
-              The review is locked. HR checks it before results are released.
-            </Notice>
+            <>
+              <Notice tone="success" title={`Submitted ${review.submittedOn ? formatDate(review.submittedOn) : ''}`}>
+                The review is locked. Managers calibrate ratings across teams before results are released.
+              </Notice>
+              {review.calibratedOverall && (
+                <Notice tone="brand" title={`Calibrated from ${review.overall} to ${review.calibratedOverall}`}>
+                  Agreed when managers aligned ratings across teams. Reason: {review.calibrationReason}
+                </Notice>
+              )}
+            </>
           ) : (
             <>
             {problems.length > 0 && (

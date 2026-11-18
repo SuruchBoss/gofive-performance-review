@@ -36,6 +36,15 @@ export function ManagerTeam({ userId }: { userId: string }) {
           </Notice>
         </div>
       )}
+      {state.calibration.status !== 'not_started' && state.cycle.status === 'open' && (
+        <div style={{ marginBottom: 16 }}>
+          <Notice tone="brand" title={state.calibration.status === 'locked' ? 'Calibration is locked' : 'Calibration in progress'}>
+            {state.calibration.status === 'locked'
+              ? 'Managers have aligned ratings across teams. Any change to your team is shown below with the reason. Results open when HR releases them.'
+              : 'Managers are aligning ratings across teams. Any change to your team is shown below with the reason. Nothing to do here.'}
+          </Notice>
+        </div>
+      )}
       {escalatedToMe.length > 0 && (
         <div style={{ marginBottom: 16 }}>
           <Notice tone="danger" title={`${escalatedToMe.length} review${escalatedToMe.length === 1 ? ' was' : 's were'} escalated to you`}>
@@ -74,6 +83,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
                       <div>
                         <CaseBadge c={c} />
                         {r.status === 'draft' && <div className="xs muted">Draft saved</div>}
+                        {r.calibratedOverall && <div className="xs cal-new strong">Calibrated {r.overall} → {r.calibratedOverall}</div>}
                       </div>
                     </td>
                     <td data-label="Deadline" className="num nowrap">{formatDate(c.deadline, true)}</td>

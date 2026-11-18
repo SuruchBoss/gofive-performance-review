@@ -30,9 +30,12 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
           stack, the formulas, the demo data and the visual details, for the PO to approve.
         </p>
         <div className="about-cal">
-          <div className="strong">Requirement change from question 2</div>
-          <p>A second build adds cross-team calibration before results are released, as asked in exam question 2. It is kept separate from this version.</p>
-          <a href="./calibration/" className="btn btn-sm">Open the calibration build →</a>
+          <div className="strong">You are in the build for the requirement change from question 2</div>
+          <p>
+            Managers calibrate ratings together across teams before results open, and no employee sees a result until calibration is
+            locked. Built on its own branch (<code>calibration</code>), not merged into the main version.
+          </p>
+          <a href="../" className="btn btn-sm">← Open the main version</a>
         </div>
         <p>
           <a href={`${REPO}#how-this-was-built`} target="_blank" rel="noreferrer">How this was built</a> ·{' '}

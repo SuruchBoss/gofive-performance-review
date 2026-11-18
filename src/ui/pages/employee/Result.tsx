@@ -34,11 +34,12 @@ export function EmployeeResult({ userId }: { userId: string }) {
             <div className="stack-sm">
               <h3>Your result is not released yet</h3>
               <p className="muted">
-                HR releases all results together, once every review is complete and has been checked. You will then see your
-                overall rating, the rating for each behaviour, and your manager's comments here.
+                Results open after every review is in, the managers have calibrated ratings across teams, and HR releases them
+                together. You will then see your overall rating, the rating for each behaviour, and your manager's comments here.
               </p>
               <p className="small muted">
-                Your review: {review.status === 'submitted' ? 'completed by your manager' : 'not completed yet'}.{' '}
+                Your review: {review.status === 'submitted' ? 'completed by your manager' : 'not completed yet'}. Calibration:{' '}
+                {state.calibration.status === 'locked' ? 'done' : state.calibration.status === 'in_session' ? 'in progress' : 'not started yet'}.{' '}
                 {['open', 'open_late'].includes(selfReviewWindow(state, userId)) ? (
                   <a href="#/me/self-review">Submit your self-review while you still can →</a>
                 ) : (

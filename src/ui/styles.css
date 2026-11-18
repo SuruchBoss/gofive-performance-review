@@ -1023,3 +1023,18 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .cal-new, .cal-arrow { color: var(--mint-700); }
 .cal-change { display: flex; flex-direction: column; gap: var(--s3); padding: var(--s3); background: var(--canvas); border-radius: var(--r-md); }
 @media (max-width: 640px) { .agenda-body { padding-left: var(--s4); } }
+.variant-tag {
+  background: var(--mint-700);
+  color: #fff;
+  border-radius: var(--r-sm);
+  padding: 2px 8px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.variant-tag:hover { background: var(--mint-900); }
+@media (max-width: 860px) {
+  .brand { flex-wrap: wrap; row-gap: 2px; }
+  .variant-tag { font-size: 11px; padding: 1px 6px; }
+}

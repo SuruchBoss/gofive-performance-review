@@ -1,5 +1,6 @@
 import { activeParticipants, farFlags, submittedReviews, suggestedFor } from './flags';
 import { behaviourScore } from './rating';
+import { finalRating } from './calibration';
 import type { DemoState } from './types';
 
 export type Band = 'low' | 'mid' | 'high';
@@ -45,7 +46,7 @@ export function mapPoints(state: DemoState, reviewerId?: string): MapPoint[] {
         teamId: state.people.find((p) => p.id === r.personId)?.teamId,
         results,
         behaviour: b,
-        overall: r.overall,
+        overall: finalRating(r) ?? r.overall,
         flagged: openFlags.has(r.personId),
         cell: cellLabel(results, b),
       }];
