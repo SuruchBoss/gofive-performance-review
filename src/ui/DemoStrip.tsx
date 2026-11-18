@@ -8,8 +8,25 @@ import { Dialog } from './components';
 
 export const HOME: Record<Role, string> = { hr: '/hr', manager: '/manager', employee: '/me' };
 
+/** +1 day, with a message that says what the day change did (escalations). */
+export function useAdvanceDay() {
+  const { state, dispatch, notify } = useStore();
+  return () => {
+    // Work out what the day change does, so the message can say it (the reducer is pure).
+    const next = reduce(state, { type: 'advance_day' });
+    const moved = next.log.filter((l) => l.type === 'escalation').length - state.log.filter((l) => l.type === 'escalation').length;
+    dispatch({ type: 'advance_day' });
+    notify(
+      moved > 0
+        ? `${formatDate(addDays(state.today, 1))}: ${moved} overdue review${moved === 1 ? '' : 's'} moved to the next manager up. See Progress or the Activity log.`
+        : `Demo date moved to ${formatDate(addDays(state.today, 1))}`,
+    );
+  };
+}
+
 export function DemoStrip() {
   const { state, dispatch, view, setView, notify } = useStore();
+  const advanceDay = useAdvanceDay();
   const [confirmReset, setConfirmReset] = useState(false);
 
   const switchRole = (role: Role) => {
@@ -52,17 +69,7 @@ export function DemoStrip() {
         <button
           type="button"
           className="demo-btn"
-          onClick={() => {
-            // Work out what the day change does, so the message can say it (the reducer is pure).
-            const next = reduce(state, { type: 'advance_day' });
-            const moved = next.log.filter((l) => l.type === 'escalation').length - state.log.filter((l) => l.type === 'escalation').length;
-            dispatch({ type: 'advance_day' });
-            notify(
-              moved > 0
-                ? `${formatDate(addDays(state.today, 1))}: ${moved} overdue review${moved === 1 ? '' : 's'} moved to the next manager up. See Progress or the Activity log.`
-                : `Demo date moved to ${formatDate(addDays(state.today, 1))}`,
-            );
-          }}
+          onClick={advanceDay}
         >
           +1 day
         </button>
