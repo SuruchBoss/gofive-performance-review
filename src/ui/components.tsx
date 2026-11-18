@@ -261,9 +261,9 @@ export function MoreMenu({ label, items }: { label: string; items: { label: stri
   };
   useEffect(() => {
     if (!open) return;
-    const shut = () => setOpen(false);
-    window.addEventListener('scroll', shut, true);
-    window.addEventListener('resize', shut);
+    // Follow the button when the page scrolls or resizes, instead of closing.
+    window.addEventListener('scroll', place, { passive: true });
+    window.addEventListener('resize', place);
     const close = (e: MouseEvent | KeyboardEvent) => {
       if (e instanceof KeyboardEvent ? e.key === 'Escape' : !ref.current?.contains(e.target as Node)) setOpen(false);
     };
@@ -271,8 +271,8 @@ export function MoreMenu({ label, items }: { label: string; items: { label: stri
     document.addEventListener('keydown', close);
     ref.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus({ preventScroll: true });
     return () => {
-      window.removeEventListener('scroll', shut, true);
-      window.removeEventListener('resize', shut);
+      window.removeEventListener('scroll', place);
+      window.removeEventListener('resize', place);
       document.removeEventListener('mousedown', close);
       document.removeEventListener('keydown', close);
     };

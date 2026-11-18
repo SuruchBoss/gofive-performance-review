@@ -488,3 +488,9 @@ Working notes for the Product Owner. Newest entry at the bottom.
   1. The menu was first placed inside the table's scroll box. It was clipped, and focusing it scrolled the table so the column headers went out of view. It is now positioned against the screen and closes on scroll.
   2. On a phone, a row near the bottom opened the menu below the screen edge. It now opens upwards when there is no room below. Both items were checked to be on screen at 1366 px and 390 px.
   3. On phones, the "joined under 3 months" note sat beside the name instead of under it. Fixed.
+- **Correction after the U3 commit:**
+  - The e2e run before the commit had actually failed. Its output was piped through `tail`, which hid the exit code, so the commit went ahead.
+  - Cause: the menu closed on *any* scroll event, including the phone tab row and the browser scrolling the button into view.
+  - Fix: the menu now follows its button on page scroll and resize instead of closing.
+  - e2e PASS at desktop and phone (exit 0).
+  - From now on test commands run with `set -o pipefail`, so a failing step stops the commit.
