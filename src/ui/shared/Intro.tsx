@@ -80,7 +80,7 @@ export function Intro() {
           <IconClose size={14} /> Hide guide
         </button>
       </div>
-      <ol className={`intro-steps${allSteps || next === -1 ? ' show-all' : ''}`}>
+      <ol className={`intro-steps${allSteps ? ' show-all' : ''}`}>
         {STEPS.map((s, i) => {
           const done = s.done(state);
           return (

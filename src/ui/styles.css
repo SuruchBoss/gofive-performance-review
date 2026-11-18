@@ -877,3 +877,7 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; transition: none !important; }
 }
+@media (max-width: 640px) {
+  .kv { grid-template-columns: 1fr; gap: 2px; }
+  .kv dd { margin-bottom: var(--s2); }
+}

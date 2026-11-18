@@ -350,3 +350,27 @@ Working notes for the Product Owner. Newest entry at the bottom.
   The goal bars in lighter mint/grey are not text and carry their percentage as text beside them.
 - **Who decided:** Developer, under the PO's design latitude.
 - **What went wrong:** Nothing new. The issues found are listed above as fixes.
+
+## Commit 15 — Browser click-through
+
+- **Done:** `e2e/clickthrough.cjs` (`npm run build && npm run e2e`) starts a local preview server and walks the whole guided path in Chromium at 1280×900 and at 390×844. It covers every role:
+  1. HR removes the new joiner.
+  2. Tom picks a 5 for Orn and is blocked by the reason and evidence rules, then submits a 3. Tom's team map.
+  3. HR reviews the Sales flag.
+  4. +1 day twice: exactly one escalation (Ying → Anong).
+  5. Ying submits a late self-review (marked late), and her result is still locked.
+  6. Anong submits the escalated review. HR reviews the remaining flags, opens the map and a person page, and releases.
+  7. Nida sees her result. Removed Fah sees why she has no result.
+  8. Reset restores 12 Dec.
+
+  At each of 14 screens it asserts no sideways scroll and saves a screenshot to `screenshots/`, which git ignores. The run fails on any console error.
+- **Result:**
+  ```
+  PASS desktop (1280px): guided path complete, 14 screens checked, no sideways scroll, no console errors
+  PASS phone (390px): guided path complete, 14 screens checked, no sideways scroll, no console errors
+  ```
+  Unit tests: 97 passed.
+- **Who decided:** PO asked for a click-through of every role in a real browser at desktop and phone width. The developer used the Playwright library already in this environment rather than adding `@playwright/test`, to avoid installing another browser.
+- **What went wrong:** The run passed the first time. Reviewing its phone screenshots found two layout issues:
+  1. When all 5 guide steps were done, the phone guide expanded to show all of them again. It now stays collapsed.
+  2. The label/value lists ("Manager's assessment") were cramped in two columns on a phone. They now stack.
