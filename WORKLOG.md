@@ -54,3 +54,11 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** PO approval with two changes.
 - **Who decided:** PO. Polish comes early and is not cut. If time runs short, the map's team filter is cut first. Branch plan and Q3 handling approved as proposed.
 - **What went wrong:** Nothing.
+
+## Commit 1 — Scaffold the app
+
+- **Done:** Set up Vite 6, React 18.3, TypeScript 5.9 (strict) and Vitest 3, with `dev`, `build`, `test` and `typecheck` scripts.
+- **Why:** A small, well-known toolchain. Exact versions are pinned in `package-lock.json`.
+- **Who decided:** Developer, per the approved plan.
+- **Notes:** Newer majors exist (Vite 8, React 19). The older versions were chosen because they are mature and their behaviour is well known; a demo gains nothing from the newest majors. `base: './'` makes the build work under the Pages sub-path.
+- **What went wrong:** Nothing. Test: 1 passed. Build: OK.
