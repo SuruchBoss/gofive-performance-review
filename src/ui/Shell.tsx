@@ -50,8 +50,12 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
         <div className="app-header-inner">
           <div className="brand">
             <span className="brand-mark"><IconMark size={18} /></span>
-            <span className="brand-name">Performance Review</span>
-            <span className="concept-tag">Concept for empeo</span>
+            <div className="brand-text">
+              <span className="brand-name">Performance Review</span>
+              <span className="brand-tags">
+                <span className="concept-tag">Concept for empeo</span>
+              </span>
+            </div>
           </div>
           <div className="spacer" />
           <button type="button" className="link-btn about-link" onClick={() => setAbout(true)} aria-label="About this prototype">

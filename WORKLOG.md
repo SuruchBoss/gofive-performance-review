@@ -606,3 +606,26 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Branches:**
   - `main` = `prototype` (`f01fbff` plus this log entry).
   - `calibration` = `6fa8319`. It contains `main` up to the blind-test fixes and is not merged into `main`.
+
+## PO phone test: header overlap and a confusing first open (on `main`)
+
+- **PO report:**
+  1. On a 412–430 px phone the "Concept for empeo" badge overlapped "About this prototype".
+  2. The guide said what to click but not why. In Employee view it still showed "1. See who is late" (an HR step) without saying so.
+- **Header (1):**
+  - **Measured** every width from 320 to 900 px. The overlap was real from **421 to 511 px**. Earlier checks used only 320 and 390 px, which is why it was missed.
+  - **Cause:** below 420 px the badge was hidden and "About" was short, while above 420 px both showed in one row with no room.
+  - **Fix:** the brand area may shrink, the name and tags stack on phones, and "About" stays short up to 860 px. The "Concept for empeo" label is now visible at every width; before, it was hidden below 420 px, which went against the brief's labelling rule.
+  - **Re-scan:** no overlap from 320 to 1600 px. Checked by eye at 320, 412, 430, 500 and 861 px.
+- **Also found by scanning all 11 screens at every width from 320 to 500 px:** the Results map scrolled sideways below 386 px. The grid column took the list table's minimum width, and the team filter tabs did not wrap.
+  - **Fixed:** the grid column can shrink; on small phones the list hides avatars and team names, names and badges wrap, and the filter tabs wrap.
+  - **Re-scan:** no sideways scroll on the page or inside any box, on any screen, from 320 to 500 px.
+- **Guide (2):**
+  - A first line states the problem: "every manager rates on their own scale, so a 4 in one team is not a 4 in another. This shows how HR catches that before results reach employees." It shows on phones too.
+  - Each step shows who it is done as ("As HR · Pim Chaiyaporn", "As Manager · Tom Wattana", "As HR · Pim Chaiyaporn, then Employee · Nida Phrom").
+  - Each link switches to that role and person by itself. When that means a switch, it says so ("Switch to HR and open Progress →").
+  - Step 4 has its own "+1 day" button, showing the current date.
+  - Step 5 adds "See Nida's result" as an employee.
+  - The footer says which role is active.
+- **Tests:** 97 passed. e2e PASS at desktop and phone. The e2e "+1 day" clicks now target the demo strip, because the guide has a second button with that name.
+- **What went wrong:** One check script ran from the repository folder and saved 3 screenshots there. They were moved out before the commit.

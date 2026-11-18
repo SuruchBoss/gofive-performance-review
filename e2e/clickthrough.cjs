@@ -100,8 +100,8 @@ async function run(vp) {
   await page.getByRole('dialog').getByRole('button', { name: 'Mark reviewed' }).click();
 
   // Step 4: two days pass; Ying's review escalates.
-  await page.getByRole('button', { name: '+1 day' }).click();
-  await page.getByRole('button', { name: '+1 day' }).click();
+  await page.getByRole('region', { name: 'Prototype controls' }).getByRole('button', { name: '+1 day' }).click();
+  await page.getByRole('region', { name: 'Prototype controls' }).getByRole('button', { name: '+1 day' }).click();
   await open('/hr/activity');
   await page.getByRole('tab', { name: 'Escalations' }).click();
   const esc = await page.locator('.log-item').allInnerTexts();
