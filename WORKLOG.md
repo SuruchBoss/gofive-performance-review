@@ -69,6 +69,7 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Employees see the manager's reason when a rating differs from results** (commit 11). This is a transparency choice; the PO may want to hide it.
 - **The results map uses a single dot colour, an amber ring for an open flag, and shaded "strong on both" and "below on both" corners, with a list view beside it** (commit 12). Colouring by team would add three hues beyond the one main colour. The list is the accessible alternative to the chart and gives exact numbers.
 - **Managers get a "Team map" of their own team only** (commit 12). DESIGN.md says managers see their own team on the map. A separate navigation item makes that visible.
+- **The guided path ticks each step off from the demo data (for example, step 1 is done once Fah is removed), highlights the next step, and has a button that switches role and opens the right screen** (commit 13). A reviewer who knows nothing about the prototype always knows where they are. "Hide guide" is remembered, and a "Guide" button in the demo strip brings it back.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -299,3 +300,20 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - Width 390 on a phone. No errors.
 - **Who decided:** PO set the two-axis map and "every score links to its source". The developer chose the single colour, the ring and the list view, following the charting guidance.
 - **What went wrong:** At 390 px the SVG scaled its text down to about 6 px. On phones, the text and dot sizes are now set larger and the corner labels are hidden; the list still names each cell. The list rows were very tall because of the cell label, so only the team is kept there.
+
+## Commit 13 — Intro box and guided path
+
+- **Done:**
+  - `src/ui/shared/Intro.tsx` shows what the prototype is and the 5 guided steps from the design. Each step's "done" state is worked out from the demo data.
+  - Hiding the guide is saved in `localStorage` and undone by Reset.
+  - A "Guide" button reopens it.
+- **Tests:** 97 passed. The intro is UI only, so it has no new unit tests.
+- **Browser run:**
+  - "Open Orn's review" switches to Manager / Tom and opens the review.
+  - "Hide guide" survives a reload.
+  - Width 390 on a phone. No errors.
+- **Who decided:** PO set the intro box with 4–5 steps that can be hidden. The developer chose the auto-ticking and the wording.
+- **What went wrong:**
+  1. The first wording was too long for 5 columns, so the cards were very tall. It was shortened.
+  2. Some demo text used gendered pronouns for fictional people (for example "her year"). It was reworded to use names.
+  3. Using a straight apostrophe inside a single-quoted string broke the build. Typographic apostrophes are used instead.

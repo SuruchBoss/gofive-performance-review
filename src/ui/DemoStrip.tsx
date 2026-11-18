@@ -50,6 +50,9 @@ export function DemoStrip() {
         <button type="button" className="demo-btn" onClick={() => { dispatch({ type: 'advance_day' }); notify(`Demo date moved to ${formatDate(addDays(state.today, 1))}`); }}>
           +1 day
         </button>
+        {view.introHidden && (
+          <button type="button" className="demo-btn" onClick={() => { setView({ introHidden: false }); window.scrollTo(0, 0); }}>Guide</button>
+        )}
         <button type="button" className="demo-btn" onClick={() => setConfirmReset(true)}>Reset demo</button>
       </div>
       {confirmReset && (

@@ -820,3 +820,34 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .map-flag { r: 17px; stroke-width: 4; }
   .map-tip { min-width: 160px; }
 }
+
+/* ---------- Intro / guided path ---------- */
+.intro {
+  background: var(--surface);
+  border: 1px solid #cfe5dc;
+  border-top: 3px solid var(--mint-700);
+  border-radius: var(--r-lg);
+  padding: var(--s5);
+  margin-bottom: var(--s6);
+}
+.intro-head { display: flex; justify-content: space-between; gap: var(--s4); align-items: flex-start; }
+.intro-head p { color: var(--ink-2); margin-top: var(--s2); max-width: 78ch; }
+.intro-kicker { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mint-700); margin-bottom: var(--s1); }
+.intro h2 { font-size: var(--fs-xl); }
+.intro-steps { list-style: none; margin: var(--s5) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--s3); }
+.intro-steps li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: var(--s2); padding: var(--s3); border: 1px solid var(--line); border-radius: var(--r-md); background: #fafcfb; }
+.intro-steps li.next { border-color: var(--mint-700); background: var(--surface); box-shadow: 0 0 0 1px var(--mint-700) inset; }
+.intro-steps li.done { opacity: 0.75; }
+.intro-num { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 600; background: var(--canvas); border: 1px solid var(--line-strong); color: var(--ink-2); }
+.intro-steps li.next .intro-num { background: var(--mint-700); border-color: var(--mint-700); color: #fff; }
+.intro-steps li.done .intro-num { background: var(--mint-100); border-color: var(--mint-100); color: var(--mint-900); }
+.link-btn { background: none; border: 0; padding: 0; color: var(--mint-700); font-weight: 600; font-size: var(--fs-sm); cursor: pointer; text-align: left; }
+.link-btn:hover { text-decoration: underline; }
+.intro-foot { margin-top: var(--s4); }
+@media (max-width: 1180px) { .intro-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .intro { padding: var(--s4); }
+  .intro-head { flex-direction: column-reverse; gap: var(--s2); }
+  .intro-head .btn { align-self: flex-end; }
+  .intro-steps { grid-template-columns: 1fr; }
+}

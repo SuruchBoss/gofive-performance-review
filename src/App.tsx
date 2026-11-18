@@ -7,6 +7,7 @@ import { Shell, type NavItem } from './ui/Shell';
 import { DemoStrip, HOME } from './ui/DemoStrip';
 import { IconCheck } from './ui/icons';
 import { navFor, routeFor } from './ui/routes';
+import { Intro } from './ui/shared/Intro';
 
 function roleOfPath(path: string): Role | undefined {
   if (path.startsWith('/hr')) return 'hr';
@@ -42,6 +43,7 @@ function Frame() {
         nav={nav}
         current={`#${route.navKey}`}
       >
+        <Intro />
         {route.element}
       </Shell>
       {toast && (

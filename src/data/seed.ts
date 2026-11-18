@@ -166,7 +166,7 @@ const notStarted = (personId: string): SelfReview => ({ personId, status: 'not_s
 
 const selfReviews: SelfReview[] = [
   self('e01', 4, 'Closed the Chiang Mai distributor deal in Q3, which was the largest new contract this year. I lost two renewals in Q2 because I followed up too late; I now block a renewal review 60 days before expiry.', '2026-11-20'),
-  self('e02', 4, 'Hit revenue and accounts targets. I helped onboard Arthit for his first two months. I want to move to larger accounts next year.', '2026-11-24'),
+  self('e02', 4, 'Hit revenue and accounts targets. I helped onboard Arthit in the first two months. I want to move to larger accounts next year.', '2026-11-24'),
   notStarted('e03'),
   self('e04', 3, 'First full year on the team. I met the accounts target. My calls convert well but my pipeline notes in the CRM are not always up to date.', '2026-11-29', true),
   self('e05', 4, 'Resolved the most tickets on the team and cut my first-response time to three hours. I wrote the new returns macro that the team now uses.', '2026-11-21'),
@@ -212,7 +212,7 @@ const managerReviews: ManagerReview[] = [
   // Sales: rates above results.
   submitted('e01', 'm-sales', B(5, 5, 4, 5), 5, 3.91, '2026-12-03', {
     overallEvidence: 'Closed the Chiang Mai distributor contract in August (THB 4.2m), which no one else on the team had been able to open in two years.',
-    deviationReason: 'The revenue figure understates her year: the distributor contract will renew at a larger size in Q1.',
+    deviationReason: 'The revenue figure understates Nida’s year: the distributor contract will renew at a larger size in Q1.',
     comment: 'Outstanding year. Next step is mentoring the newer account executives.',
   }),
   submitted('e02', 'm-sales', B(4, 4, 4, 3), 4, 3.2, '2026-12-04', {
@@ -227,7 +227,7 @@ const managerReviews: ManagerReview[] = [
   }),
   // Customer Support: rates below results.
   submitted('e05', 'm-support', B(3, 2, 2, 2), 3, 4.17, '2026-12-08', {
-    deviationReason: 'Her numbers are strong but she often picks the easy tickets and leaves complex ones for others.',
+    deviationReason: 'Mai’s numbers are strong, but Mai often picks the easy tickets and leaves complex ones for others.',
     comment: 'Fast and productive. Needs to share the harder work.',
   }),
   submitted('e06', 'm-support', B(3, 3, 3, 3), 3, 3.81, '2026-12-09', {
