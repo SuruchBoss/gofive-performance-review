@@ -50,6 +50,7 @@ export function ExtendDialog({ personId, onClose }: { personId: string; onClose:
       onClose={onClose}
       footer={
         <>
+          {!valid && <span className="foot-hint">{reason.trim() ? `Choose ${formatDate(min)} or later.` : 'Add a reason to continue.'}</span>}
           <button type="button" className="btn" onClick={onClose}>Cancel</button>
           <button
             type="button"
@@ -96,6 +97,7 @@ export function RemoveDialog({ personId, onClose }: { personId: string; onClose:
       onClose={onClose}
       footer={
         <>
+          {!valid && <span className="foot-hint">Describe the reason to continue.</span>}
           <button type="button" className="btn" onClick={onClose}>Cancel</button>
           <button
             type="button"

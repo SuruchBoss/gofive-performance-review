@@ -494,3 +494,21 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - Fix: the menu now follows its button on page scroll and resize instead of closing.
   - e2e PASS at desktop and phone (exit 0).
   - From now on test commands run with `set -o pipefail`, so a failing step stops the commit.
+
+## U4 — Locked, empty and blocked states say why and what next
+
+- **Done:**
+  - **Manager whose reviews escalated:**
+    - "My team" now lists them under "Moved to your manager", for example "Moved to Anong Rattanakul on 14 Dec 2026: 3 days past the deadline". Before this, they disappeared without a word.
+    - Opening such a review explains where it went and says "Nothing to do now", instead of "not assigned to you".
+  - **Disabled dialog buttons** say what is missing:
+    - Extend: "Add a reason to continue" / "Choose 13 Dec 2026 or later".
+    - Remove: "Describe the reason to continue".
+    - Flag review: "Write a short note to continue".
+  - **Employee "My result" while locked:** says what to do next. Either "Submit your self-review while you still can →" (while the self-review window is open) or "Nothing to do now".
+  - **Cycle deadlines after release:** "Deadlines are locked because results have been released."
+  - **Empty states:** they now end with what happens next.
+  - Already covered before this step: Submit review (to-do list), Release (blocker list), and the self-review window.
+- **Why:** PO rule: "Every locked, empty or blocked state says why, and what to do next."
+- **Tests:** 97 passed. e2e PASS at desktop and phone (with `pipefail`). Browser check: Tom after +2 days sees both moved reviews, the moved-review notice and the Extend hint.
+- **What went wrong:** The first version of the Extend hint computed the earliest date in a roundabout way. It now uses the dialog's own minimum date.

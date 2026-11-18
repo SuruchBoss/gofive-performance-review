@@ -146,7 +146,9 @@ export function HrCycle() {
             <DeadlineField field="selfReviewDeadline" label="Self-review deadline" />
             <DeadlineField field="managerDeadline" label="Manager review deadline" />
             <p className="small muted">
-              Changes apply to everyone and are logged. To give one person more time, use Extend in <a href="#/hr/progress">Progress</a>.
+              {state.cycle.status === 'released'
+                ? 'Deadlines are locked because results have been released.'
+                : <>Changes apply to everyone and are logged. To give one person more time, use Extend in <a href="#/hr/progress">Progress</a>.</>}
             </p>
           </div>
         </Panel>

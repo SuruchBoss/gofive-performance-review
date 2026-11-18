@@ -975,3 +975,4 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 @media (max-width: 860px) {
   table.data.stack-on-phone td.cell-primary { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
+.foot-hint { margin-right: auto; align-self: center; font-size: var(--fs-sm); color: var(--muted); }

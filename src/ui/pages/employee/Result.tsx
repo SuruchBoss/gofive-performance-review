@@ -1,5 +1,6 @@
 import { formatDate } from '../../../domain/dates';
 import { isReleased } from '../../../domain/release';
+import { selfReviewWindow } from '../../../domain/selfReview';
 import { managerReviewOf } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
 import { Notice, PageHead, Panel } from '../../components';
@@ -37,7 +38,12 @@ export function EmployeeResult({ userId }: { userId: string }) {
                 overall rating, the rating for each behaviour, and your manager's comments here.
               </p>
               <p className="small muted">
-                Your review: {review.status === 'submitted' ? 'completed by your manager' : 'not completed yet'}.
+                Your review: {review.status === 'submitted' ? 'completed by your manager' : 'not completed yet'}.{' '}
+                {['open', 'open_late'].includes(selfReviewWindow(state, userId)) ? (
+                  <a href="#/me/self-review">Submit your self-review while you still can →</a>
+                ) : (
+                  'Nothing to do now.'
+                )}
               </p>
             </div>
           </div>

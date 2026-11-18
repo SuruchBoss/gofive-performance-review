@@ -12,6 +12,7 @@ export function FlagReviewDialog({ flagKey, label, context, onClose }: { flagKey
       onClose={onClose}
       footer={
         <>
+          {!note.trim() && <span className="foot-hint">Write a short note to continue.</span>}
           <button type="button" className="btn" onClick={onClose}>Cancel</button>
           <button
             type="button"

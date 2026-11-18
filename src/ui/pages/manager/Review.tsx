@@ -56,7 +56,14 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
   const [confirm, setConfirm] = useState(false);
   const participant = state.participants.find((p) => p.personId === personId);
   if (!participant || participant.reviewerId !== userId) {
-    return <Notice tone="warning" title="This review is not assigned to you">Go back to <a href="#/manager">My team</a>.</Notice>;
+    if (participant?.escalatedFrom === userId) {
+      return (
+        <Notice tone="brand" title={`This review moved to ${person(state, participant.reviewerId).name}`}>
+          It escalated on {formatDate(participant.escalatedOn!)} because it was 3 days past the deadline. Nothing to do now. <a href="#/manager">Back to My team</a>
+        </Notice>
+      );
+    }
+    return <Notice tone="warning" title="This review is not assigned to you">Only the current reviewer can open it. <a href="#/manager">Back to My team</a></Notice>;
   }
 
   const who = person(state, personId);

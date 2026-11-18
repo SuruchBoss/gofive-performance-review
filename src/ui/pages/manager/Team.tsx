@@ -10,6 +10,7 @@ import { Notice } from '../../components';
 export function ManagerTeam({ userId }: { userId: string }) {
   const { state } = useStore();
   const me = person(state, userId);
+  const movedAway = state.participants.filter((p) => p.escalatedFrom === userId && !p.removed);
   const rank = (id: string) => ({ draft: 0, not_started: 1, submitted: 2 })[managerReviewOf(state, id).status];
   // Open reviews first (drafts before new ones), finished ones last.
   const mine = state.participants.filter((p) => p.reviewerId === userId && !p.removed).sort((a, b) => rank(a.personId) - rank(b.personId));
@@ -45,7 +46,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
       <Panel bodyClass="table-wrap">
         {mine.length === 0 ? (
           <Empty icon={<IconPeople size={32} />} title="No reviews assigned to you">
-            Reviews appear here when they are assigned or escalated to you.
+            {movedAway.length ? 'Your open reviews moved to your manager after the deadline. Nothing to do now.' : 'Reviews appear here when they are assigned or escalated to you. Nothing to do now.'}
           </Empty>
         ) : (
           <table className="data stack-on-phone">
@@ -88,6 +89,17 @@ export function ManagerTeam({ userId }: { userId: string }) {
           </table>
         )}
       </Panel>
+      {movedAway.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <Panel title="Moved to your manager" actions={<span className="small muted">Nothing to do</span>} bodyClass="">
+            {movedAway.map((p) => (
+              <div className="flag-row" key={p.personId}>
+                <PersonCell name={person(state, p.personId).name} sub={`Moved to ${person(state, p.reviewerId).name} on ${formatDate(p.escalatedOn!)}: 3 days past the deadline.`} size="sm" />
+              </div>
+            ))}
+          </Panel>
+        </div>
+      )}
     </>
   );
 }
