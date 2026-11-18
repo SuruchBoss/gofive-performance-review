@@ -47,3 +47,10 @@ Working notes for the Product Owner. Newest entry at the bottom.
 
 ### Design changes beyond DESIGN.md
 (none yet)
+
+## Step 4 — Plan approved (2026-11-18)
+
+- **Done:** Updated `docs/PLAN.md`: marked approved, moved the visual system to commit 3, and turned commit 14 into a review pass. Created branch `prototype`.
+- **Why:** PO approval with two changes.
+- **Who decided:** PO. Polish comes early and is not cut. If time runs short, the map's team filter is cut first. Branch plan and Q3 handling approved as proposed.
+- **What went wrong:** Nothing.
