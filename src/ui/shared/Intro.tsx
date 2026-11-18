@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { formatDate } from '../../domain/dates';
 import type { DemoState } from '../../domain/types';
 import { useStore, type ViewState } from '../../state/store';
@@ -58,6 +59,7 @@ const STEPS: Step[] = [
 
 export function Intro() {
   const { state, view, setView } = useStore();
+  const [allSteps, setAllSteps] = useState(false);
   if (view.introHidden) return null;
   const doneCount = STEPS.filter((s) => s.done(state)).length;
   const next = STEPS.findIndex((s) => !s.done(state));
@@ -78,7 +80,7 @@ export function Intro() {
           <IconClose size={14} /> Hide guide
         </button>
       </div>
-      <ol className="intro-steps">
+      <ol className={`intro-steps${allSteps || next === -1 ? ' show-all' : ''}`}>
         {STEPS.map((s, i) => {
           const done = s.done(state);
           return (
@@ -93,6 +95,9 @@ export function Intro() {
           );
         })}
       </ol>
+      <button type="button" className="link-btn intro-more" onClick={() => setAllSteps((v) => !v)}>
+        {allSteps ? 'Show only the next step' : `Show all ${STEPS.length} steps`}
+      </button>
       <div className="intro-foot small muted">
         {doneCount} of {STEPS.length} done. Use <strong>View as</strong> to switch roles at any time, and <strong>Reset demo</strong> to start again.
       </div>

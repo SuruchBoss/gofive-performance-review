@@ -851,3 +851,29 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .intro-head .btn { align-self: flex-end; }
   .intro-steps { grid-template-columns: 1fr; }
 }
+
+/* ---------- Review pass (commit 14) ---------- */
+.intro-more { display: none; margin-top: var(--s3); }
+@media (max-width: 640px) {
+  .intro-head p { font-size: var(--fs-sm); }
+  .intro-steps { margin-top: var(--s3); }
+  .intro-steps:not(.show-all) li:not(.next) { display: none; }
+  .intro-more { display: inline-block; }
+  .intro-foot { margin-top: var(--s2); }
+}
+@media (max-width: 860px) {
+  .sidebar::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 1px;
+    width: 28px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff);
+    pointer-events: none;
+  }
+  .anchor.empty { padding: 4px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}

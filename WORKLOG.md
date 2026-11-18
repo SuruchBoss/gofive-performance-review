@@ -70,6 +70,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **The results map uses a single dot colour, an amber ring for an open flag, and shaded "strong on both" and "below on both" corners, with a list view beside it** (commit 12). Colouring by team would add three hues beyond the one main colour. The list is the accessible alternative to the chart and gives exact numbers.
 - **Managers get a "Team map" of their own team only** (commit 12). DESIGN.md says managers see their own team on the map. A separate navigation item makes that visible.
 - **The guided path ticks each step off from the demo data (for example, step 1 is done once Fah is removed), highlights the next step, and has a button that switches role and opens the right screen** (commit 13). A reviewer who knows nothing about the prototype always knows where they are. "Hide guide" is remembered, and a "Guide" button in the demo strip brings it back.
+- **On phones the guide shows only the next step, with "Show all 5 steps"** (commit 14). The full guide filled the whole first screen on every page.
+- **The phone tab bar fades at the right edge** (commit 14). It shows that more tabs scroll into view.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -317,3 +319,34 @@ Working notes for the Product Owner. Newest entry at the bottom.
   1. The first wording was too long for 5 columns, so the cards were very tall. It was shortened.
   2. Some demo text used gendered pronouns for fictional people (for example "her year"). It was reworded to use names.
   3. Using a straight apostrophe inside a single-quoted string broke the build. Typographic apostrophes are used instead.
+
+## Commit 14 — Visual review pass
+
+- **Done:**
+  - Screenshots of every screen at 1280 px and 390 px: HR cycle, progress, consistency, map, activity and person detail; manager team, review and team map; head "Assigned to me"; employee goals, self-review and result.
+  - Checked that no page scrolls sideways at 390 px. `scrollWidth` was 390 on all of them.
+  - Fixes:
+    - the guide collapses to the next step on phones;
+    - the phone tab bar fades at the right edge;
+    - the "draft" label moved under the status badge instead of beside it;
+    - the empty anchor placeholder is smaller on phones;
+    - motion is turned off when the user prefers reduced motion.
+- **Contrast (re-checked, WCAG AA is 4.5:1 for text):**
+
+  | Pair | Ratio |
+  |---|---|
+  | Mint on white | 6.17 |
+  | Mint on canvas | 5.72 |
+  | Muted on white | 5.89 |
+  | Muted on canvas | 5.46 |
+  | Ink on white | 15.9 |
+  | Red on its background | 5.79 |
+  | Amber on its background | 5.74 |
+  | Green on its background | 5.76 |
+  | Dark mint on light mint (selected nav) | 7.62 |
+  | Demo strip: light text on dark | 11.04 |
+  | Demo strip: grey label on dark | 6.69 |
+
+  The goal bars in lighter mint/grey are not text and carry their percentage as text beside them.
+- **Who decided:** Developer, under the PO's design latitude.
+- **What went wrong:** Nothing new. The issues found are listed above as fixes.

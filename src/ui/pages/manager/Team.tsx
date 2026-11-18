@@ -64,7 +64,12 @@ export function ManagerTeam({ userId }: { userId: string }) {
                       <PersonCell name={who.name} sub={p.escalatedFrom ? `${who.title} · escalated from ${person(state, p.escalatedFrom).name}` : who.title} size="sm" />
                     </td>
                     <td data-label="Self-review"><SelfReviewBadge r={selfReviewOf(state, p.personId)} /></td>
-                    <td data-label="Your review"><CaseBadge c={c} />{r.status === 'draft' && <span className="xs muted"> draft</span>}</td>
+                    <td data-label="Your review">
+                      <div>
+                        <CaseBadge c={c} />
+                        {r.status === 'draft' && <div className="xs muted">Draft saved</div>}
+                      </div>
+                    </td>
                     <td data-label="Deadline" className="num nowrap">{formatDate(c.deadline, true)}</td>
                     <td className="actions">
                       <a className={`btn btn-sm${r.status === 'submitted' ? '' : ' btn-primary'}`} href={`#/manager/review/${p.personId}`}>
