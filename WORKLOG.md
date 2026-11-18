@@ -22,3 +22,9 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** Working agreement step 2: design before plan and code.
 - **Who decided:** Answers to the five open questions were relayed by another Claude session as the PO's reply ("use the recommendations; public repo is OK"). The developer chose the formulas and the demo data layout; all are marked for PO approval.
 - **What went wrong:** Nothing yet. Noted that the PO's answers arrived through a relay, not directly; the PO should confirm when approving the design.
+
+## Note — Proposed change to working rule 4 (2026-11-18)
+
+- **Done:** Recorded a proposed change, not applied yet.
+- **What:** A message relayed by another Claude session says the PO wants to drop the stop after every commit. The only stops would be: design ready, commit plan ready, and prototype done and deployed. All other rules stay.
+- **Who decided:** Pending. It reached the developer through a relay, not from the PO directly. It removes a review point, so it waits for the PO's own confirmation. Until then, rule 4 stays as originally written. The design is not approved yet in any case, so this changes nothing right now.
