@@ -1,12 +1,53 @@
 import { useState } from 'react';
-import { formatDate } from '../../../domain/dates';
-import { goalsOf, managerReviewOf, person, selfReviewOf, teamName } from '../../../domain/selectors';
-import type { Rating } from '../../../domain/types';
 import type { ReviewPatch } from '../../../domain/actions';
+import { CONFIG } from '../../../domain/config';
+import { formatDate } from '../../../domain/dates';
+import { achievement, distanceFromSuggestion, isFarFromSuggestion, needsEvidence, reviewProblems, suggestionFor } from '../../../domain/rating';
+import { firstName, goalsOf, managerReviewOf, person, selfReviewOf, teamName } from '../../../domain/selectors';
+import type { Goal, Rating } from '../../../domain/types';
 import { useStore } from '../../../state/store';
 import { go } from '../../../state/router';
-import { Dialog, Notice, PageHead, Panel, PersonCell, RatingScale } from '../../components';
+import { Dialog, Notice, PageHead, Panel, RatingScale } from '../../components';
 import { ReviewBadge } from '../../status';
+
+export const pct = (v: number) => `${Math.round(v * 100)}%`;
+
+export function GoalRow({ g }: { g: Goal }) {
+  const a = achievement(g);
+  const tone = a >= 1 ? 'met' : a >= 0.8 ? 'near' : 'below';
+  return (
+    <div className="goal" id={`goal-${g.id}`}>
+      <div>
+        <div className="goal-title">{g.title}</div>
+        <div className="goal-meta">Weight {g.weight}% · {g.source}</div>
+      </div>
+      <div className="goal-figures num">
+        <div className="big">{g.actual} {g.unit}</div>
+        <div className="muted">Target {g.direction === 'lower' ? '≤ ' : ''}{g.target}</div>
+      </div>
+      <div className="goal-bar" aria-label={`${pct(a)} of target`}>
+        <div className="goal-track">
+          <span className={`goal-fill ${tone}`} style={{ width: `${(Math.min(a, 1.5) / 1.5) * 100}%` }} />
+          <span className="goal-target" style={{ left: `${(1 / 1.5) * 100}%` }} />
+        </div>
+        <span className="goal-pct num">{pct(a)}</span>
+      </div>
+    </div>
+  );
+}
+
+export function SuggestionExplainer() {
+  return (
+    <details className="explain">
+      <summary>How is this calculated?</summary>
+      <p>
+        Each goal's result is divided by its target (capped at 150%), then weighted. Meeting 100% of target suggests a 3, and every 20
+        points above or below moves the suggestion one level (80% → 2, 120% → 4). Behaviours are not part of the suggestion: they are
+        the manager's judgement.
+      </p>
+    </details>
+  );
+}
 
 export function ManagerReviewPage({ personId, userId }: { personId: string; userId: string }) {
   const { state, dispatch, notify } = useStore();
@@ -17,17 +58,21 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
   }
 
   const who = person(state, personId);
+  const first = firstName(who);
   const review = managerReviewOf(state, personId);
   const self = selfReviewOf(state, personId);
   const goals = goalsOf(state, personId);
   const locked = review.status === 'submitted';
-  const save = (patch: ReviewPatch) =>
-    dispatch({ type: 'save_review', personId, patch });
-
+  const sug = suggestionFor(state, personId);
+  const suggested = locked && review.suggestedAtSubmit !== undefined ? review.suggestedAtSubmit : sug.value;
+  const save = (patch: ReviewPatch) => dispatch({ type: 'save_review', personId, patch });
   const setBehaviour = (competencyId: string, rating: Rating) =>
     save({ behaviour: review.behaviour.map((b) => (b.competencyId === competencyId ? { ...b, rating } : b)) });
 
-  const complete = review.behaviour.every((b) => b.rating) && review.overall !== undefined;
+  const far = review.overall !== undefined && isFarFromSuggestion(review.overall, suggested);
+  const evidence = needsEvidence(review.overall);
+  const problems = locked ? [] : reviewProblems(review, suggested);
+  const evidenceLen = review.overallEvidence?.trim().length ?? 0;
 
   return (
     <>
@@ -38,27 +83,42 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
       />
       <div className="review-layout">
         <div className="stack">
-          <Panel title="Goal results" actions={<span className="small muted">Measured, not rated</span>} bodyClass="goals">
-            {goals.map((g) => (
-              <div className="goal" key={g.id}>
-                <div>
-                  <div className="goal-title">{g.title}</div>
-                  <div className="goal-meta">Weight {g.weight}% · {g.source}</div>
+          <Panel
+            title="Goal results"
+            actions={<span className="small muted">Measured, not rated</span>}
+            bodyClass="goals"
+            foot={
+              <div className="stack-sm">
+                <div className="suggestion">
+                  <div className="suggestion-num num">{Math.round(suggested)}</div>
+                  <div>
+                    <div className="strong">Suggested overall rating</div>
+                    <div className="small muted num">
+                      {pct(sug.results)} weighted achievement · exact value {suggested.toFixed(2)}
+                    </div>
+                  </div>
                 </div>
-                <div className="goal-figures num">
-                  <div className="big">{g.actual} {g.unit}</div>
-                  <div className="muted">Target {g.direction === 'lower' ? '≤ ' : ''}{g.target}</div>
-                </div>
+                <SuggestionExplainer />
               </div>
-            ))}
+            }
+          >
+            {goals.map((g) => <GoalRow key={g.id} g={g} />)}
           </Panel>
 
-          <Panel title="Self-review" actions={self.status === 'submitted' && self.selfRating ? <span className="small">Own rating <strong>{self.selfRating}</strong></span> : undefined}>
+          <Panel
+            title="Self-review"
+            actions={self.status === 'submitted' && self.selfRating ? <span className="small">Own rating <strong>{self.selfRating}</strong> <span className="muted">· context only</span></span> : undefined}
+          >
             {self.status === 'submitted' ? (
-              <p style={{ whiteSpace: 'pre-wrap' }}>{self.text}</p>
+              <div className="stack-sm">
+                <p className="quote">{self.text}</p>
+                {self.late && <span className="small muted">Submitted late, {formatDate(self.submittedOn!)}.</span>}
+              </div>
+            ) : locked ? (
+              <Notice tone="warning" title="Reviewed without a self-review">This is recorded on the review.</Notice>
             ) : (
               <Notice tone="warning" title="Self-review missing">
-                {who.name.split(' ')[0]} has not submitted a self-review. You can still review.
+                {first} has not submitted a self-review. You can still review; it will be recorded as missing. {first} can submit late until you submit.
               </Notice>
             )}
           </Panel>
@@ -85,11 +145,56 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             </div>
           </Panel>
 
-          <Panel title="Overall rating">
+          <Panel title="Overall rating" actions={<span className="small muted">The tick marks the suggestion</span>}>
             <div className="stack">
-              <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} onChange={(r) => save({ overall: r })} />
+              <div className="row" style={{ gap: 16 }}>
+                <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
+                {review.overall !== undefined && (
+                  <span className={`small ${far ? 'strong' : 'muted'} num`}>
+                    {distanceFromSuggestion(review.overall, suggested).toFixed(1)} from the suggestion
+                  </span>
+                )}
+              </div>
+
+              {far && (
+                <div className="field">
+                  <label htmlFor="reason">Why does your rating differ from the goal results?</label>
+                  <span className="hint" id="reason-hint">
+                    Required when the rating is {CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more from the suggestion. HR sees this when checking consistency.
+                  </span>
+                  <textarea
+                    id="reason"
+                    className="textarea"
+                    aria-describedby="reason-hint"
+                    disabled={locked}
+                    value={review.deviationReason ?? ''}
+                    onChange={(e) => save({ deviationReason: e.target.value })}
+                    placeholder="For example: results were helped or held back by something outside their control."
+                  />
+                </div>
+              )}
+
+              {evidence && (
+                <div className="field">
+                  <label htmlFor="evidence">Specific example</label>
+                  <span className="hint" id="evidence-hint">
+                    An overall {review.overall} needs a real example: what happened, when, and the effect.
+                  </span>
+                  <textarea
+                    id="evidence"
+                    className="textarea"
+                    aria-describedby="evidence-hint"
+                    disabled={locked}
+                    value={review.overallEvidence ?? ''}
+                    onChange={(e) => save({ overallEvidence: e.target.value })}
+                    placeholder="In May, ... which led to ..."
+                  />
+                  {!locked && <span className="counter num">{evidenceLen} / {CONFIG.EVIDENCE_MIN_CHARS} characters minimum</span>}
+                </div>
+              )}
+
               <div className="field">
-                <label htmlFor="comment">Comment for {who.name.split(' ')[0]}</label>
+                <label htmlFor="comment">Comment for {first}</label>
                 <textarea id="comment" className="textarea" disabled={locked} value={review.comment ?? ''} onChange={(e) => save({ comment: e.target.value })} placeholder="What went well, and what to focus on next year." />
               </div>
             </div>
@@ -100,9 +205,15 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
               The review is locked. HR checks it before results are released.
             </Notice>
           ) : (
-            <div className="row-between">
-              <span className="small muted">Changes are saved as a draft automatically.</span>
-              <button type="button" className="btn btn-primary" disabled={!complete} onClick={() => setConfirm(true)}>Submit review</button>
+            <div className="submit-bar">
+              {problems.length > 0 ? (
+                <ul className="todo" aria-label="Before you can submit">
+                  {problems.map((p) => <li key={p.field}>{p.message}</li>)}
+                </ul>
+              ) : (
+                <span className="small muted">Ready to submit. Drafts are saved automatically.</span>
+              )}
+              <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>Submit review</button>
             </div>
           )}
         </div>
@@ -131,7 +242,14 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             </>
           }
         >
-          <PersonCell name={who.name} sub={`Overall rating ${review.overall}`} />
+          <dl className="kv">
+            <dt>Overall rating</dt>
+            <dd className="strong">{review.overall}</dd>
+            <dt>Suggested</dt>
+            <dd className="num">{suggested.toFixed(2)}</dd>
+            {self.status !== 'submitted' && (<><dt>Self-review</dt><dd>Missing; this will be recorded</dd></>)}
+            {far && (<><dt>Flag</dt><dd>HR will check this rating against the results</dd></>)}
+          </dl>
         </Dialog>
       )}
     </>

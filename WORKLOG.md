@@ -52,6 +52,9 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Square-cornered badges with a status dot, and 6 px button corners** (commit 3). This follows the "no pills everywhere" rule.
 - **The manager's goal results are a two-line list, not a table** (commit 4). A four-column table squeezed the goal names into three lines in the half-width column.
 - **The anchor text for the chosen level appears under each behaviour** (commit 4). The manager reads what the number means at the moment of choosing, instead of opening a separate guide.
+- **Each goal shows a bar against a target line, and the suggestion box can expand to "How is this calculated?"** (commit 5). The manager sees where the number came from without leaving the form.
+- **The distance from the suggestion is shown next to the overall rating ("2.0 from the suggestion")** (commit 5). The reason rule is then predictable, not a surprise at submit.
+- **Required fields are listed above the Submit button instead of turning red as soon as they appear** (commit 5). Red fields before the manager has typed anything read as a telling-off.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -127,3 +130,18 @@ Working notes for the Product Owner. Newest entry at the bottom.
   2. The overall rating scale stretched to the full width. Fixed with `align-self`.
   3. The selected rating lost its colour on hover. Fixed.
   4. The sticky evidence column was dropped, because it cut off long content.
+
+## Commit 5 — Rating rules
+
+- **Done:**
+  - `src/domain/rating.ts`: goal achievement (clamped 0–150%, lower-is-better supported), weighted results, the suggested rating, the ≥ 1.0 reason rule with a floating-point tolerance, the evidence rule for an overall 1, 2 or 5 only, and the behaviour mean.
+  - The reducer refuses to submit a review that breaks a rule, and stores `suggestedAtSubmit`.
+  - The review form shows goal bars, the suggestion with its explanation, the reason and evidence fields when needed, and a to-do list above Submit.
+- **Tests:** 43 passed. These include:
+  - every boundary in the design (60/80/100/120/140%);
+  - exactly 1.0 away, including the floating-point case;
+  - 39 vs 40 characters of evidence;
+  - a check that every seed review still passes the rules and matches its stored suggestion.
+- **Browser run:** on Orn Lertsak (suggestion 3.05), choosing 5 showed both required fields and disabled Submit. Choosing 3 enabled it. Width 390 at phone size. No errors.
+- **Who decided:** PO set the rules and thresholds. The developer chose the floating-point tolerance and the UI wording.
+- **What went wrong:** `3 + (1.0 − 1)/0.2` is exact, but other inputs at 1.0 distance can come out as 0.9999999. A tolerance of 1e-9 was added and is tested.

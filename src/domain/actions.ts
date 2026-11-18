@@ -2,6 +2,7 @@ import { createSeed } from '../data/seed';
 import { addDays } from './dates';
 import type { DemoState, LogEntry, ManagerReview } from './types';
 import { person } from './selectors';
+import { reviewProblems, suggestionFor } from './rating';
 
 /**
  * Every change to the demo state goes through `reduce`. It is pure, so the
@@ -46,11 +47,14 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
     case 'submit_review': {
       const review = state.managerReviews.find((r) => r.personId === action.personId);
       if (!review || review.status === 'submitted') return state;
+      const suggested = suggestionFor(state, action.personId).value;
+      if (reviewProblems(review, suggested).length > 0) return state;
       const self = state.selfReviews.find((r) => r.personId === action.personId);
       const next = updateReview(state, action.personId, (r) => ({
         ...r,
         status: 'submitted',
         submittedOn: state.today,
+        suggestedAtSubmit: Math.round(suggested * 100) / 100,
         selfReviewMissing: self?.status !== 'submitted',
       }));
       return withLog(next, {
