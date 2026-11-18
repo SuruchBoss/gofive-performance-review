@@ -746,3 +746,32 @@ table.data td.actions .row { flex-wrap: nowrap; }
 .log-icon.tone-success { background: var(--green-bg); color: var(--green); }
 .log-icon.tone-warning { background: var(--amber-bg); color: var(--amber); }
 .log-icon.tone-danger { background: var(--red-bg); color: var(--red); }
+
+/* ---------- Cycle overview ---------- */
+.cycle-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--s4); align-items: start; }
+.timeline-wrap { overflow-x: auto; }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); position: relative; }
+.timeline::before { content: ''; position: absolute; left: 8px; right: 8px; top: 8px; height: 2px; background: var(--line); }
+.timeline li { position: relative; display: flex; flex-direction: column; gap: 2px; padding-right: var(--s3); }
+.tl-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 2px solid var(--line-strong); display: grid; place-items: center; color: #fff; position: relative; margin-bottom: var(--s2); }
+.timeline li.done .tl-dot { background: var(--mint-700); border-color: var(--mint-700); }
+.timeline li.today .tl-dot { border-color: var(--ink); background: var(--ink); width: 10px; height: 10px; margin: 4px 0 12px 4px; }
+.tl-label { font-weight: 600; font-size: var(--fs-sm); }
+.tl-date { font-size: var(--fs-sm); color: var(--muted); }
+.timeline li.today .tl-label { color: var(--ink); }
+.checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s4); }
+.checklist > li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: var(--s3); }
+.ck { width: 20px; height: 20px; border-radius: var(--r-sm); border: 2px solid var(--line-strong); display: grid; place-items: center; color: #fff; margin-top: 1px; }
+.checklist > li.ok .ck { background: var(--mint-700); border-color: var(--mint-700); }
+.blockers { margin: 4px 0 0; padding-left: 18px; font-size: var(--fs-sm); }
+.blockers li + li { margin-top: 2px; }
+@media (max-width: 960px) {
+  .cycle-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 860px) {
+  .timeline { grid-template-columns: 1fr; gap: var(--s3); }
+  .timeline::before { left: 8px; right: auto; top: 8px; bottom: 8px; width: 2px; height: auto; }
+  .timeline li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: var(--s3); align-items: center; padding: 0; }
+  .tl-dot { margin: 0; }
+  .timeline li.today .tl-dot { margin: 0 4px; }
+}

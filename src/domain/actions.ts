@@ -7,6 +7,7 @@ import { daysLate, selfReviewWindow } from './selfReview';
 import type { IsoDate, Rating } from './types';
 import { applyEscalations, effectiveDeadline } from './deadlines';
 import { formatDate } from './dates';
+import { canRelease } from './release';
 
 /**
  * Every change to the demo state goes through `reduce`. It is pure, so the
@@ -25,6 +26,8 @@ export type Action =
   | { type: 'remind'; personId: string; actorId: string }
   | { type: 'extend'; personId: string; until: IsoDate; reason: string; actorId: string }
   | { type: 'remove'; personId: string; reason: string; actorId: string }
+  | { type: 'release'; actorId: string }
+  | { type: 'change_deadline'; field: 'selfReviewDeadline' | 'managerDeadline'; date: IsoDate; actorId: string }
   | { type: 'review_flag'; flagKey: string; note: string; actorId: string; label: string };
 
 export function nextLogId(state: DemoState): string {
@@ -79,6 +82,7 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
       });
     }
     case 'remind': {
+      if (state.cycle.status !== 'open') return state;
       const p = state.participants.find((x) => x.personId === action.personId);
       const r = state.managerReviews.find((x) => x.personId === action.personId);
       if (!p || p.removed || r?.status === 'submitted') return state;
@@ -91,6 +95,7 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
       });
     }
     case 'extend': {
+      if (state.cycle.status !== 'open') return state;
       const p = state.participants.find((x) => x.personId === action.personId);
       const r = state.managerReviews.find((x) => x.personId === action.personId);
       const reason = action.reason.trim();
@@ -121,6 +126,19 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
         targetId: action.personId,
         detail: `Removed ${person(state, p.personId).name} from the cycle. Reason: ${reason}`,
       });
+    }
+    case 'release': {
+      if (!canRelease(state)) return state;
+      const count = state.participants.filter((p) => !p.removed).length;
+      const next = { ...state, cycle: { ...state.cycle, status: 'released' as const, releasedOn: state.today } };
+      return withLog(next, { actorId: action.actorId, type: 'release', detail: `Released results to ${count} employees.` });
+    }
+    case 'change_deadline': {
+      const old = state.cycle[action.field];
+      if (state.cycle.status !== 'open' || !action.date || action.date === old || action.date < state.cycle.openedOn) return state;
+      const next = { ...state, cycle: { ...state.cycle, [action.field]: action.date } };
+      const label = action.field === 'managerDeadline' ? 'Manager review deadline' : 'Self-review deadline';
+      return withLog(next, { actorId: action.actorId, type: 'deadline_change', detail: `${label} changed from ${formatDate(old)} to ${formatDate(action.date)}.` });
     }
     case 'review_flag': {
       const note = action.note.trim();

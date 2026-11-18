@@ -64,6 +64,9 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **The head of company sees "Assigned to me", with a red banner for escalated cases** (commit 8). The head has no team of their own in this cycle, so "My team" would be misleading.
 - **The Remove dialog offers the two reasons from the brief as choices, plus "Other reason"** (commit 9). HR is the one deciding, but common reasons are worded the same way every time, which keeps the audit log readable.
 - **New joiners get an amber "Joined 3 Oct: under 3 months" note in Progress and appear under "Needs action"** (commit 9). The system only points out the case. HR decides.
+- **The HR home is a cycle overview: a timeline with "Today" placed among the steps, four summary figures, and a release checklist that names every blocker with a link** (commit 11). HR answers "can I release, and if not, why?" without opening other screens.
+- **Release asks for confirmation and states what employees will see** (commit 11). It cannot be undone.
+- **Employees see the manager's reason when a rating differs from results** (commit 11). This is a transparency choice; the PO may want to hide it.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -250,3 +253,29 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Browser run:** +1 day twice, then Activity log shows 3 escalations under Mon 14 Dec. Width 390 on a phone. No errors.
 - **Who decided:** PO set the requirement for the log. The developer chose the grouping and the filters.
 - **What went wrong:** Nothing.
+
+## Commit 11 — Release gate and cycle overview
+
+- **Done:**
+  - `src/domain/release.ts`: release is blocked by any open review of a person still in the cycle, and by any flag (individual or manager gap) without an HR note.
+  - `release` action: logged, locks the cycle. After release, reminders, extensions and removals are refused, and self-reviews close.
+  - `change_deadline` action: logged. Not allowed before the cycle opened.
+  - HR Cycle overview: timeline, summary figures, release checklist, and both deadlines editable.
+  - Employee "My result" unlocks after release and shows each score with its source. Removed employees see why they are not in the cycle.
+- **Tests:** 92 passed. New tests cover:
+  - blocked at the start (3 open reviews, 4 flags);
+  - still blocked by only the un-removed new joiner;
+  - still blocked by a single unreviewed flag;
+  - release works once all is clear, and the cycle is then locked;
+  - a late review that is far from results blocks release again;
+  - a deadline change moves escalation, and dates before the cycle opened are refused.
+- **Browser run (the full path):**
+  - Tom submits Orn and Ying (rated 3).
+  - HR removes Fah and marks all 4 flags reviewed. Release becomes enabled. HR releases.
+  - Employee Nida sees her overall 5, goal results 3.9 and behaviours 4.8, with the reason and example.
+  - Width 390 on a phone. No errors.
+- **Who decided:** PO set the release rule. The developer decided that a global deadline change is allowed while the cycle is open, that it is logged, and that it can trigger escalations.
+- **What went wrong:**
+  - "Today" was drawn after "Results released" on the timeline. It now sits between steps in date order.
+  - The employee tile label "Results" was unclear and was renamed "Goal results".
+  - The date fields follow the browser's locale (US format in the test browser). This was left as is, because a real user's browser shows their own format.

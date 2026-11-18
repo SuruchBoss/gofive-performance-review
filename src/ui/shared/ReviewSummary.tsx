@@ -38,7 +38,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
         </Panel>
         <Panel>
           <button type="button" className="score-tile link" onClick={() => jump('goals')}>
-            <span className="l">Results</span>
+            <span className="l">Goal results</span>
             <span className="v num">{suggested.toFixed(1)}</span>
             <span className="s">{pct(sug.results)} of goal targets, weighted</span>
           </button>
