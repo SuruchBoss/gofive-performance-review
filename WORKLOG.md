@@ -28,3 +28,10 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Done:** Recorded a proposed change, not applied yet.
 - **What:** A message relayed by another Claude session says the PO wants to drop the stop after every commit. The only stops would be: design ready, commit plan ready, and prototype done and deployed. All other rules stay.
 - **Who decided:** Pending. It reached the developer through a relay, not from the PO directly. It removes a review point, so it waits for the PO's own confirmation. Until then, rule 4 stays as originally written. The design is not approved yet in any case, so this changes nothing right now.
+
+## Step 3 — Design approved, rule 4 changed, commit plan (2026-11-18)
+
+- **Done:** The PO confirmed directly that the relayed brief, the five answers and the rule 4 change are their decisions. Updated `docs/DESIGN.md`: marked it approved, limited the evidence rule to the overall rating, and recorded the four resolved questions. Wrote `docs/PLAN.md` (17 commits).
+- **Why:** Working agreement step 3: plan before code.
+- **Who decided:** PO: design approval, evidence on the overall rating only, keep "≥ 1.0", Operations plays both parts, managers are not reviewed, minimum 3 reviews for the gap, and rule 4 now stops only at design, plan and done-and-deployed. Developer: commit order and branch strategy (proposed).
+- **What went wrong:** Nothing.

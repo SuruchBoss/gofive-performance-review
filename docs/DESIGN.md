@@ -1,6 +1,6 @@
 # Design — Annual Performance Review (concept for empeo)
 
-Status: **draft, waiting for PO approval.**
+Status: **approved by the PO on 2026-11-18**, with one change: the evidence rule (4.3) applies to the overall rating only.
 Inputs: `docs/BRIEF.md`, the PO decisions in the task message, and the answers to the five open questions (all accepted as recommended).
 
 ## 1. Scope recap
@@ -38,14 +38,14 @@ Out of scope for v1, as decided: goal setting and mid-year check-ins, 360/peer f
 | Screen | Purpose |
 |---|---|
 | **My team** | Status per person and their deadline. For the head of company, a section "Escalated to you". |
-| **Review form** | Left: goals with target, actual, achievement and source, then the **suggested rating** and how it was calculated. Middle: the self-review (text + self-rating), or a "Self-review missing" notice. Right: 4 behaviours, each rated 1–5 with its anchor text shown, then the **overall rating**, the reason field (required when far from the suggestion) and the evidence fields (required for 1, 2 or 5). Save draft / Submit. Read-only after submit. |
+| **Review form** | Left: goals with target, actual, achievement and source, then the **suggested rating** and how it was calculated. Middle: the self-review (text + self-rating), or a "Self-review missing" notice. Right: 4 behaviours, each rated 1–5 with its anchor text shown, then the **overall rating**, the reason field (required when far from the suggestion) and the evidence field (required when the overall rating is 1, 2 or 5). Save draft / Submit. Read-only after submit. |
 
 ### Employee
 | Screen | Purpose |
 |---|---|
 | **My goals** | Goals with target, actual and source. |
 | **Self-review** | Text + own rating 1–5. Shows the deadline. After the deadline it can still be submitted, marked "late", until the manager submits. Then it closes. |
-| **My result** | Locked ("Results are released after HR finishes the review") until release. Then: overall rating, behaviour ratings with the anchors, the manager's comments and evidence, and the goal results. |
+| **My result** | Locked ("Results are released after HR finishes the review") until release. Then: overall rating, behaviour ratings with the anchors, the manager's evidence and reason, and the goal results. |
 
 ## 3. Data model
 
@@ -68,7 +68,7 @@ Participant { personId, reviewerId,                      // reviewerId changes o
 SelfReview  { personId, status: 'not_started' | 'draft' | 'submitted',
               text, selfRating?, submittedOn?, late: boolean }
 ManagerReview { personId, reviewerId, status: 'not_started' | 'draft' | 'submitted',
-              behaviour: { competencyId, rating, evidence? }[],
+              behaviour: { competencyId, rating }[],
               overall?, overallEvidence?, deviationReason?,
               suggestedAtSubmit?, selfReviewMissing: boolean, submittedOn? }
 FlagReview  { flagKey, note, by, on }                    // flags are derived; only HR's review is stored
@@ -109,7 +109,7 @@ All thresholds sit in one file, `src/domain/config.ts`, so they can be changed.
 - `s` is saved on the review at submit (`suggestedAtSubmit`) so the record shows what the manager saw.
 
 ### 4.3 Evidence rule
-- Any behaviour rating or overall rating of **1, 2 or 5** needs an evidence text of at least `EVIDENCE_MIN_CHARS` characters.
+- An **overall rating** of **1, 2 or 5** needs an evidence text of at least `EVIDENCE_MIN_CHARS` characters. Single behaviour ratings do not need their own evidence (PO decision).
 - The field prompt asks for "what happened, when, and the effect". The system can check that the text is present and long enough, not that the example is real (see trade-off C).
 
 ### 4.4 HR consistency check (per manager, against their own team)
@@ -122,7 +122,7 @@ All thresholds sit in one file, `src/domain/config.ts`, so they can be changed.
 - X axis = results score (`s`, 1–5). Y axis = behaviour score (mean of the 4 behaviour ratings).
 - A 3×3 grid with cuts at 2.5 and 3.5. The corners are labelled, for example "Strong on both" and "Below on both". The middle band is neutral.
 - A dot has a ring if the review has an open flag.
-- Clicking a dot shows the breakdown: each goal and its source, each behaviour rating with its anchor and evidence, and the overall rating with its reason. This is the "every score links to where it came from" rule.
+- Clicking a dot shows the breakdown: each goal and its source, each behaviour rating with its anchor, and the overall rating with its reason and evidence. This is the "every score links to where it came from" rule.
 - Only submitted reviews are plotted. HR sees everyone; a manager sees only their own team.
 
 ### 4.6 Deadlines, reminders, extension, escalation
@@ -177,8 +177,8 @@ Each employee has 3–4 goals with a source label. The results spread so that th
 - *Why:* Evidence length, reasons and flags are enforced, but nothing is auto-rejected or auto-adjusted. This fits "no AI that rates people".
 - *Cost:* A determined manager can write filler text. HR's flag review is the backstop.
 
-## 8. Open questions for the PO
-1. **The 1.0 threshold is strict at exact integers.** With "≥ 1.0", a suggestion of exactly 3.0 makes ratings 2 and 4 both need a reason; at 3.4, ratings 3 and 4 are free. Keep "≥ 1.0", or use "> 1.0"?
-2. **Operations is both "in line" and "not finished".** With only 3 managers, one manager must play two parts. I chose Operations for both, so the late case is not confused with a rating-gap flag. OK?
-3. **Managers are not reviewed in this cycle.** It keeps the demo small. The alternative is to have the head of company review the 3 managers.
-4. **The manager gap needs at least 3 submitted reviews** before it can flag. OK?
+## 8. Resolved questions (PO, 2026-11-18)
+1. Keep `|overall − s| ≥ 1.0` for the reason rule.
+2. Operations is both the in-line manager and the one who has not finished.
+3. Managers are not reviewed in this cycle.
+4. The manager gap needs at least 3 submitted reviews.
