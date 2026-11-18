@@ -4,7 +4,7 @@ import { formatDate, weekday } from '../../../domain/dates';
 import { allFlags } from '../../../domain/flags';
 import { canRelease, releaseBlockers } from '../../../domain/release';
 import { useStore } from '../../../state/store';
-import { Badge, Dialog, Notice, PageHead, Panel, Stat } from '../../components';
+import { Badge, DateField, Dialog, Notice, PageHead, Panel, Stat } from '../../components';
 import { IconCheck, IconLock } from '../../icons';
 
 function Timeline() {
@@ -52,7 +52,7 @@ function DeadlineField({ field, label }: { field: 'selfReviewDeadline' | 'manage
     <div className="field">
       <label htmlFor={field}>{label}</label>
       <div className="row" style={{ flexWrap: 'nowrap' }}>
-        <input id={field} type="date" className="input" min={state.cycle.openedOn} value={value} disabled={!open} onChange={(e) => setValue(e.target.value)} />
+        <DateField id={field} min={state.cycle.openedOn} value={value} disabled={!open} onChange={setValue} />
         {changed && (
           <button
             type="button"

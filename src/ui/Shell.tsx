@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AboutDialog } from './shared/About';
 import { IconMark } from './icons';
 import { Avatar } from './components';
@@ -6,6 +6,8 @@ import { Avatar } from './components';
 export interface NavItem {
   href: string;
   label: string;
+  /** Shorter label used on phones so every tab fits. */
+  short?: string;
   icon: ReactNode;
   count?: number;
   alert?: boolean;
@@ -21,6 +23,24 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
   children: ReactNode;
 }) {
   const [about, setAbout] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+  const [more, setMore] = useState({ left: false, right: false });
+
+  // On phones the tabs scroll sideways: keep the current tab in view and show
+  // an edge fade only on the side where more tabs are hidden.
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+    const update = () => setMore({ left: el.scrollLeft > 2, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 2 });
+    el.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      el.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [current, nav.length]);
   return (
     <>
       <div className="demo-strip" role="region" aria-label="Prototype controls">
@@ -34,7 +54,10 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
             <span className="concept-tag">Concept for empeo</span>
           </div>
           <div className="spacer" />
-          <button type="button" className="link-btn about-link" onClick={() => setAbout(true)}>About this prototype</button>
+          <button type="button" className="link-btn about-link" onClick={() => setAbout(true)} aria-label="About this prototype">
+            <span className="about-long">About this prototype</span>
+            <span className="about-short" aria-hidden="true">About</span>
+          </button>
           <div className="who">
             <div className="who-text" style={{ textAlign: 'right' }}>
               <span className="who-name">{user.name}</span>
@@ -45,13 +68,14 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
         </div>
       </header>
       <div className="shell">
-        <nav className="sidebar" aria-label="Main">
+        <nav className="sidebar" aria-label="Main" data-more-left={more.left} data-more-right={more.right}>
           <div className="nav-section">{navTitle}</div>
-          <div className="nav">
+          <div className="nav" ref={navRef}>
             {nav.map((n) => (
               <a key={n.href} href={n.href} aria-current={current === n.href ? 'page' : undefined}>
                 {n.icon}
-                <span>{n.label}</span>
+                <span className={n.short ? 'nav-long' : undefined}>{n.label}</span>
+                {n.short && <span className="nav-short">{n.short}</span>}
                 {n.count !== undefined && n.count > 0 && <span className={`nav-count${n.alert ? ' alert' : ''}`}>{n.count}</span>}
               </a>
             ))}

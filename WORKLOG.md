@@ -414,3 +414,28 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Not claimed:** The live deploy time. Pages was not yet enabled at the time of writing.
 - **Who decided:** PO asked for it and set the content. The developer wrote it.
 - **What went wrong:** The first wording said "97 rule tests". Some of those tests cover dates and demo data, so it was reworded to "unit tests (rules and demo data)".
+
+## UI fixes requested by the PO (2026-11-18)
+
+- **Done (one commit, on `main` only; no calibration branch exists yet):**
+  1. **Date format.** Deadline fields showed the browser's US format (11/27/2026). A new `DateField` shows the app's format ("27 Nov 2026") with a calendar icon. An invisible native date input on top keeps the device's own picker and keyboard input. It is used in the Cycle overview deadlines and in the Extend dialog.
+  2. **Phone tabs.** HR tabs were cut off at 390 px with no hint. Phones now use short labels (Overview, Progress, Consistency, Map, Log) and tighter spacing, so all 5 fit at 390 px and 360 px. On narrower screens (320 px) the row scrolls. An edge fade then appears only on the side where tabs are hidden, and the current tab scrolls into view.
+  3. **Guide arrow.** The "→" in the guide links is joined to the last word with a non-breaking space, so it never wraps alone.
+- **Found while checking:** At 320 px the header link "About this prototype" (added in step 5) overlapped the product name. Below 420 px it now reads "About".
+- **Checked in the browser:**
+
+  | Check | 1366 px | 390 px | 320 px |
+  |---|---|---|---|
+  | Dates show "27 Nov 2026" / "11 Dec 2026" | ✓ | ✓ | ✓ |
+  | Extend dialog shows "17 Dec 2026" | ✓ | ✓ | |
+  | Changing a deadline saves and shows "15 Dec 2026" | ✓ | ✓ | ✓ |
+  | All 5 guide arrows on the same line as their last word | ✓ | ✓ | |
+  | Nav fits: HR (scroll 390 = width 390), Manager, Employee | ✓ | ✓ | |
+  | HR row scrolls, with a fade on the hidden side | | | ✓ |
+  | Header without overlap | ✓ | ✓ | ✓ |
+  | No sideways page scroll, no console errors | ✓ | ✓ | ✓ |
+- **Tests:** `npm test` 97 passed. `npm run e2e` PASS at desktop (1280 px) and phone (390 px).
+- **Who decided:** PO asked for the three fixes. The developer chose short phone labels over a wrapping or two-row tab bar, because one row keeps the main content higher on the screen.
+- **What went wrong:**
+  - The first try (short labels only) still overflowed by 14 px at 390 px. Tighter tab padding fixed it.
+  - The 320 px header overlap was caught in this check, not reported by the PO.

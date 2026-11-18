@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import type { Rating } from '../domain/types';
-import { IconAlert, IconCheck, IconClose, IconInfo } from './icons';
+import { IconAlert, IconCalendar, IconCheck, IconClose, IconInfo } from './icons';
+import { formatDate } from '../domain/dates';
 
 export type Tone = 'neutral' | 'brand' | 'success' | 'warning' | 'danger';
 
@@ -155,6 +156,43 @@ export function Empty({ icon, title, children }: { icon?: ReactNode; title: stri
       {icon}
       <h4>{title}</h4>
       {children && <p className="small">{children}</p>}
+    </div>
+  );
+}
+
+/**
+ * Date field that shows the app's own format ("27 Nov 2026") on every device.
+ * A native date input sits invisibly on top, so clicking or tapping anywhere
+ * opens the browser's date picker, and keyboard users still get the native input.
+ */
+export function DateField({ id, value, min, disabled, onChange, describedBy }: {
+  id: string;
+  value: string;
+  min?: string;
+  disabled?: boolean;
+  onChange: (v: string) => void;
+  describedBy?: string;
+}) {
+  return (
+    <div className={`date-field${disabled ? ' is-disabled' : ''}`}>
+      <span className="date-text num" aria-hidden="true">{value ? formatDate(value) : 'Choose a date'}</span>
+      <IconCalendar size={16} />
+      <input
+        id={id}
+        type="date"
+        value={value}
+        min={min}
+        disabled={disabled}
+        aria-describedby={describedBy}
+        onChange={(e) => e.target.value && onChange(e.target.value)}
+        onClick={(e) => {
+          try {
+            e.currentTarget.showPicker?.();
+          } catch {
+            // showPicker can throw if the input is not focusable; the native control still works.
+          }
+        }}
+      />
     </div>
   );
 }

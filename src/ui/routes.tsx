@@ -24,11 +24,11 @@ export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] 
   const flags = openFlagCount(store.state);
   if (role === 'hr') {
     return [
-      { href: '#/hr', label: 'Cycle overview', icon: <IconCycle /> },
+      { href: '#/hr', label: 'Cycle overview', short: 'Overview', icon: <IconCycle /> },
       { href: '#/hr/progress', label: 'Progress', icon: <IconPeople /> },
       { href: '#/hr/consistency', label: 'Consistency', icon: <IconScale />, count: flags, alert: true },
-      { href: '#/hr/map', label: 'Results map', icon: <IconMap /> },
-      { href: '#/hr/activity', label: 'Activity log', icon: <IconLog /> },
+      { href: '#/hr/map', label: 'Results map', short: 'Map', icon: <IconMap /> },
+      { href: '#/hr/activity', label: 'Activity log', short: 'Log', icon: <IconLog /> },
     ];
   }
   if (role === 'manager') {

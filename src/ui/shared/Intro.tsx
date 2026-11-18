@@ -89,7 +89,7 @@ export function Intro() {
               <div className="stack-sm" style={{ gap: 4 }}>
                 <span className="strong">{s.title}{done && <span className="sr-only"> (done)</span>}</span>
                 <span className="small">{s.body}</span>
-                <button type="button" className="link-btn" onClick={() => { setView(s.view); go(s.path); }}>{s.cta} →</button>
+                <button type="button" className="link-btn" onClick={() => { setView(s.view); go(s.path); }}>{s.cta}{'\u00a0'}→</button>
               </div>
             </li>
           );

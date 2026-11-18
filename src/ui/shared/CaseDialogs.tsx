@@ -3,7 +3,7 @@ import { addDays, formatDate } from '../../domain/dates';
 import { effectiveDeadline } from '../../domain/deadlines';
 import { person } from '../../domain/selectors';
 import { useStore } from '../../state/store';
-import { Dialog, Notice } from '../components';
+import { DateField, Dialog, Notice } from '../components';
 import { eligibilityHint } from '../../domain/eligibility';
 
 export function RemindDialog({ personId, onClose }: { personId: string; onClose: () => void }) {
@@ -67,7 +67,7 @@ export function ExtendDialog({ personId, onClose }: { personId: string; onClose:
       )}
       <div className="field">
         <label htmlFor="ext-date">New deadline</label>
-        <input id="ext-date" type="date" className="input" min={min} value={until} onChange={(e) => setUntil(e.target.value)} />
+        <DateField id="ext-date" min={min} value={until} onChange={setUntil} />
         {!p.escalatedOn && <span className="hint">If still open, it escalates 3 days after this date.</span>}
       </div>
       <div className="field">

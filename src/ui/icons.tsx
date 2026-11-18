@@ -137,3 +137,9 @@ export const IconUserX = (p: P) => (
     <path d="M3.5 19.5c.7-3.4 3.2-5.2 6.5-5.2 1.4 0 2.6.3 3.7.9M16 15l4 4M20 15l-4 4" />
   </Svg>
 );
+export const IconCalendar = (p: P) => (
+  <Svg {...p}>
+    <rect x="3.5" y="5" width="17" height="15" rx="2" />
+    <path d="M3.5 10h17M8 3v4M16 3v4M8 14h2M14 14h2M8 17h2" />
+  </Svg>
+);
