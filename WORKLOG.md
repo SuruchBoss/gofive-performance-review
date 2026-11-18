@@ -98,10 +98,10 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** Approved design, sections 3 and 5.
 - **Who decided:** Developer chose the names, goals and numbers. The patterns follow the PO's demo data plan.
 - **Numbers:** Worked out by hand before writing, so each pattern lands where the design says. Commit 5 tests check them against the real formulas.
-  - Sales: gap about +0.9, with Nida Phrom far above her suggestion.
-  - Support: gap about −0.9, with Mai Tran far below her suggestion.
+  - Sales: gap about +0.9, with Nida Phrom far above the suggestion.
+  - Support: gap about −0.9, with Mai Tran far below the suggestion.
   - Operations: 2 submitted reviews (gap about +0.1). The gap is not assessed until a 3rd review is in. This is a side effect of the "minimum 3" rule and makes a good demo step.
-- **Note:** Fah Inthira (joined 3 Oct) has an open review, so she will also escalate on 14 Dec unless HR removes her first. That is realistic, so it was left in.
+- **Note:** Fah Inthira (joined 3 Oct) has an open review, so that review will also escalate on 14 Dec unless HR removes Fah first. That is realistic, so it was left in.
 - **What went wrong:** Nothing.
 
 ## Commit 3 — Visual system and app shell
@@ -192,8 +192,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - after the deadline it is late, with the logged detail "15 days after the deadline";
   - it closes once the manager submits;
   - text and rating are both required;
-  - if Ying submits late before Tom reviews, her review is no longer recorded as missing.
-- **Browser run:** Ying Chen submits late, the badge shows "Submitted late", and Tom's review form then shows her text and own rating. Width 390 on a phone. No errors.
+  - if Ying submits late before Tom reviews, the self-review is no longer recorded as missing.
+- **Browser run:** Ying Chen submits late, the badge shows "Submitted late", and Tom's review form then shows Ying's text and own rating. Width 390 on a phone. No errors.
 - **Who decided:** PO set the rule ("can submit late until the manager finishes"). The developer chose the wording.
 - **What went wrong:** The status badge sat far to the right of the narrow form. The header was moved into the same column.
 
@@ -222,7 +222,7 @@ Working notes for the Product Owner. Newest entry at the bottom.
     - calendar days, not working days;
     - the escalation log is dated on the escalation day, even if the clock jumps;
     - an extension after escalation gives the new reviewer more time.
-- **What went wrong:** The Remind and Extend buttons wrapped onto two lines in the table. Fixed with `nowrap`. Also note: Fah Inthira (new joiner) escalates on 14 Dec too if HR has not removed her. This is expected and kept; it shows why the removal step matters.
+- **What went wrong:** The Remind and Extend buttons wrapped onto two lines in the table. Fixed with `nowrap`. Also note: Fah Inthira (new joiner) escalates on 14 Dec too if HR has not removed Fah. This is expected and kept; it shows why the removal step matters.
 
 ## Commit 9 — Eligibility hint and removal
 
@@ -277,7 +277,7 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Browser run (the full path):**
   - Tom submits Orn and Ying (rated 3).
   - HR removes Fah and marks all 4 flags reviewed. Release becomes enabled. HR releases.
-  - Employee Nida sees her overall 5, goal results 3.9 and behaviours 4.8, with the reason and example.
+  - Employee Nida sees the overall 5, goal results 3.9 and behaviours 4.8, with the reason and example.
   - Width 390 on a phone. No errors.
 - **Who decided:** PO set the release rule. The developer decided that a global deadline change is allowed while the cycle is open, that it is logged, and that it can trigger escalations.
 - **What went wrong:**
@@ -296,7 +296,7 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - New: the band edges, corner names, and 9 points in the seed with someone in every corner.
   - Flagged points are Nida and Mai. The manager view of Operations shows Krit and Ben.
 - **Browser run:**
-  - Hovering Nida shows her tooltip with the open flag.
+  - Hovering Nida shows the tooltip with the open flag.
   - The Customer Support filter shows 3 dots.
   - Clicking a dot opens `#/hr/person/e05`.
   - Width 390 on a phone. No errors.
@@ -383,3 +383,13 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** The PO chose GitHub Pages via Actions, which is free for public repositories.
 - **Who decided:** PO.
 - **Note:** GitHub Pages must be set to "Source: GitHub Actions" in the repository settings (Settings → Pages). If the first run fails at the deploy step, that setting is the likely cause. The PO can change it; the developer has no access to repository settings.
+
+## Commit 17 — Draft answers to Part 2
+
+- **Done:** `docs/ANSWERS.md`:
+  - draft answers to Q1 (scope) and Q2 (the calibration change and what to measure);
+  - five candidate examples for Q3, taken from this log.
+- **Why:** Part 2 of the brief. The PO approved "developer drafts Q1 and Q2; Q3 is the PO's own answer".
+- **Who decided:** Developer drafted. The PO decides the final wording.
+- **Also:** Replaced the gendered pronouns used for fictional people in earlier entries of this log with names.
+- **Deploy:** `main` was moved up to `prototype` (fast-forward from the initial commit). The first Actions run was in progress at the time of this entry.
