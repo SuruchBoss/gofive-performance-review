@@ -57,6 +57,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Required fields are listed above the Submit button instead of turning red as soon as they appear** (commit 5). Red fields before the manager has typed anything read as a telling-off.
 - **Each manager card on the Consistency screen has a small per-person chart: a ring for the suggestion from results and a dot for the manager's rating** (commit 6). HR sees in one glance whether a gap comes from one person or from the whole team. That is the question HR has to answer before release.
 - **An HR person-detail page (`#/hr/person/:id`)** (commit 6). Not listed in DESIGN.md. Every flag and every chart row links to it, which is how "every score links to where it came from" is met on the HR side.
+- **The self-review uses a narrower reading column, and each own-rating number gets a plain label ("Met expectations")** (commit 7). An employee writing about their year should not face a dashboard-width form.
+- **The Self-review navigation item shows a "1" while the employee still has to act** (commit 7). It is a quiet prompt instead of an email, which is out of scope.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -165,3 +167,19 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Browser run:** 4 open flags. Marking the Sales flag reviewed lowered the count to 3. "Open review" goes to the detail page. Width 390 on a phone. No errors.
 - **Who decided:** PO set the rules. The developer chose the key format for reopening flags and the per-person chart.
 - **What went wrong:** The first version of the score tiles used `href="#goals"`, which the hash router would read as a route. Changed them to buttons that scroll to the section.
+
+## Commit 7 — Employee goals and self-review
+
+- **Done:**
+  - `src/domain/selfReview.ts`: the self-review window. It is open until the deadline, open late until the manager submits, then closed.
+  - Actions `save_self_review` and `submit_self_review`. Both need text and an own rating. A late submit is marked late and logged with the number of days.
+  - Employee "My goals" and "Self-review" screens.
+- **Tests:** 62 passed. New tests cover:
+  - on the deadline day it is still on time;
+  - after the deadline it is late, with the logged detail "15 days after the deadline";
+  - it closes once the manager submits;
+  - text and rating are both required;
+  - if Ying submits late before Tom reviews, her review is no longer recorded as missing.
+- **Browser run:** Ying Chen submits late, the badge shows "Submitted late", and Tom's review form then shows her text and own rating. Width 390 on a phone. No errors.
+- **Who decided:** PO set the rule ("can submit late until the manager finishes"). The developer chose the wording.
+- **What went wrong:** The status badge sat far to the right of the narrow form. The header was moved into the same column.

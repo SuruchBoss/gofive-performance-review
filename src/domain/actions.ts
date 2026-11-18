@@ -3,6 +3,8 @@ import { addDays } from './dates';
 import type { DemoState, LogEntry, ManagerReview } from './types';
 import { person } from './selectors';
 import { reviewProblems, suggestionFor } from './rating';
+import { daysLate, selfReviewWindow } from './selfReview';
+import type { Rating } from './types';
 
 /**
  * Every change to the demo state goes through `reduce`. It is pure, so the
@@ -16,6 +18,8 @@ export type Action =
   | { type: 'advance_day' }
   | { type: 'save_review'; personId: string; patch: ReviewPatch }
   | { type: 'submit_review'; personId: string; actorId: string }
+  | { type: 'save_self_review'; personId: string; text?: string; selfRating?: Rating }
+  | { type: 'submit_self_review'; personId: string }
   | { type: 'review_flag'; flagKey: string; note: string; actorId: string; label: string };
 
 export function nextLogId(state: DemoState): string {
@@ -37,6 +41,38 @@ function updateReview(state: DemoState, personId: string, fn: (r: ManagerReview)
 
 function reduceRaw(state: DemoState, action: Action): DemoState {
   switch (action.type) {
+    case 'save_self_review': {
+      const w = selfReviewWindow(state, action.personId);
+      if (w !== 'open' && w !== 'open_late') return state;
+      return {
+        ...state,
+        selfReviews: state.selfReviews.map((r) =>
+          r.personId === action.personId
+            ? { ...r, status: 'draft', text: action.text ?? r.text, selfRating: action.selfRating ?? r.selfRating }
+            : r,
+        ),
+      };
+    }
+    case 'submit_self_review': {
+      const w = selfReviewWindow(state, action.personId);
+      const self = state.selfReviews.find((r) => r.personId === action.personId);
+      if ((w !== 'open' && w !== 'open_late') || !self || !self.text.trim() || !self.selfRating) return state;
+      const late = w === 'open_late';
+      const next = {
+        ...state,
+        selfReviews: state.selfReviews.map((r) =>
+          r.personId === action.personId ? { ...r, status: 'submitted' as const, submittedOn: state.today, late } : r,
+        ),
+      };
+      if (!late) return next;
+      const d = daysLate(state);
+      return withLog(next, {
+        actorId: action.personId,
+        type: 'self_review_late',
+        targetId: action.personId,
+        detail: `Self-review submitted ${d} day${d === 1 ? '' : 's'} after the deadline.`,
+      });
+    }
     case 'review_flag': {
       const note = action.note.trim();
       if (!note || state.flagReviews.some((f) => f.flagKey === action.flagKey)) return state;

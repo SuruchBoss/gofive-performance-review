@@ -717,3 +717,5 @@ table.data tr.is-removed td { color: var(--muted); }
 .score-tile.link .l::after { content: ' →'; color: var(--mint-700); }
 .score-tile.link:hover .v { color: var(--mint-700); }
 .rating-chip { min-width: 28px; height: 28px; border-radius: var(--r-md); background: var(--mint-100); color: var(--mint-900); font-weight: 600; display: inline-grid; place-items: center; }
+.narrow { max-width: 760px; }
+.textarea.tall { min-height: 160px; }

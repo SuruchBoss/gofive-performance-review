@@ -11,10 +11,13 @@ import type { DemoState } from '../domain/types';
 import { ManagerTeam } from './pages/manager/Team';
 import { ManagerReviewPage } from './pages/manager/Review';
 import { EmployeeResult } from './pages/employee/Result';
+import { EmployeeGoals } from './pages/employee/Goals';
+import { EmployeeSelfReview } from './pages/employee/SelfReview';
+import { selfReviewWindow } from '../domain/selfReview';
 
 type StoreLike = { state: DemoState };
 
-export function navFor(role: Role, store: StoreLike, _userId: string): NavItem[] {
+export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] {
   const flags = openFlagCount(store.state);
   if (role === 'hr') {
     return [
@@ -30,7 +33,7 @@ export function navFor(role: Role, store: StoreLike, _userId: string): NavItem[]
   }
   return [
     { href: '#/me', label: 'My goals', icon: <IconTarget /> },
-    { href: '#/me/self-review', label: 'Self-review', icon: <IconPen /> },
+    { href: '#/me/self-review', label: 'Self-review', icon: <IconPen />, count: ['open', 'open_late'].includes(selfReviewWindow(store.state, userId)) ? 1 : 0, alert: true },
     { href: '#/me/result', label: 'My result', icon: <IconResult /> },
   ];
 }
@@ -52,5 +55,6 @@ export function routeFor(path: string, role: Role, userId: string): { navKey: st
   }
   const key = ['/me/self-review', '/me/result'].find((k) => path.startsWith(k)) ?? '/me';
   if (key === '/me/result') return { navKey: key, element: <EmployeeResult userId={userId} /> };
-  return { navKey: key, element: placeholder(key) };
+  if (key === '/me/self-review') return { navKey: key, element: <EmployeeSelfReview userId={userId} /> };
+  return { navKey: key, element: <EmployeeGoals userId={userId} /> };
 }
