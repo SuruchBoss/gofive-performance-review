@@ -15,7 +15,8 @@ export type Action =
   | { type: 'reset' }
   | { type: 'advance_day' }
   | { type: 'save_review'; personId: string; patch: ReviewPatch }
-  | { type: 'submit_review'; personId: string; actorId: string };
+  | { type: 'submit_review'; personId: string; actorId: string }
+  | { type: 'review_flag'; flagKey: string; note: string; actorId: string; label: string };
 
 export function nextLogId(state: DemoState): string {
   const max = state.log.reduce((m, l) => Math.max(m, Number(l.id.slice(1)) || 0), 0);
@@ -36,6 +37,12 @@ function updateReview(state: DemoState, personId: string, fn: (r: ManagerReview)
 
 function reduceRaw(state: DemoState, action: Action): DemoState {
   switch (action.type) {
+    case 'review_flag': {
+      const note = action.note.trim();
+      if (!note || state.flagReviews.some((f) => f.flagKey === action.flagKey)) return state;
+      const next = { ...state, flagReviews: [...state.flagReviews, { flagKey: action.flagKey, note, by: action.actorId, on: state.today }] };
+      return withLog(next, { actorId: action.actorId, type: 'flag_reviewed', detail: `Reviewed flag: ${action.label}. Note: ${note}` });
+    }
     case 'reset':
       return createSeed();
     case 'advance_day':

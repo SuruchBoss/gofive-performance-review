@@ -4,18 +4,23 @@ import type { NavItem } from './Shell';
 import { IconCycle, IconLog, IconMap, IconPeople, IconPen, IconResult, IconScale, IconTarget } from './icons';
 import { PageHead } from './components';
 import { HrProgress } from './pages/hr/Progress';
+import { HrConsistency } from './pages/hr/Consistency';
+import { HrPersonDetail } from './pages/hr/PersonDetail';
+import { openFlagCount } from '../domain/flags';
+import type { DemoState } from '../domain/types';
 import { ManagerTeam } from './pages/manager/Team';
 import { ManagerReviewPage } from './pages/manager/Review';
 import { EmployeeResult } from './pages/employee/Result';
 
-type StoreLike = { state: unknown };
+type StoreLike = { state: DemoState };
 
-export function navFor(role: Role, _store: StoreLike, _userId: string): NavItem[] {
+export function navFor(role: Role, store: StoreLike, _userId: string): NavItem[] {
+  const flags = openFlagCount(store.state);
   if (role === 'hr') {
     return [
       { href: '#/hr', label: 'Cycle overview', icon: <IconCycle /> },
       { href: '#/hr/progress', label: 'Progress', icon: <IconPeople /> },
-      { href: '#/hr/consistency', label: 'Consistency', icon: <IconScale /> },
+      { href: '#/hr/consistency', label: 'Consistency', icon: <IconScale />, count: flags, alert: true },
       { href: '#/hr/map', label: 'Results map', icon: <IconMap /> },
       { href: '#/hr/activity', label: 'Activity log', icon: <IconLog /> },
     ];
@@ -34,7 +39,10 @@ export function routeFor(path: string, role: Role, userId: string): { navKey: st
   const placeholder = (title: string) => <PageHead title={title} sub="This screen is built in a later commit." />;
   if (role === 'hr') {
     const key = ['/hr/progress', '/hr/consistency', '/hr/map', '/hr/activity'].find((k) => path.startsWith(k)) ?? '/hr';
+    const pm = path.match(/^\/hr\/person\/(\w+)/);
+    if (pm) return { navKey: '/hr/consistency', element: <HrPersonDetail personId={pm[1]} /> };
     if (key === '/hr/progress') return { navKey: key, element: <HrProgress /> };
+    if (key === '/hr/consistency') return { navKey: key, element: <HrConsistency /> };
     return { navKey: key, element: placeholder(key) };
   }
   if (role === 'manager') {

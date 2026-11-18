@@ -55,6 +55,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Each goal shows a bar against a target line, and the suggestion box can expand to "How is this calculated?"** (commit 5). The manager sees where the number came from without leaving the form.
 - **The distance from the suggestion is shown next to the overall rating ("2.0 from the suggestion")** (commit 5). The reason rule is then predictable, not a surprise at submit.
 - **Required fields are listed above the Submit button instead of turning red as soon as they appear** (commit 5). Red fields before the manager has typed anything read as a telling-off.
+- **Each manager card on the Consistency screen has a small per-person chart: a ring for the suggestion from results and a dot for the manager's rating** (commit 6). HR sees in one glance whether a gap comes from one person or from the whole team. That is the question HR has to answer before release.
+- **An HR person-detail page (`#/hr/person/:id`)** (commit 6). Not listed in DESIGN.md. Every flag and every chart row links to it, which is how "every score links to where it came from" is met on the HR side.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -145,3 +147,21 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Browser run:** on Orn Lertsak (suggestion 3.05), choosing 5 showed both required fields and disabled Submit. Choosing 3 enabled it. Width 390 at phone size. No errors.
 - **Who decided:** PO set the rules and thresholds. The developer chose the floating-point tolerance and the UI wording.
 - **What went wrong:** `3 + (1.0 − 1)/0.2` is exact, but other inputs at 1.0 distance can come out as 0.9999999. A tolerance of 1e-9 was added and is tested.
+
+## Commit 6 — Flags and the consistency screen
+
+- **Done:**
+  - `src/domain/flags.ts`: individual "far from results" flags and per-manager gap flags (minimum 3 reviews, threshold 0.75), worked out from the state on every change.
+  - Each flag key holds the data it is about, so a reviewed flag reopens when that data changes.
+  - `review_flag` action: needs a note, logs it, and changes no rating.
+  - HR Consistency screen, the HR person-detail page, and an open-flag count in the navigation.
+- **Tests:** 53 passed. New tests cover:
+  - a gap of exactly ±0.75 is flagged and 0.74 is not;
+  - 2 reviews never flag;
+  - a team rated high that also has high results counts as in line;
+  - the seed shows Sales above (+0.90), Support below (−0.89) and Operations "not enough reviews";
+  - Operations is in line after Tom's 3rd review;
+  - a flag reopens after its data changes.
+- **Browser run:** 4 open flags. Marking the Sales flag reviewed lowered the count to 3. "Open review" goes to the detail page. Width 390 on a phone. No errors.
+- **Who decided:** PO set the rules. The developer chose the key format for reopening flags and the per-person chart.
+- **What went wrong:** The first version of the score tiles used `href="#goals"`, which the hash router would read as a route. Changed them to buttons that scroll to the section.
