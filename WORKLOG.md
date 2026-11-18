@@ -358,9 +358,9 @@ Working notes for the Product Owner. Newest entry at the bottom.
   2. Tom picks a 5 for Orn and is blocked by the reason and evidence rules, then submits a 3. Tom's team map.
   3. HR reviews the Sales flag.
   4. +1 day twice: exactly one escalation (Ying → Anong).
-  5. Ying submits a late self-review (marked late), and her result is still locked.
+  5. Ying submits a late self-review (marked late), and Ying's result is still locked.
   6. Anong submits the escalated review. HR reviews the remaining flags, opens the map and a person page, and releases.
-  7. Nida sees her result. Removed Fah sees why she has no result.
+  7. Nida sees the released result. Removed Fah sees why there is no result.
   8. Reset restores 12 Dec.
 
   At each of 14 screens it asserts no sideways scroll and saves a screenshot to `screenshots/`, which git ignores. The run fails on any console error.
@@ -374,3 +374,12 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **What went wrong:** The run passed the first time. Reviewing its phone screenshots found two layout issues:
   1. When all 5 guide steps were done, the phone guide expanded to show all of them again. It now stays collapsed.
   2. The label/value lists ("Manager's assessment") were cramped in two columns on a phone. They now stack.
+
+## Commit 16 — GitHub Pages deploy
+
+- **Done:**
+  - `.github/workflows/deploy.yml`: on every push to `main`, it runs `npm ci`, the tests and the build, then deploys `dist/` with the official Pages actions.
+  - `README.md`: link, what to try first, how fairness works, and how to run and test.
+- **Why:** The PO chose GitHub Pages via Actions, which is free for public repositories.
+- **Who decided:** PO.
+- **Note:** GitHub Pages must be set to "Source: GitHub Actions" in the repository settings (Settings → Pages). If the first run fails at the deploy step, that setting is the likely cause. The PO can change it; the developer has no access to repository settings.
