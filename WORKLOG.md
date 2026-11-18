@@ -535,3 +535,14 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** PO change to PLAN-2: reviewers should be able to click the calibration version, while `main` stays the main link.
 - **Who decided:** PO set what to deploy. The developer chose the mechanism: one workflow on `main` builds both, plus a trigger.
 - **Note:** Both builds share one browser origin. The calibration build therefore uses its own storage keys (see C1), so its demo state cannot mix with the main build's.
+
+## Q2 answer updated with what actually happened (on `main`)
+
+- **Done:** `docs/ANSWERS.md` Q2 now has a section "What happened when it was built":
+  - the timing, taken from commit timestamps: about 8 minutes from branch to last commit, for 4 commits, not counting the plan;
+  - the files changed: 24 files, +726 / −80 lines in `src/`;
+  - what the existing design already handled: the release gate as one function, flags reused as the agenda, the suggestion already stored on each review, and the log, person page and map reused;
+  - what had to be added: a new stage and change history, the changed release rule (4 tests rewritten), the new screen, and the separate storage and deploy setup;
+  - what was not done: a real multi-person session.
+- **Why on `main`:** The answers document is the submission, and the calibration branch is never merged.
+- **Not claimed:** The time of the PO's approval. It is a chat message, not in git.
