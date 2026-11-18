@@ -67,6 +67,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **The HR home is a cycle overview: a timeline with "Today" placed among the steps, four summary figures, and a release checklist that names every blocker with a link** (commit 11). HR answers "can I release, and if not, why?" without opening other screens.
 - **Release asks for confirmation and states what employees will see** (commit 11). It cannot be undone.
 - **Employees see the manager's reason when a rating differs from results** (commit 11). This is a transparency choice; the PO may want to hide it.
+- **The results map uses a single dot colour, an amber ring for an open flag, and shaded "strong on both" and "below on both" corners, with a list view beside it** (commit 12). Colouring by team would add three hues beyond the one main colour. The list is the accessible alternative to the chart and gives exact numbers.
+- **Managers get a "Team map" of their own team only** (commit 12). DESIGN.md says managers see their own team on the map. A separate navigation item makes that visible.
 - **Reviews save as a draft automatically, and Submit asks for confirmation** (commit 4). A submitted review is locked, so the confirmation guards the one action that cannot be undone.
 
 ## Step 4 — Plan approved (2026-11-18)
@@ -279,3 +281,21 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - "Today" was drawn after "Results released" on the timeline. It now sits between steps in date order.
   - The employee tile label "Results" was unclear and was renamed "Goal results".
   - The date fields follow the browser's locale (US format in the test browser). This was left as is, because a real user's browser shows their own format.
+
+## Commit 12 — Results map and score sources
+
+- **Done:**
+  - `src/domain/map.ts`: bands with cuts at 2.5 and 3.5 (a cut value counts as the middle band), cell labels, and plot points. Only submitted reviews of people still in the cycle are plotted. Open flags are marked, and a manager can be limited to their own team.
+  - SVG map: hover and focus tooltip, a 36 px hit area around each dot, keyboard focus, and an accessible label per dot.
+  - HR team filter. The list view links to each breakdown.
+  - Manager "Team map".
+- **Tests:** 97 passed.
+  - New: the band edges, corner names, and 9 points in the seed with someone in every corner.
+  - Flagged points are Nida and Mai. The manager view of Operations shows Krit and Ben.
+- **Browser run:**
+  - Hovering Nida shows her tooltip with the open flag.
+  - The Customer Support filter shows 3 dots.
+  - Clicking a dot opens `#/hr/person/e05`.
+  - Width 390 on a phone. No errors.
+- **Who decided:** PO set the two-axis map and "every score links to its source". The developer chose the single colour, the ring and the list view, following the charting guidance.
+- **What went wrong:** At 390 px the SVG scaled its text down to about 6 px. On phones, the text and dot sizes are now set larger and the corner labels are hidden; the list still names each cell. The list rows were very tall because of the cell label, so only the team is kept there.

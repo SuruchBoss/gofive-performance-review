@@ -8,6 +8,7 @@ import { HrConsistency } from './pages/hr/Consistency';
 import { HrPersonDetail } from './pages/hr/PersonDetail';
 import { HrActivity } from './pages/hr/Activity';
 import { HrCycle } from './pages/hr/Cycle';
+import { MapPage } from './pages/hr/MapPage';
 import { openFlagCount } from '../domain/flags';
 import type { DemoState } from '../domain/types';
 import { ManagerTeam } from './pages/manager/Team';
@@ -35,7 +36,9 @@ export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] 
     const open = store.state.participants.filter(
       (p) => p.reviewerId === userId && !p.removed && store.state.managerReviews.find((r) => r.personId === p.personId)?.status !== 'submitted',
     ).length;
-    return [{ href: '#/manager', label: isHead ? 'Assigned to me' : 'My team', icon: <IconPeople />, count: open, alert: true }];
+    const items: NavItem[] = [{ href: '#/manager', label: isHead ? 'Assigned to me' : 'My team', icon: <IconPeople />, count: open, alert: true }];
+    if (!isHead) items.push({ href: '#/manager/map', label: 'Team map', icon: <IconMap /> });
+    return items;
   }
   return [
     { href: '#/me', label: 'My goals', icon: <IconTarget /> },
@@ -54,11 +57,13 @@ export function routeFor(path: string, role: Role, userId: string): { navKey: st
     if (key === '/hr/consistency') return { navKey: key, element: <HrConsistency /> };
     if (key === '/hr/activity') return { navKey: key, element: <HrActivity /> };
     if (key === '/hr') return { navKey: key, element: <HrCycle /> };
+    if (key === '/hr/map') return { navKey: key, element: <MapPage /> };
     return { navKey: key, element: placeholder(key) };
   }
   if (role === 'manager') {
     const m = path.match(/^\/manager\/review\/(\w+)/);
     if (m) return { navKey: '/manager', element: <ManagerReviewPage key={m[1]} personId={m[1]} userId={userId} /> };
+    if (path.startsWith('/manager/map')) return { navKey: '/manager/map', element: <MapPage reviewerId={userId} /> };
     return { navKey: '/manager', element: <ManagerTeam userId={userId} /> };
   }
   const key = ['/me/self-review', '/me/result'].find((k) => path.startsWith(k)) ?? '/me';
