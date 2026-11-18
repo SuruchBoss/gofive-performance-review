@@ -1,5 +1,11 @@
 name: Test and deploy to GitHub Pages
 
+# One Pages site, two builds:
+#   /              -> main (the prototype)
+#   /calibration/  -> the calibration branch (requirement change from exam question 2), if it exists
+# Only main may deploy to Pages, so a push to the calibration branch triggers this
+# workflow on main (see calibration-trigger.yml).
+
 on:
   push:
     branches: [main]
@@ -26,6 +32,17 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - name: Build the calibration branch into /calibration/
+        run: |
+          if git ls-remote --exit-code --heads origin calibration > /dev/null; then
+            git fetch --depth 1 origin calibration
+            git worktree add ../calibration FETCH_HEAD
+            (cd ../calibration && npm ci && npm test && npm run build)
+            cp -r ../calibration/dist dist/calibration
+            echo "Calibration build added at /calibration/"
+          else
+            echo "No calibration branch yet; skipping."
+          fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

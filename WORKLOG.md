@@ -524,3 +524,14 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Checked:** At 390×844 the Submit button is at y = 788 (bottom of the screen) without scrolling. At 1366 px it stays in the page. 97 tests passed. e2e PASS at desktop and phone.
 - **Who decided:** Developer, under the PO's UX rules and design latitude.
 - **What went wrong:** Nothing new.
+
+## B0 — Deploy a second build under /calibration/ (on main)
+
+- **Done:**
+  - `deploy.yml` now builds `main` into the site root and, if a `calibration` branch exists, also builds and tests that branch into `/calibration/`. Both go into one Pages artifact.
+  - A new `calibration-trigger.yml` runs on pushes to `calibration` and starts the main workflow, because only `main` can deploy to the `github-pages` environment.
+  - The About dialog on `main` has a box, "Requirement change from question 2", with a link to `./calibration/`.
+  - The README lists both links.
+- **Why:** PO change to PLAN-2: reviewers should be able to click the calibration version, while `main` stays the main link.
+- **Who decided:** PO set what to deploy. The developer chose the mechanism: one workflow on `main` builds both, plus a trigger.
+- **Note:** Both builds share one browser origin. The calibration build therefore uses its own storage keys (see C1), so its demo state cannot mix with the main build's.

@@ -4,6 +4,8 @@ A clickable prototype of one annual performance review cycle, with HR, manager a
 
 **Live prototype:** https://suruchboss.github.io/gofive-performance-review/
 
+**Requirement change from question 2 (calibration):** https://suruchboss.github.io/gofive-performance-review/calibration/ is built from the `calibration` branch. It is not merged into `main`.
+
 Demo data only. The company, people and numbers are fictional. There is no backend, no login and no email. State is kept in your browser, and **Reset demo** restores the starting data. This is a concept for empeo, not an empeo product, and uses none of empeo's branding.
 
 ## What to try first

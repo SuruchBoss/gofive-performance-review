@@ -29,6 +29,11 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
           <strong>PO decided</strong> the scope, the fairness rules, the thresholds and the look. <strong>The AI proposed</strong> the
           stack, the formulas, the demo data and the visual details, for the PO to approve.
         </p>
+        <div className="about-cal">
+          <div className="strong">Requirement change from question 2</div>
+          <p>A second build adds cross-team calibration before results are released, as asked in exam question 2. It is kept separate from this version.</p>
+          <a href="./calibration/" className="btn btn-sm">Open the calibration build →</a>
+        </div>
         <p>
           <a href={`${REPO}#how-this-was-built`} target="_blank" rel="noreferrer">How this was built</a> ·{' '}
           <a href={`${REPO}/blob/main/WORKLOG.md`} target="_blank" rel="noreferrer">Full work log</a> ·{' '}
