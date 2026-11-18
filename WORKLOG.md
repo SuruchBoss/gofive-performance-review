@@ -46,7 +46,10 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Pending:** explicit approval of `docs/PLAN.md` and its three questions.
 
 ### Design changes beyond DESIGN.md
-(none yet)
+- **Demo controls in their own dark strip, above the product header** (commit 3). This keeps prototype controls (role, demo date, reset) visibly apart from the product a customer would use.
+- **IBM Plex Sans as the typeface** (commit 3). A sober enterprise face with tabular figures and a matching Thai family. It avoids the default "Inter" look of generated UIs.
+- **Rating scale as five joined squares, with a small tick under the suggested value** (commit 3). It is compact, reads as a scale rather than as pill buttons, and keeps the suggestion visible without choosing for the manager.
+- **Square-cornered badges with a status dot, and 6 px button corners** (commit 3). This follows the "no pills everywhere" rule.
 
 ## Step 4 — Plan approved (2026-11-18)
 
@@ -77,3 +80,19 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - Operations: 2 submitted reviews (gap about +0.1). The gap is not assessed until a 3rd review is in. This is a side effect of the "minimum 3" rule and makes a good demo step.
 - **Note:** Fah Inthira (joined 3 Oct) has an open review, so she will also escalate on 14 Dec unless HR removes her first. That is realistic, so it was left in.
 - **What went wrong:** Nothing.
+
+## Commit 3 — Visual system and app shell
+
+- **Done:**
+  - `src/ui/styles.css`: tokens for colour, type and spacing, the base components, and the phone layout below 860 px.
+  - `src/ui/components.tsx`: badge, panel, page head, notice, avatar, stat, rating scale, dialog, empty state.
+  - `src/ui/icons.tsx`: icons drawn for this project. No icon font, no emoji.
+  - `src/ui/Shell.tsx`.
+- **Contrast (WCAG AA needs 4.5:1):**
+  - Mint `#0F6E5C` on white: 6.17. White on mint: 6.17.
+  - Muted text `#5B6763` on white: 5.89.
+  - Status text on its own background: red 5.79, amber 5.74, green 5.76.
+  - Ink on white: 15.9.
+- **Why:** The PO asked for the visual system early, so every screen is built to it.
+- **Who decided:** Developer, under the PO's design latitude. Design changes are listed in the "Design changes" section above.
+- **What went wrong:** On a phone, the shell grid stretched the navigation row and left an empty band. Fixed by switching the shell to block layout on narrow screens. Checked with a 390 px screenshot.
