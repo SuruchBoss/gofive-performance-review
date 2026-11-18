@@ -551,3 +551,45 @@ Working notes for the Product Owner. Newest entry at the bottom.
 
 - **Done:** Replaced the candidate list under question 3 in `docs/ANSWERS.md` with the PO's text, exactly as written. The status line now says Q1 and Q2 are drafts and Q3 is the PO's final wording. The document title was left unchanged, because Q1 and Q2 are still drafts.
 - **Who decided:** PO (wording). Developer: placement only.
+
+## C — Blind test and fixes (on `main`)
+
+- **How:** A fresh agent with no context got only the live link and the five tasks in plain words (not the guide's wording). It used a real browser at 1366×900 and 390×844 and was asked to report where it got confused or stuck. It completed all five tasks at both sizes. Task 5 (release) was the hardest, at about 28 clicks.
+- **Findings and fixes:**
+
+| # | Finding (blind tester) | Fix |
+|---|---|---|
+| 1 | Release blocker "Ying Chen: review not submitted (Anong Rattanakul)" led to Progress, where HR cannot act; the tester had to work out to switch to Manager → Anong (its "one change that would help most") | Each blocker now says who must act and links there: "Ying Chen: escalated to Anong Rattanakul (Managing Director) on 14 Dec, waiting for their review · **Open as Anong →**". The link (`?as=head`) switches the manager view. A new joiner's blocker says "joined under 3 months ago… · **Remove in Progress →**" |
+| 2 | After +1 day nothing showed the escalation | The +1 day message now says "14 Dec 2026: 3 overdue reviews moved to the next manager up. See Progress or the Activity log." |
+| 3 | "the Managing Director" in the guide vs "Anong Rattanakul" everywhere else | Reviewer names for the head show "(Managing Director)"; the guide names Anong |
+| 4 | Guide says "Two reviews are overdue", screens say 3 | Guide: "Three reviews are overdue. One is for Fah…" |
+| 5 | "Everyone (12)" after a removal next to "9 / 11" | Tab reads "Everyone (11 + 1 removed)" |
+| 6 | "The tick marks the suggestion": there is no tick, it is an underline | "The underlined number is the suggestion" |
+| 7 | Suggestion shown as 3, "exact value 3.05", "2.0 from the suggestion", dialog "Suggested 3.05" | Whole numbers throughout; the distance is in words: "Far from the suggestion: add a reason below" / "Close to" / "Same as" |
+| 8 | Unsure whether "Comment for Orn" was required | Label says "(optional)" |
+| 9 | Flag labels worded differently | One pattern: "Daniel Reyes's ratings: above results", "Nida Phrom's rating: above results" |
+| 10 | Anong's page says "Reviews assigned to me" but the breadcrumb says "My team"; the escalated banner stays after submitting | Breadcrumb "Assigned to me" for the head; the banner counts only open escalated reviews |
+| 11 | Switching to Employee after release opened My goals, not My result | After release, Employee opens My result |
+| 12 | Employee result: "Goal results 2.6" beside "Overall 3" while the manager saw "suggest 3" | Tile shows "92% of goal targets… suggests an overall 3" |
+| 13 | Toasts cover rows and buttons (both sizes) | Desktop: bottom-right corner. Phone: top of the screen |
+| 14 | Phone: person picker cut off | Picker gets its own full-width row; shorter labels ("Tom Wattana · Operations") |
+| 15 | Phone: Activity log tabs cut off | Shorter labels ("Reminders", "Flags"); panel tabs wrap on phones |
+| 16 | Phone: guide fills the first screen | Description paragraph hidden on phones; only the title, next step and controls show |
+| 17 | Phone: rating buttons leave an empty strip | The scale keeps its own width instead of stretching |
+| 18 | Phone: bottom bar says "(listed above)" but the list is out of view | The bar shows the first missing item: "Rate the 2 remaining behaviours. (+1 more)" |
+| 19 | Guide says "Use View as", which phones do not show | "Switch between HR, Manager and Employee at the top" |
+| 20 | Unclear words: "Measured, not rated", "context only", "written anchors", "Escalates 14 Dec" | "From company systems", "for information only", anchors explained as "a short written description (shown when you pick it)", "Moves to Anong Rattanakul (Managing Director) on 14 Dec" |
+
+- **Not changed:**
+  - "Manager gap" and "Results map / Map": both already have one-line explanations on their screens. The tester read them only in passing.
+  - The phone guide still takes about half the first screen. It can be hidden, and hiding is remembered.
+- **Checked:**
+  - 97 unit tests passed. e2e PASS at desktop and phone (the picker label in the test was updated).
+  - Browser check at 1366 px and 390 px:
+    - the +1 day message after two clicks;
+    - all three blockers name Anong with "Open as Anong →", and the link selects Anong;
+    - the Activity tabs fit;
+    - the scale is 202 px with no strip;
+    - the bar text;
+    - no sideways scroll, no errors.
+- **Who decided:** PO asked for the blind test and for fixes. The developer chose the fixes.

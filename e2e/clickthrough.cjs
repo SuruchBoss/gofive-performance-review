@@ -77,7 +77,7 @@ async function run(vp) {
   assert((await page.locator('tr', { hasText: 'Fah Inthira' }).innerText()).includes('Removed'), 'Fah not removed');
 
   // Step 2: Manager Tom reviews Orn; the reason and evidence rules block a 5.
-  await viewAs('Manager', 'Tom Wattana · Operations Manager');
+  await viewAs('Manager', 'Tom Wattana · Operations');
   await shot('03-manager-team');
   await open('/manager/review/e11');
   await rate(5);

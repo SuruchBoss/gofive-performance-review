@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ReviewPatch } from '../../../domain/actions';
 import { CONFIG } from '../../../domain/config';
 import { formatDate } from '../../../domain/dates';
-import { achievement, distanceFromSuggestion, isFarFromSuggestion, needsEvidence, reviewProblems, suggestionFor } from '../../../domain/rating';
+import { achievement, isFarFromSuggestion, needsEvidence, reviewProblems, suggestionFor } from '../../../domain/rating';
 import { firstName, goalsOf, managerReviewOf, person, selfReviewOf, teamName } from '../../../domain/selectors';
 import type { Goal, Rating } from '../../../domain/types';
 import { useStore } from '../../../state/store';
@@ -88,7 +88,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
   return (
     <>
       <PageHead
-        crumbs={<a href="#/manager">My team</a>}
+        crumbs={<a href="#/manager">{person(state, userId).kind === 'head' ? 'Assigned to me' : 'My team'}</a>}
         title={<span className="row" style={{ gap: 12 }}>{who.name} <ReviewBadge r={review} /></span>}
         sub={`${who.title} · ${teamName(state, who.teamId)} · ${state.cycle.name}`}
       />
@@ -110,7 +110,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
         <div className="stack">
           <Panel
             title="Goal results"
-            actions={<span className="small muted">Measured, not rated</span>}
+            actions={<span className="small muted">From company systems</span>}
             bodyClass="goals"
             foot={
               <div className="stack-sm">
@@ -120,7 +120,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                     <div className="strong">Suggested overall rating</div>
                     <Explain>{TERMS.suggested}</Explain>
                     <div className="xs muted num">
-                      {pct(sug.results)} of targets, weighted · exact value {suggested.toFixed(2)}
+                      Based on {pct(sug.results)} of goal targets, weighted.
                     </div>
                   </div>
                 </div>
@@ -133,7 +133,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
 
           <Panel
             title="Self-review"
-            actions={self.status === 'submitted' && self.selfRating ? <span className="small">Own rating <strong>{self.selfRating}</strong> <span className="muted">· context only</span></span> : undefined}
+            actions={self.status === 'submitted' && self.selfRating ? <span className="small">Own rating <strong>{self.selfRating}</strong> <span className="muted">· for information only</span></span> : undefined}
           >
             {self.status === 'submitted' ? (
               <div className="stack-sm">
@@ -172,13 +172,13 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             </div>
           </Panel>
 
-          <Panel title="Overall rating" actions={<span className="small muted">The tick marks the suggestion</span>}>
+          <Panel title="Overall rating" actions={<span className="small muted">The underlined number is the suggestion</span>}>
             <div className="stack">
               <div className="row" style={{ gap: 16 }}>
                 <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
                 {review.overall !== undefined && (
                   <span className={`small ${far ? 'strong' : 'muted'} num`}>
-                    {distanceFromSuggestion(review.overall, suggested).toFixed(1)} from the suggestion
+                    {far ? 'Far from the suggestion: add a reason below' : review.overall === Math.round(suggested) ? 'Same as the suggestion' : 'Close to the suggestion'}
                   </span>
                 )}
               </div>
@@ -221,7 +221,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
               )}
 
               <div className="field">
-                <label htmlFor="comment">Comment for {first}</label>
+                <label htmlFor="comment">Comment for {first} <span className="muted" style={{ fontWeight: 400 }}>(optional)</span></label>
                 <textarea id="comment" className="textarea" disabled={locked} value={review.comment ?? ''} onChange={(e) => save({ comment: e.target.value })} placeholder="What went well, and what to focus on next year." />
               </div>
             </div>
@@ -240,7 +240,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             )}
             <div className="submit-bar action-bar">
               <span className="small muted">
-                {problems.length > 0 ? `${problems.length} thing${problems.length === 1 ? '' : 's'} left before you can submit (listed above).` : 'Ready to submit. Drafts save automatically.'}
+                {problems.length > 0 ? `${problems[0].message}${problems.length > 1 ? ` (+${problems.length - 1} more)` : ''}` : 'Ready to submit. Drafts save automatically.'}
               </span>
               <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>Submit review</button>
             </div>
@@ -276,7 +276,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             <dt>Overall rating</dt>
             <dd className="strong">{review.overall}</dd>
             <dt>Suggested</dt>
-            <dd className="num">{suggested.toFixed(2)}</dd>
+            <dd className="num">{Math.round(suggested)}</dd>
             {self.status !== 'submitted' && (<><dt>Self-review</dt><dd>Missing; this will be recorded</dd></>)}
             {far && (<><dt>Flag</dt><dd>HR will check this rating against the results</dd></>)}
           </dl>

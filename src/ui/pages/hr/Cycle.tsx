@@ -112,7 +112,7 @@ export function HrCycle() {
                     <div className="strong">Every manager review submitted</div>
                     {openReviews.length > 0 ? (
                       <ul className="blockers">
-                        {openReviews.map((b) => <li key={b.key}><a href={b.href}>{b.text}</a></li>)}
+                        {openReviews.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">{submitted} of {active.length} submitted.</div>}
                   </div>
@@ -123,7 +123,7 @@ export function HrCycle() {
                     <div className="strong">Every flag reviewed by HR</div>
                     {openFlags.length > 0 ? (
                       <ul className="blockers">
-                        {openFlags.map((b) => <li key={b.key}><a href={b.href}>{b.text}</a></li>)}
+                        {openFlags.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">{flags.length ? `${flags.length} of ${flags.length} reviewed.` : 'No flags.'}</div>}
                   </div>

@@ -20,10 +20,10 @@ const META: Record<LogType, { label: string; icon: ReactNode; tone: string }> = 
 
 const FILTERS: { key: string; label: string; types?: LogType[] }[] = [
   { key: 'all', label: 'All' },
-  { key: 'deadlines', label: 'Reminders and extensions', types: ['reminder', 'extension', 'deadline_change'] },
+  { key: 'deadlines', label: 'Reminders', types: ['reminder', 'extension', 'deadline_change'] },
   { key: 'escalation', label: 'Escalations', types: ['escalation'] },
   { key: 'removal', label: 'Removals', types: ['removal'] },
-  { key: 'flags', label: 'Flags and release', types: ['flag_reviewed', 'release'] },
+  { key: 'flags', label: 'Flags', types: ['flag_reviewed', 'release'] },
 ];
 
 export function HrActivity() {

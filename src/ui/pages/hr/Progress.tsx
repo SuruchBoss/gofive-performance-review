@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { caseInfo } from '../../../domain/deadlines';
 import { formatDate } from '../../../domain/dates';
-import { person, selfReviewOf, teamName } from '../../../domain/selectors';
+import { nameWithRole, person, selfReviewOf, teamName } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
 import { Empty, MoreMenu, PageHead, Panel, PersonCell, Stat } from '../../components';
 import { IconCheck } from '../../icons';
@@ -46,7 +46,7 @@ export function HrProgress() {
       <Panel
         title={
           <div className="tabs" role="tablist" aria-label="Filter">
-            {([['action', `Needs action (${rows.filter(needsAction).length})`], ['submitted', `Submitted (${submitted})`], ['all', `Everyone (${rows.length})`]] as [Filter, string][]).map(([k, label]) => (
+            {([['action', `Needs action (${rows.filter(needsAction).length})`], ['submitted', `Submitted (${submitted})`], ['all', `Everyone (${active.length}${removed ? ` + ${removed} removed` : ''})`]] as [Filter, string][]).map(([k, label]) => (
               <button key={k} type="button" role="tab" aria-selected={filter === k} onClick={() => setFilter(k)}>{label}</button>
             ))}
           </div>
@@ -81,7 +81,7 @@ export function HrProgress() {
                     </td>
                     <td data-label="Reviewer">
                       <div>
-                        <div>{person(state, p.reviewerId).name}</div>
+                        <div>{nameWithRole(state, p.reviewerId)}</div>
                         {p.escalatedFrom && <div className="xs muted">from {person(state, p.escalatedFrom).name}, {formatDate(p.escalatedOn!, true)}</div>}
                       </div>
                     </td>
@@ -90,7 +90,7 @@ export function HrProgress() {
                     <td data-label="Deadline" className="num">
                       <div>
                       <div className="nowrap">{formatDate(c.deadline, true)}{p.extension && <span className="xs muted"> · extended</span>}</div>
-                      {c.status === 'overdue' && c.escalatesOn && <div className="xs muted nowrap">Escalates {formatDate(c.escalatesOn, true)}</div>}
+                      {c.status === 'overdue' && c.escalatesOn && <div className="xs muted">Moves to {nameWithRole(state, person(state, p.reviewerId).managerId ?? p.reviewerId)} on {formatDate(c.escalatesOn, true)}</div>}
                       {p.lastRemindedOn && open && <div className="xs muted nowrap">Reminded {formatDate(p.lastRemindedOn, true)}</div>}
                       </div>
                     </td>
