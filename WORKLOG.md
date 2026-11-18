@@ -35,3 +35,15 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** Working agreement step 3: plan before code.
 - **Who decided:** PO: design approval, evidence on the overall rating only, keep "≥ 1.0", Operations plays both parts, managers are not reviewed, minimum 3 reviews for the gap, and rule 4 now stops only at design, plan and done-and-deployed. Developer: commit order and branch strategy (proposed).
 - **What went wrong:** Nothing.
+
+## Note — Design latitude granted (2026-11-18)
+
+- **What:** The PO allows visual and small UX changes beyond `docs/DESIGN.md`: layout, typography, spacing, empty states and micro-copy. The aim is a real HR product feel, not generic AI output.
+- **Still fixed:** scope, rules and thresholds, the demo data plan, the deep mint main colour, and the "no template look" rule.
+- **Also allowed:** testing as much as needed, including browser click-throughs at desktop and phone width, and fixing what is found. Treat it as a customer-facing POC.
+- **Rule:** Every design change beyond `docs/DESIGN.md` is recorded below, with one line on why.
+- **Who decided:** PO.
+- **Pending:** explicit approval of `docs/PLAN.md` and its three questions.
+
+### Design changes beyond DESIGN.md
+(none yet)
