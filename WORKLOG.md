@@ -475,3 +475,16 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Why:** PO rule: "Show the summary first; details open on click."
 - **Tests:** 97 passed. e2e PASS at desktop and phone. Checked by hand at 1366 px and 390 px.
 - **What went wrong:** The flag notice on the person page repeated the glossary line and read awkwardly. It was rewritten as one sentence with the limit in brackets.
+
+## U3 — One main action per row and screen
+
+- **Done:**
+  - **Progress:** each open row shows one button, "Remind". "Extend deadline" and "Remove from cycle" move into a "More" menu (`MoreMenu`, keyboard: Escape closes, the first item gets focus).
+  - **Manager "My team":** open reviews come first (drafts, then not started, then submitted), and only the most urgent one has the filled main button ("Continue review").
+  - **Consistency** (from U2): "Mark reviewed" is the only filled button on each card.
+- **Why:** PO rule: "Each screen has one main job and one obvious main action."
+- **Tests:** 97 passed. e2e PASS at desktop and phone, after updating it to open "More" before "Remove from cycle".
+- **What went wrong:**
+  1. The menu was first placed inside the table's scroll box. It was clipped, and focusing it scrolled the table so the column headers went out of view. It is now positioned against the screen and closes on scroll.
+  2. On a phone, a row near the bottom opened the menu below the screen edge. It now opens upwards when there is no room below. Both items were checked to be on screen at 1366 px and 390 px.
+  3. On phones, the "joined under 3 months" note sat beside the name instead of under it. Fixed.

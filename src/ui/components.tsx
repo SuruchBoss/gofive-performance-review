@@ -242,3 +242,55 @@ export function Section({ id, title, summary, open, onToggle, children, bodyClas
     </section>
   );
 }
+
+/** Small "More" menu for secondary row actions. */
+export function MoreMenu({ label, items }: { label: string; items: { label: string; onSelect: () => void; danger?: boolean }[] }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ top: number; left: number }>();
+  const ref = useRef<HTMLDivElement>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+  // The menu is positioned against the viewport so a scrolling table cannot clip it.
+  const place = () => {
+    const r = btn.current?.getBoundingClientRect();
+    if (!r) return;
+    const width = 200;
+    const height = items.length * 37 + 10;
+    // Open upwards when there is no room below (rows near the bottom of a phone screen).
+    const top = r.bottom + 4 + height > window.innerHeight - 8 ? r.top - 4 - height : r.bottom + 4;
+    setPos({ top, left: Math.max(8, Math.min(r.right - width, window.innerWidth - width - 8)) });
+  };
+  useEffect(() => {
+    if (!open) return;
+    const shut = () => setOpen(false);
+    window.addEventListener('scroll', shut, true);
+    window.addEventListener('resize', shut);
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent ? e.key === 'Escape' : !ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', close);
+    document.addEventListener('keydown', close);
+    ref.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus({ preventScroll: true });
+    return () => {
+      window.removeEventListener('scroll', shut, true);
+      window.removeEventListener('resize', shut);
+      document.removeEventListener('mousedown', close);
+      document.removeEventListener('keydown', close);
+    };
+  }, [open]);
+  return (
+    <div className="more" ref={ref}>
+      <button ref={btn} type="button" className="btn btn-sm" aria-haspopup="menu" aria-expanded={open} aria-label={label} onClick={() => { place(); setOpen((v) => !v); }}>
+        More <span aria-hidden="true">▾</span>
+      </button>
+      {open && (
+        <div className="more-menu" role="menu" style={pos ? { position: 'fixed', top: pos.top, left: pos.left } : undefined}>
+          {items.map((it) => (
+            <button key={it.label} type="button" role="menuitem" className={it.danger ? 'danger' : undefined} onClick={() => { setOpen(false); it.onSelect(); }}>
+              {it.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

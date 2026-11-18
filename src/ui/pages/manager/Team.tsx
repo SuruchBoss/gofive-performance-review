@@ -10,12 +10,17 @@ import { Notice } from '../../components';
 export function ManagerTeam({ userId }: { userId: string }) {
   const { state } = useStore();
   const me = person(state, userId);
-  const mine = state.participants.filter((p) => p.reviewerId === userId && !p.removed);
+  const rank = (id: string) => ({ draft: 0, not_started: 1, submitted: 2 })[managerReviewOf(state, id).status];
+  // Open reviews first (drafts before new ones), finished ones last.
+  const mine = state.participants.filter((p) => p.reviewerId === userId && !p.removed).sort((a, b) => rank(a.personId) - rank(b.personId));
   const done = mine.filter((p) => managerReviewOf(state, p.personId).status === 'submitted').length;
   const overdue = mine.filter((p) => caseInfo(state, p.personId).status === 'overdue');
   const escalatedToMe = mine.filter((p) => p.escalatedFrom);
   const firstEscalation = overdue.map((p) => caseInfo(state, p.personId).escalatesOn!).sort()[0];
   const boss = me.managerId ? person(state, me.managerId) : undefined;
+  // The one main action: the most urgent open review (drafts first, then by name order in the list).
+  const openOnes = mine.filter((p) => managerReviewOf(state, p.personId).status !== 'submitted');
+  const nextId = (openOnes.find((p) => managerReviewOf(state, p.personId).status === 'draft') ?? openOnes[0])?.personId;
 
   return (
     <>
@@ -72,7 +77,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
                     </td>
                     <td data-label="Deadline" className="num nowrap">{formatDate(c.deadline, true)}</td>
                     <td className="actions">
-                      <a className={`btn btn-sm${r.status === 'submitted' ? '' : ' btn-primary'}`} href={`#/manager/review/${p.personId}`}>
+                      <a className={`btn btn-sm${p.personId === nextId ? ' btn-primary' : ''}`} href={`#/manager/review/${p.personId}`}>
                         {r.status === 'submitted' ? 'View' : r.status === 'draft' ? 'Continue review' : 'Start review'}
                       </a>
                     </td>

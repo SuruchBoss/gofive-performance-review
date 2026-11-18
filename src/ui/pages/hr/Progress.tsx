@@ -3,7 +3,7 @@ import { caseInfo } from '../../../domain/deadlines';
 import { formatDate } from '../../../domain/dates';
 import { person, selfReviewOf, teamName } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
-import { Empty, PageHead, Panel, PersonCell, Stat } from '../../components';
+import { Empty, MoreMenu, PageHead, Panel, PersonCell, Stat } from '../../components';
 import { IconCheck } from '../../icons';
 import { ExtendDialog, RemindDialog, RemoveDialog } from '../../shared/CaseDialogs';
 import { eligibilityHint } from '../../../domain/eligibility';
@@ -98,10 +98,13 @@ export function HrProgress() {
                       {open && (
                         <div className="row" style={{ justifyContent: 'flex-end' }}>
                           <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>Remind</button>
-                          <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'extend', personId: p.personId })}>Extend</button>
-                          {state.cycle.status === 'open' && (
-                            <button type="button" className="btn btn-sm btn-danger" onClick={() => setDialog({ kind: 'remove', personId: p.personId })} aria-label={`Remove ${who.name} from the cycle`}>Remove</button>
-                          )}
+                          <MoreMenu
+                            label={`More actions for ${who.name}`}
+                            items={[
+                              { label: 'Extend deadline', onSelect: () => setDialog({ kind: 'extend', personId: p.personId }) },
+                              ...(state.cycle.status === 'open' ? [{ label: 'Remove from cycle', danger: true, onSelect: () => setDialog({ kind: 'remove', personId: p.personId }) }] : []),
+                            ]}
+                          />
                         </div>
                       )}
                     </td>
