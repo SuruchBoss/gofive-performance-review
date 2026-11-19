@@ -63,6 +63,15 @@ export function DemoStrip() {
     go(HOME.employee);
   };
   const hr = state.people.find((p) => p.id === 'hr');
+  // One short line of demo help, never more.
+  const managersOwe = state.participants.some((p) => !p.removed && state.managerReviews.find((r) => r.personId === p.personId)?.status !== 'submitted');
+  const tip = released
+    ? 'Results are released. Switch person to see a result.'
+    : view.role === 'hr' && managersOwe
+    ? 'Demo tip: reviews still open? “More” can let the managers finish them.'
+    : view.role === 'employee'
+    ? 'Demo tip: result locked? “More” can skip to released results.'
+    : 'Demo tip: switch person to see the same review from the other side.';
 
   return (
     <div className="demo-bar" ref={wrap}>
@@ -85,7 +94,7 @@ export function DemoStrip() {
           </optgroup>
         </select>
       </label>
-      <span className="demo-tip">Switch person to see the same review from the other side.</span>
+      <span className="demo-tip">{tip}</span>
       <span className="demo-clock">
         <span className="demo-date num">{weekday(state.today)} {formatDate(state.today)}</span>
         <button type="button" className="demo-btn" onClick={advanceDay}>+1 day</button>

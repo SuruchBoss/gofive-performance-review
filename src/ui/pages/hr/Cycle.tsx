@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { caseInfo } from '../../../domain/deadlines';
+import { answerAwaitingHr, caseInfo, openReturn } from '../../../domain/deadlines';
+import { eligibilityHint } from '../../../domain/eligibility';
+import { person, teamName } from '../../../domain/selectors';
+import { RemindDialog, RemoveDialog } from '../../shared/CaseDialogs';
 import { formatDate, weekday } from '../../../domain/dates';
-import { allFlags } from '../../../domain/flags';
 import { canRelease, releaseBlockers } from '../../../domain/release';
 import { useStore } from '../../../state/store';
-import { Badge, DateField, Dialog, Notice, PageHead, Panel, Stat } from '../../components';
+import { Badge, DateField, Dialog, Notice, PageHead, Panel, PersonCell } from '../../components';
 import { IconCheck, IconLock } from '../../icons';
 
 function Timeline() {
@@ -70,90 +72,148 @@ function DeadlineField({ field, label }: { field: 'selfReviewDeadline' | 'manage
 export function HrCycle() {
   const { state, dispatch, notify } = useStore();
   const [confirm, setConfirm] = useState(false);
+  const [dialog, setDialog] = useState<{ kind: 'remind' | 'remove'; personId: string }>();
   const released = state.cycle.status === 'released';
   const active = state.participants.filter((p) => !p.removed);
-  const cases = active.map((p) => caseInfo(state, p.personId));
-  const submitted = cases.filter((c) => c.status === 'submitted').length;
-  const late = cases.filter((c) => c.status === 'overdue' || c.status === 'escalated').length;
-  const flags = allFlags(state);
-  const reviewedFlags = flags.filter((f) => f.reviewed).length;
+  const review = (id: string) => state.managerReviews.find((r) => r.personId === id)!;
+  const name = (id: string) => person(state, id).name;
+  const first = (id: string) => name(id).split(' ')[0];
+  const submitted = active.filter((p) => review(p.personId).status === 'submitted').length;
   const blockers = releaseBlockers(state);
-  const openReviews = blockers.filter((b) => b.kind === 'open_review');
-  const openFlags = blockers.filter((b) => b.kind === 'flag');
   const ready = canRelease(state);
+
+  // What needs HR now, in the order HR would handle it.
+  const open = active.filter((p) => review(p.personId).status !== 'submitted');
+  const tooNew = open.filter((p) => eligibilityHint(state, person(state, p.personId)));
+  const waitingForAnswer = open.filter((p) => openReturn(review(p.personId)));
+  const toWrite = open.filter((p) => !tooNew.includes(p) && !waitingForAnswer.includes(p));
+  const answers = active.filter((p) => review(p.personId).status === 'submitted' && answerAwaitingHr(review(p.personId)));
+  const toCheck = blockers.filter((b) => b.kind === 'flag' && !b.key.startsWith('answer:'));
+  const groups = [tooNew.length, toWrite.length, waitingForAnswer.length, answers.length, toCheck.length].filter(Boolean).length;
+  const late = toWrite.filter((p) => ['overdue', 'escalated'].includes(caseInfo(state, p.personId).status));
 
   return (
     <>
       <PageHead
         title={<span className="row" style={{ gap: 12 }}>{state.cycle.name} {released ? <Badge tone="success">Released</Badge> : <Badge tone="brand">Open</Badge>}</span>}
-        sub={`${state.company} · review period ${formatDate(state.cycle.periodStart)} – ${formatDate(state.cycle.periodEnd)} · ${active.length} people`}
+        sub={`${submitted} of ${active.length} reviews are in · ${released ? `results released ${formatDate(state.cycle.releasedOn!)}` : 'results not released yet'}`}
       />
-      <Panel bodyClass="panel-body timeline-wrap"><Timeline /></Panel>
-      <div style={{ height: 16 }} />
-      <div className="grid-3 stats-row">
-        <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
-        <Stat label="Late or escalated, still open" value={late} sub={<a href="#/hr/progress">See progress</a>} />
-        <Stat label="Flags reviewed" value={`${reviewedFlags} / ${flags.length}`} sub={<a href="#/hr/consistency">Check consistency</a>} />
-      </div>
-      <div style={{ height: 16 }} />
 
-      <div className="cycle-grid">
-        <Panel title="Release results" actions={released ? undefined : <span className="small muted">Results stay locked until everything is resolved</span>}>
-          {released ? (
-            <Notice tone="success" title={`Released ${formatDate(state.cycle.releasedOn!)}`}>
-              Employees can now see their result. The cycle is closed for changes.
-            </Notice>
-          ) : (
-            <div className="stack">
-              <ul className="checklist">
-                <li className={openReviews.length ? '' : 'ok'}>
-                  <span className="ck" aria-hidden="true">{openReviews.length ? '' : <IconCheck size={13} />}</span>
-                  <div>
-                    <div className="strong">Every manager review submitted</div>
-                    {openReviews.length > 0 ? (
-                      <ul className="blockers">
-                        {openReviews.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
-                      </ul>
-                    ) : <div className="small muted">{submitted} of {active.length} submitted.</div>}
+      {released ? (
+        <Notice tone="success" title={`Results released ${formatDate(state.cycle.releasedOn!)}`}>
+          Everyone can now see their result. Nothing can be changed any more.
+        </Notice>
+      ) : (
+        <div className="stack">
+          <Panel title="Needs your attention" actions={<span className="small muted">{groups ? 'Results can be released when this list is empty' : ''}</span>} bodyClass="">
+            {groups === 0 && <div className="attention-empty"><IconCheck size={16} /> Nothing needs your attention. You can release results.</div>}
+
+            {tooNew.length > 0 && (
+              <section className="attention">
+                <h3>{tooNew.length} {tooNew.length === 1 ? 'person' : 'people'} joined less than 3 months ago</h3>
+                <p className="small muted">Someone that new should not be reviewed yet. The system suggests leaving them out; you decide.</p>
+                {tooNew.map((p) => (
+                  <div className="attention-row" key={p.personId}>
+                    <PersonCell name={name(p.personId)} sub={`Joined ${formatDate(person(state, p.personId).startDate)} · ${teamName(state, person(state, p.personId).teamId)}`} size="sm" />
+                    <button type="button" className="btn btn-sm btn-primary" onClick={() => setDialog({ kind: 'remove', personId: p.personId })}>Leave {first(p.personId)} out</button>
                   </div>
-                </li>
-                <li className={openFlags.length ? '' : 'ok'}>
-                  <span className="ck" aria-hidden="true">{openFlags.length ? '' : <IconCheck size={13} />}</span>
-                  <div>
-                    <div className="strong">Every flag reviewed by HR</div>
-                    {openFlags.length > 0 ? (
-                      <ul className="blockers">
-                        {openFlags.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
-                      </ul>
-                    ) : <div className="small muted">{flags.length ? `${flags.length} of ${flags.length} reviewed.` : 'No flags.'}</div>}
+                ))}
+              </section>
+            )}
+
+            {toWrite.length > 0 && (
+              <section className="attention">
+                <h3>{late.length === toWrite.length ? `${toWrite.length} review${toWrite.length === 1 ? ' is' : 's are'} late` : `${toWrite.length} review${toWrite.length === 1 ? ' is' : 's are'} not in yet`}</h3>
+                <p className="small muted">A late review moves to the manager's own manager 3 days after the deadline. You can remind the manager, or give more time in People.</p>
+                {toWrite.map((p) => {
+                  const c = caseInfo(state, p.personId);
+                  return (
+                    <div className="attention-row" key={p.personId}>
+                      <PersonCell
+                        name={name(p.personId)}
+                        sub={c.status === 'escalated'
+                          ? `Moved to ${name(p.reviewerId)} on ${formatDate(p.escalatedOn!, true)}`
+                          : c.status === 'overdue'
+                          ? `${name(p.reviewerId)} · ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} late · moves up on ${formatDate(c.escalatesOn!, true)}`
+                          : `${name(p.reviewerId)} · due ${formatDate(c.deadline, true)}`}
+                        size="sm"
+                      />
+                      <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>Remind {first(p.reviewerId)}</button>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
+
+            {answers.length > 0 && (
+              <section className="attention">
+                <h3>{answers.length} answer{answers.length === 1 ? '' : 's'} from {answers.length === 1 ? 'a manager' : 'managers'} to read</h3>
+                {answers.map((p) => (
+                  <div className="attention-row" key={p.personId}>
+                    <PersonCell name={name(p.personId)} sub={`${name(p.reviewerId)} answered your question`} size="sm" />
+                    <a className="btn btn-sm btn-primary" href="#/hr/consistency">Read the answer</a>
                   </div>
-                </li>
-              </ul>
-              <div className={`submit-bar${ready ? ' action-bar' : ''}`}>
-                <span className="small muted">
-                  {ready ? 'Ready. Everyone in the cycle sees their result at the same time.' : `${blockers.length} item${blockers.length === 1 ? '' : 's'} left before release.`}
-                </span>
-                <button type="button" className="btn btn-primary" disabled={!ready} onClick={() => setConfirm(true)}>
-                  {!ready && <IconLock size={15} />} Release results
-                </button>
-              </div>
+                ))}
+              </section>
+            )}
+
+            {toCheck.length > 0 && (
+              <section className="attention">
+                <h3>{toCheck.length} rating{toCheck.length === 1 ? ' does' : 's do'} not match results</h3>
+                <p className="small muted">A manager's ratings are far from what their own team's goal results suggest. Check each one before release.</p>
+                <ul className="attention-list">
+                  {toCheck.map((b) => <li key={b.key}>{b.text}</li>)}
+                </ul>
+                <a className="btn btn-sm btn-primary" href="#/hr/consistency">Check fairness</a>
+              </section>
+            )}
+
+            {waitingForAnswer.length > 0 && (
+              <section className="attention">
+                <h3>Waiting for {waitingForAnswer.length === 1 ? `${first(waitingForAnswer[0].reviewerId)}'s answer` : `${waitingForAnswer.length} answers`}</h3>
+                {waitingForAnswer.map((p) => (
+                  <div className="attention-row" key={p.personId}>
+                    <PersonCell name={name(p.personId)} sub={`You sent this review back to ${name(p.reviewerId)} with a question`} size="sm" />
+                    <a className="btn btn-sm" href="#/hr/consistency">See the question</a>
+                  </div>
+                ))}
+              </section>
+            )}
+          </Panel>
+
+          <Panel title="Release results">
+            <div className="submit-bar">
+              <span className="small muted">
+                {ready ? 'Ready. Everyone sees their result at the same time.' : `${blockers.length} thing${blockers.length === 1 ? '' : 's'} left in the list above.`}
+              </span>
+              <button type="button" className="btn btn-primary" disabled={!ready} onClick={() => setConfirm(true)}>
+                {!ready && <IconLock size={15} />} Release results
+              </button>
             </div>
-          )}
-        </Panel>
+          </Panel>
+        </div>
+      )}
 
-        <Panel title="Deadlines">
-          <div className="stack">
-            <DeadlineField field="selfReviewDeadline" label="Self-review deadline" />
-            <DeadlineField field="managerDeadline" label="Manager review deadline" />
-            <p className="small muted">
-              {state.cycle.status === 'released'
-                ? 'Deadlines are locked because results have been released.'
-                : <>Changes apply to everyone and are logged. To give one person more time, use Extend in <a href="#/hr/progress">Progress</a>.</>}
-            </p>
-          </div>
-        </Panel>
-      </div>
+      <details className="fold" style={{ marginTop: 16 }}>
+        <summary>Dates and deadlines</summary>
+        <div className="stack" style={{ marginTop: 12 }}>
+          <Panel bodyClass="panel-body timeline-wrap"><Timeline /></Panel>
+          <Panel title="Deadlines">
+            <div className="stack">
+              <DeadlineField field="selfReviewDeadline" label="Self-review deadline" />
+              <DeadlineField field="managerDeadline" label="Manager review deadline" />
+              <p className="small muted">
+                {released
+                  ? 'Deadlines are locked because results have been released.'
+                  : <>Changes apply to everyone and are logged. To give one person more time, use Extend in <a href="#/hr/progress">People</a>.</>}
+              </p>
+            </div>
+          </Panel>
+        </div>
+      </details>
 
+      {dialog?.kind === 'remind' && <RemindDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
+      {dialog?.kind === 'remove' && <RemoveDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
       {confirm && (
         <Dialog
           title={`Release results to ${active.length} employees?`}
@@ -168,7 +228,7 @@ export function HrCycle() {
             </>
           }
         >
-          <p className="small">Flags and their HR notes stay visible to HR only.</p>
+          <p className="small">Your notes on ratings stay visible to HR only.</p>
         </Dialog>
       )}
     </>
