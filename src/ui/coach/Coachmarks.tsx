@@ -97,6 +97,8 @@ export function Coachmarks({ role, userId, path }: { role: Role; userId: string;
         const r = el.getBoundingClientRect();
         const top = (document.querySelector('.demo-strip')?.getBoundingClientRect().bottom ?? 0) + 8;
         if (r.top < Math.max(top, 8) || r.bottom > window.innerHeight - 8) el.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+        // A tab in the phone's scrolling tab row can sit off to the side.
+        else if (r.left < 0 || r.right > document.documentElement.clientWidth) el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
       }
       measure();
     }, 350);

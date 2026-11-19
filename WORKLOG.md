@@ -1008,3 +1008,4 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
   - First version: using a highlighted link closed that tip for the whole session, so the "back to Overview" tip never came back during step 5. The new e2e caught it. Fixed: using the target never closes a tip, and closing is per visit.
   - One e2e expectation was wrong, not the app: after "Submit review" the manager lands on My team, which is already the screen for Manager step 2.
 - **Checks:** 135 unit tests passed. `e2e:tips` PASS at 320, 375, 412 and 1366 px. Existing e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+- **Engine tweak after the calibration merge (on `main`):** a target that is off to the side is scrolled into view before its tip shows, and the e2e fails if a target is off screen sideways. Details are in the `calibration` branch's log.

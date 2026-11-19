@@ -44,7 +44,7 @@ async function run(width) {
       if (g.missing) return `no ${g.missing}`;
       const pad = 6, tol = 2;
       if (Math.abs(g.hole.left - (g.el.left - pad)) > tol || Math.abs(g.hole.top - (g.el.top - pad)) > tol || Math.abs(g.hole.right - (g.el.right + pad)) > tol || Math.abs(g.hole.bottom - (g.el.bottom + pad)) > tol) return 'highlight is not on the target';
-      if (g.el.bottom <= g.stripBottom || g.el.top >= g.vh) return 'target is off screen';
+      if (g.el.bottom <= g.stripBottom || g.el.top >= g.vh || g.el.right <= 0 || g.el.left >= g.vw) return 'target is off screen';
       if (g.card.left < 15.5 || g.card.right > g.vw - 15.5) return `note is not inside the side gutters (${g.card.left}–${g.card.right} of ${g.vw})`;
       if (g.card.top < g.stripBottom || g.card.bottom > g.vh) return `note is not fully on screen (${g.card.top}–${g.card.bottom}, bar ${g.stripBottom}, height ${g.vh})`;
       if (g.dimTop < g.stripBottom - 1) return 'the dim covers the top bar';
