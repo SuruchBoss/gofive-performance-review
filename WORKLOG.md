@@ -809,3 +809,7 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Found while checking, fixed:** after the demo shortcut, the Employee guide still asked Ying to "Write your self-review", which is impossible once the manager's review is done. Step 1 now counts as done when the self-review window has closed, so the guide reads "Guide complete".
 - **No more persona rounds**, as the PO asked.
 - **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px. Landing and released result checked at 412 px (Pixel 7) and 1366 px: no sideways scroll, no page errors.
+- **Live check (main 467ae2d, calibration 5204ff8):**
+  - At 412 px (Pixel 7) and 1366 px on both builds: the landing link shows the new wording; the demo shortcut releases results; My result leads with the overall rating (3, "Met expectations") above its two inputs; no sideways scroll; no page errors.
+  - The full click-through passed live at 1280 px and 390 px (main 16 screens, calibration 18).
+  - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
