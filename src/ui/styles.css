@@ -1337,3 +1337,7 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .mgr-finding strong { color: var(--amber); }
 .mgr-finding.checked strong { color: inherit; }
 .quiet-line { margin: var(--s3) 0 0; }
+/* Calibration build: the build tag sits under the product name on phones, so it never runs into the avatar. */
+@media (max-width: 860px) {
+  .brand-text:has(.variant-tag) { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
