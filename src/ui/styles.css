@@ -1041,7 +1041,7 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .intro-as { font-size: var(--fs-xs); font-weight: 600; color: var(--mint-900); background: var(--mint-100); border-radius: var(--r-sm); padding: 1px 6px; align-self: flex-start; }
 .intro-clock { align-self: flex-start; }
 @media (max-width: 1080px) { .map-layout { grid-template-columns: minmax(0, 1fr); } }
-@media (max-width: 480px) {
+@media (max-width: 520px) {
   table.data.compact th, table.data.compact td { padding: 8px 6px; }
   table.data.compact th { font-size: 10px; letter-spacing: 0.02em; }
   table.data.compact .person-sub,

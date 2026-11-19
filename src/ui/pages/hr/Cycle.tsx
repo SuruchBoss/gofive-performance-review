@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { answerAwaitingHr, caseInfo, openReturn } from '../../../domain/deadlines';
-import { eligibilityHint } from '../../../domain/eligibility';
+import { caseInfo } from '../../../domain/deadlines';
+import { hrAttention } from '../../../domain/home';
 import { person, teamName } from '../../../domain/selectors';
 import { RemindDialog, RemoveDialog } from '../../shared/CaseDialogs';
 import { formatDate, weekday } from '../../../domain/dates';
@@ -83,14 +83,7 @@ export function HrCycle() {
   const ready = canRelease(state);
 
   // What needs HR now, in the order HR would handle it.
-  const open = active.filter((p) => review(p.personId).status !== 'submitted');
-  const tooNew = open.filter((p) => eligibilityHint(state, person(state, p.personId)));
-  const waitingForAnswer = open.filter((p) => openReturn(review(p.personId)));
-  const toWrite = open.filter((p) => !tooNew.includes(p) && !waitingForAnswer.includes(p));
-  const answers = active.filter((p) => review(p.personId).status === 'submitted' && answerAwaitingHr(review(p.personId)));
-  const toCheck = blockers.filter((b) => b.kind === 'flag' && !b.key.startsWith('answer:'));
-  const groups = [tooNew.length, toWrite.length, waitingForAnswer.length, answers.length, toCheck.length].filter(Boolean).length;
-  const late = toWrite.filter((p) => ['overdue', 'escalated'].includes(caseInfo(state, p.personId).status));
+  const { tooNew, toWrite, late, waitingForAnswer, answers, toCheck, groups } = hrAttention(state);
 
   return (
     <>

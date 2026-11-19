@@ -1,4 +1,5 @@
-import { caseInfo, openReturn } from '../../../domain/deadlines';
+import { caseInfo } from '../../../domain/deadlines';
+import { managerTodo } from '../../../domain/home';
 import { formatDate } from '../../../domain/dates';
 import { managerReviewOf, person, selfReviewOf } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
@@ -15,12 +16,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
   const boss = me.managerId ? person(state, me.managerId) : undefined;
   const mine = state.participants.filter((p) => p.reviewerId === userId && !p.removed);
   const review = (id: string) => managerReviewOf(state, id);
-  const returned = mine.filter((p) => openReturn(review(p.personId)));
-  const toWrite = mine
-    .filter((p) => review(p.personId).status !== 'submitted' && !openReturn(review(p.personId)))
-    .sort((a, b) => (review(a.personId).status === 'draft' ? 0 : 1) - (review(b.personId).status === 'draft' ? 0 : 1));
-  const done = mine.filter((p) => review(p.personId).status === 'submitted');
-  const movedAway = state.participants.filter((p) => p.escalatedFrom === userId && !p.removed);
+  const { returned, toWrite, done, movedAway } = managerTodo(state, userId);
   const open = [...returned, ...toWrite];
   const lateOnes = toWrite.map((p) => caseInfo(state, p.personId)).filter((c) => c.status === 'overdue');
   const movesOn = lateOnes.map((c) => c.escalatesOn!).sort()[0];
