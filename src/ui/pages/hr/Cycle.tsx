@@ -117,7 +117,7 @@ export function HrCycle() {
             {toWrite.length > 0 && (
               <section className="attention">
                 <h3>{late.length === toWrite.length ? `${toWrite.length} review${toWrite.length === 1 ? ' is' : 's are'} late` : `${toWrite.length} review${toWrite.length === 1 ? ' is' : 's are'} not in yet`}</h3>
-                <p className="small muted">A late review moves to the manager's own manager 3 days after the deadline. You can remind the manager, or give more time in People.</p>
+                <p className="small muted">A late review moves to the manager's own manager 3 days after the deadline. You can remind the manager, or give more time in People. This group clears when the reviews are in.</p>
                 {toWrite.map((p) => {
                   const c = caseInfo(state, p.personId);
                   return (
@@ -127,11 +127,11 @@ export function HrCycle() {
                         sub={c.status === 'escalated'
                           ? `Moved to ${name(p.reviewerId)} on ${formatDate(p.escalatedOn!, true)}`
                           : c.status === 'overdue'
-                          ? `${name(p.reviewerId)} · ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} late · moves up on ${formatDate(c.escalatesOn!, true)}`
-                          : `${name(p.reviewerId)} · due ${formatDate(c.deadline, true)}`}
+                          ? `${name(p.reviewerId)} · ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} late · moves up on ${formatDate(c.escalatesOn!, true)}${p.lastRemindedOn ? ` · reminded ${formatDate(p.lastRemindedOn, true)}` : ''}`
+                          : `${name(p.reviewerId)} · due ${formatDate(c.deadline, true)}${p.lastRemindedOn ? ` · reminded ${formatDate(p.lastRemindedOn, true)}` : ''}`}
                         size="sm"
                       />
-                      <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>Remind {first(p.reviewerId)}</button>
+                      <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>{p.lastRemindedOn === state.today ? `Remind ${first(p.reviewerId)} again` : `Remind ${first(p.reviewerId)}`}</button>
                     </div>
                   );
                 })}

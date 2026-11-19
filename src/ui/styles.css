@@ -1271,3 +1271,6 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .landing-option.first { padding-top: var(--s4); padding-bottom: var(--s4); }
 .landing-option:not(.first) { padding-top: var(--s2); padding-bottom: var(--s2); background: transparent; }
 .landing-option:not(.first) .landing-option-title { font-size: var(--fs-md); }
+/* Dialogs opened from the demo bar are ordinary dialogs: dark text, not the bar's light text. */
+.demo-strip .dialog { color: var(--ink); font-size: var(--fs-md); }
+.demo-tip { color: #d6ece5; }

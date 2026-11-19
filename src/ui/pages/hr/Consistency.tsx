@@ -108,6 +108,13 @@ export function HrConsistency() {
         </div>
       )}
 
+      {todo.length === 0 && state.cycle.status === 'open' && (
+        <div style={{ marginBottom: 20 }}>
+          <Notice tone="success" title="Every rating has been checked">
+            Nothing is left here. <a href="#/hr">Go to Home to release results →</a>
+          </Notice>
+        </div>
+      )}
       {waiting.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <Panel title="Waiting for managers" actions={<span className="small muted">Release waits for their answers. While returned, a review is left out of its manager's gap.</span>} bodyClass="">

@@ -29,7 +29,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
         returned.length ? `${returned.length} question${returned.length === 1 ? '' : 's'} from HR` : '',
       ].filter(Boolean).join(' and ');
   const sub = open.length === 0
-    ? (mine.length ? `All ${done.length} of your reviews are sent. HR checks them, then everyone sees their result.` : movedAway.length ? 'Your open reviews moved to your manager after the deadline.' : 'Reviews appear here when they are yours to write.')
+    ? (mine.length ? (state.cycle.status === 'released' ? `All ${done.length} of your reviews are sent, and results were released on ${formatDate(state.cycle.releasedOn!)}. Everyone can see their result.` : `All ${done.length} of your reviews are sent. HR checks them, then everyone sees their result.`) : movedAway.length ? 'Your open reviews moved to your manager after the deadline.' : 'Reviews appear here when they are yours to write.')
     : toWrite.length === 0
     ? 'HR sent a review back with a question. Results wait for your answer.'
     : lateOnes.length

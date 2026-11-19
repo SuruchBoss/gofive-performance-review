@@ -257,7 +257,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
 
           {locked ? (
             <Notice tone="success" title={`Submitted ${review.submittedOn ? formatDate(review.submittedOn) : ''}`}>
-              The review is locked. HR checks it before results are released.
+              {state.cycle.status === 'released' ? `The review is locked. Results were released on ${formatDate(state.cycle.releasedOn!)}.` : 'The review is locked. HR checks it before results are released.'}
             </Notice>
           ) : null}
           {locked && lastAnswered && (
