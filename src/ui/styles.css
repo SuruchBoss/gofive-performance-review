@@ -1274,3 +1274,18 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 /* Dialogs opened from the demo bar are ordinary dialogs: dark text, not the bar's light text. */
 .demo-strip .dialog { color: var(--ink); font-size: var(--fs-md); }
 .demo-tip { color: #d6ece5; }
+/* ---------- Quieter top (PLAN-6): on phones the demo bar is two rows and the header one line ---------- */
+.demo-menu-tip { display: none; margin: 0; }
+@media (max-width: 1100px) {
+  .demo-tip { display: none; }
+  .demo-menu-tip { display: block; }
+}
+@media (max-width: 860px) {
+  .demo-strip-inner { padding-top: 6px; padding-bottom: 6px; }
+  .demo-bar { row-gap: 6px; }
+  .app-header-inner { min-height: 44px; padding-top: 4px; padding-bottom: 4px; }
+  .brand-text { flex-direction: row; align-items: center; gap: var(--s2); }
+  .brand-mark { width: 24px; height: 24px; }
+  .concept-tag { display: none; }
+  .who .avatar { width: 28px; height: 28px; font-size: 11px; }
+}
