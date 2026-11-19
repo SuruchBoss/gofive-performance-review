@@ -22,7 +22,7 @@ export function EmployeeGoals({ userId }: { userId: string }) {
           {goals.map((g) => <GoalRow key={g.id} g={g} />)}
         </Panel>
         <p className="small muted">
-          Results come from company systems on the date shown with each goal. Your manager sees the same figures when they review you.
+          Results come from company systems on the date shown with each goal.{!removed && ' Your manager sees the same figures when they review you.'}
         </p>
       </div>
     </>

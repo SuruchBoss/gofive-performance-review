@@ -193,7 +193,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                 <div className="field">
                   <label htmlFor="reason">Why does your rating differ from the goal results?</label>
                   <span className="hint" id="reason-hint">
-                    Required when the rating is {CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more from the suggestion. HR sees this when checking consistency.
+                    Required when the rating is {CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more from the suggestion. HR sees it when checking consistency, and the employee sees it with their result.
                   </span>
                   <textarea
                     id="reason"

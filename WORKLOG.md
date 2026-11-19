@@ -650,3 +650,32 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Header (point 3):** already fixed in the previous step. Re-scanned after these changes: no overlap at any width from 320 to 900 px, and no sideways scroll on 12 screens (including the landing page) from 320 to 500 px.
 - **Tests:** 97 passed. e2e PASS at desktop and phone (15 screens).
 - **What went wrong:** On the first e2e run, "Exit demo" appeared not to work, because the test checked before the page had redrawn. The test now waits for the start page.
+
+## Blind test 2: five personas, and fixes (on `main`)
+
+- **How:** After the landing page was live, five fresh agents ran independently. Each got only the live link, one persona and "Someone sent you this link. Try it and evaluate it." (plus how to drive a browser). No repo, docs, guide hints or task list.
+  - HR manager (desktop): **7/10**.
+  - Team manager (desktop): **7/10**.
+  - Sales employee (phone): **6/10**.
+  - Non-technical employee on the bus (phone): **6/10**.
+  - Sceptical employee who felt underrated (phone): **6/10**.
+  - All reports, the fixes and the open decisions are in `docs/blind-test-2.md`.
+- **Fixed (clear bugs or confusion):**
+  - The suggested rating is shown with one decimal on every screen. The manager sees which whole ratings need no reason, and that a 1, 2 or 5 needs an example.
+  - Level descriptions show on hover.
+  - The self-review hint was rewritten (broken grammar).
+  - A self-review asks for confirmation before it locks.
+  - Overall ratings show level words.
+  - Status badges say what they refer to.
+  - Manager and employee screens show a "Viewing as …, pick a name at the top" line.
+  - The guide shrinks to one line in another role's view.
+  - The manager's reason hint now says the employee also sees it.
+  - An escalated result explains why another person rated it.
+  - "Late or escalated, still open".
+  - The removed employee no longer sees the "your manager sees" line.
+  - A line explains that the overall rating is the manager's call, informed by both scores.
+  - New test: `ratingsWithoutReason` (2.6 → 2 or 3; 3.0 → 3; 3.05 → 3 or 4; 4.17 → 4 or 5).
+- **Not changed, listed for the PO** (they change scope or rules): follow-through on a flag (return to manager), an employee response button, telling employees about the consistency check, who sees the manager's reason, evidence when rating down, a behaviour vs overall mismatch rule, a live team-gap meter for managers, the landing framing ("try it as HR, a manager or an employee"), and the Nida demo-data reason.
+- **Tests:** 98 unit tests passed. e2e PASS at desktop and phone. The e2e now confirms the self-review dialog.
+- **Who decided:** PO asked for the five-persona test, for clear issues to be fixed and for scope or rule changes to be listed. The developer judged what is "clearly a bug or clearly confusing" against the rules in `docs/DESIGN.md`. Anything that would change what someone sees or can do was left for the PO.
+- **What went wrong:** A repository check asked for a push before this step was finished. The first fix commit was pushed to `prototype` only and moved to `main` together with this entry.

@@ -23,6 +23,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
   const b = behaviourScore(review);
   const flag = farFlags(state).find((f) => f.personId === personId);
   const submitted = review.status === 'submitted';
+  const participant = state.participants.find((p) => p.personId === personId);
   const goals = goalsOf(state, personId);
   const [open, setOpen] = useState({ goals: false, behaviours: false, self: false });
   const toggle = (k: keyof typeof open) => setOpen((o) => ({ ...o, [k]: !o[k] }));
@@ -41,7 +42,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             <span className="v num">{submitted ? review.overall : '–'}</span>
             {submitted && review.overall && <span className="level-word">{LEVEL_WORDS[review.overall]}</span>}
             <span className="s">
-              {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}</> : 'Not submitted yet'}
+              {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}{participant?.escalatedFrom && <> (moved from {person(state, participant.escalatedFrom).name} after a missed deadline)</>}</> : 'Not submitted yet'}
             </span>
           </div>
         </Panel>
@@ -68,7 +69,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
       )}
 
       {submitted && (
-        <Panel title="Manager's assessment">
+        <Panel title="Manager's assessment" actions={<span className="small muted">The overall rating is the manager's call, informed by both scores above</span>}>
           <dl className="kv">
             {review.deviationReason && (<><dt>Why it differs from results</dt><dd>{review.deviationReason}</dd></>)}
             {review.overallEvidence && (<><dt>Example</dt><dd>{review.overallEvidence}</dd></>)}

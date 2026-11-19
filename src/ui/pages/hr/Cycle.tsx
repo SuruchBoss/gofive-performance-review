@@ -92,7 +92,7 @@ export function HrCycle() {
       <div style={{ height: 16 }} />
       <div className="grid-3 stats-row">
         <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
-        <Stat label="Late or escalated" value={late} sub={<a href="#/hr/progress">See progress</a>} />
+        <Stat label="Late or escalated, still open" value={late} sub={<a href="#/hr/progress">See progress</a>} />
         <Stat label="Flags reviewed" value={`${reviewedFlags} / ${flags.length}`} sub={<a href="#/hr/consistency">Check consistency</a>} />
       </div>
       <div style={{ height: 16 }} />
