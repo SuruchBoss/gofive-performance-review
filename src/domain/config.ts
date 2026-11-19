@@ -15,6 +15,8 @@ export const CONFIG = {
   ELIGIBILITY_MIN_MONTHS: 3,
   /** Minimum length of the evidence text for an overall rating of 1, 2 or 5. */
   EVIDENCE_MIN_CHARS: 40,
+  /** Minimum length of the reason when a rating is far from the suggestion. */
+  REASON_MIN_CHARS: 20,
   /** Goal achievement is clamped to this range. */
   ACHIEVEMENT_MIN: 0,
   ACHIEVEMENT_MAX: 1.5,

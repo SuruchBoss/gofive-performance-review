@@ -49,6 +49,13 @@ describe('demo shortcut: skip to released results', () => {
     expect(out.managerReviews.find((r) => r.personId === 'e01')!.returns![0]).toMatchObject({ outcome: 'confirmed', hrDecision: 'accepted' });
   });
 
+  it('still releases when a draft holds a reason that is too short', () => {
+    const s = reduce(createSeed(), { type: 'save_review', personId: 'e11', patch: { overall: 5, deviationReason: 'aa' } });
+    const out = skipToRelease(s);
+    expect(out.cycle.status).toBe('released');
+    expect(out.managerReviews.find((r) => r.personId === 'e11')!.deviationReason).toMatch(/^Demo shortcut/);
+  });
+
   it('does nothing once results are released', () => {
     const s = skipToRelease(createSeed());
     expect(skipToRelease(s)).toBe(s);

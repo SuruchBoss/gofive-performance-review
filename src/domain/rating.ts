@@ -88,8 +88,8 @@ export function reviewProblems(review: ManagerReview, suggested: number): Review
     out.push({ field: 'overall', message: 'Choose an overall rating.' });
     return out;
   }
-  if (isFarFromSuggestion(review.overall, suggested) && !review.deviationReason?.trim()) {
-    out.push({ field: 'deviationReason', message: 'Explain why the rating differs from the goal results.' });
+  if (isFarFromSuggestion(review.overall, suggested) && (review.deviationReason?.trim().length ?? 0) < CONFIG.REASON_MIN_CHARS) {
+    out.push({ field: 'deviationReason', message: `Explain why the rating differs from the goal results (at least ${CONFIG.REASON_MIN_CHARS} characters).` });
   }
   if (needsEvidence(review.overall) && (review.overallEvidence?.trim().length ?? 0) < CONFIG.EVIDENCE_MIN_CHARS) {
     out.push({ field: 'overallEvidence', message: `Give a specific example (at least ${CONFIG.EVIDENCE_MIN_CHARS} characters).` });

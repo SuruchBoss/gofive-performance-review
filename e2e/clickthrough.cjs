@@ -96,6 +96,11 @@ async function run(vp) {
   assert(await page.getByLabel('Why does your rating differ from the goal results?').isVisible(), 'reason field missing');
   assert(await page.getByLabel('Specific example').isVisible(), 'evidence field missing');
   assert(await page.getByRole('button', { name: 'Submit review' }).isDisabled(), 'submit should be blocked');
+  // A two-character reason is not a reason: the counter shows it and the list still asks for it.
+  await page.getByLabel('Why does your rating differ from the goal results?').fill('aa');
+  assert(await page.getByText('2 / 20 characters minimum').isVisible(), 'reason counter missing');
+  assert((await page.getByText('Explain why the rating differs from the goal results (at least 20 characters).').count()) > 0, 'short reason should still be listed');
+  await page.getByLabel('Why does your rating differ from the goal results?').fill('');
   await shot('04-manager-review-far');
   await rate(3);
   await submitReview();
