@@ -25,9 +25,9 @@ export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] 
   const flags = releaseBlockers(store.state).filter((b) => b.kind === 'flag').length + store.state.managerReviews.filter((r) => r.returns?.some((x) => !x.answeredOn)).length;
   if (role === 'hr') {
     return [
-      { href: '#/hr', label: 'Overview', icon: <IconCycle /> },
-      { href: '#/hr/progress', label: 'Progress', icon: <IconPeople /> },
-      { href: '#/hr/consistency', label: 'Consistency', icon: <IconScale />, count: flags, alert: true },
+      { href: '#/hr', label: 'Home', icon: <IconCycle /> },
+      { href: '#/hr/progress', label: 'People', icon: <IconPeople /> },
+      { href: '#/hr/consistency', label: 'Fairness', icon: <IconScale />, count: flags, alert: true },
       { href: '#/hr/map', label: 'Map', icon: <IconMap /> },
       { href: '#/hr/activity', label: 'Activity', icon: <IconLog /> },
     ];

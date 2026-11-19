@@ -23,7 +23,7 @@ export function ReturnDialog({ flagKey, personIds, onClose, again }: { flagKey: 
 
   return (
     <Dialog
-      title={again ? 'Ask again' : 'Return to manager'}
+      title={again ? 'Ask again' : 'Send back with a question'}
       sub={manager ? `The review reopens for ${manager.name}${again ? ' with your new question' : ''}. Release stays blocked until they answer and you accept, and every step is logged.` : 'No submitted review to return.'}
       onClose={onClose}
       footer={
@@ -36,7 +36,7 @@ export function ReturnDialog({ flagKey, personIds, onClose, again }: { flagKey: 
             disabled={!ready}
             onClick={() => {
               dispatch({ type: 'return_to_manager', personId, flagKey, question, actorId: 'hr' });
-              notify(again ? `Asked ${manager!.name} again` : `Returned to ${manager!.name} with your question`);
+              notify(again ? `Asked ${manager!.name} again` : `Sent back to ${manager!.name} with your question`);
               onClose();
             }}
           >

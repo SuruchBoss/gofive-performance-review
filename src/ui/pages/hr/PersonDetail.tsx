@@ -10,7 +10,7 @@ export function HrPersonDetail({ personId }: { personId: string }) {
   return (
     <>
       <PageHead
-        crumbs={<><a href="#/hr/consistency">Consistency</a> · <a href="#/hr/map">Map</a></>}
+        crumbs={<><a href="#/hr/consistency">Fairness</a> · <a href="#/hr/map">Map</a></>}
         title={who.name}
         sub={`${who.title} · ${teamName(state, who.teamId)} · manager ${person(state, who.managerId!).name}`}
       />

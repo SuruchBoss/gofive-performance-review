@@ -17,7 +17,7 @@ export function EmployeeResult({ userId }: { userId: string }) {
     return (
       <>
         <PageHead title="My result" sub={state.cycle.name} />
-        <Notice tone="brand" title="You are not part of this review cycle">
+        <Notice tone="brand" title="You are not in this review">
           HR removed you from {state.cycle.name} on {formatDate(participant.removed.on)}. Reason: {participant.removed.reason}
         </Notice>
       </>

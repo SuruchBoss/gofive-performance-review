@@ -1266,3 +1266,8 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .fold[open] > summary::before { content: '▾'; }
 /* The demo tip is one short line; on phones it sits on its own row. */
 @media (max-width: 1100px) { .demo-tip { display: block; flex: 1 1 100%; order: 5; white-space: normal; } }
+/* Start page: HR is the clear first choice; the other two are quieter. */
+.landing-option-start { font-size: var(--fs-sm); font-weight: 600; color: #fff; margin-top: 4px; }
+.landing-option.first { padding-top: var(--s4); padding-bottom: var(--s4); }
+.landing-option:not(.first) { padding-top: var(--s2); padding-bottom: var(--s2); background: transparent; }
+.landing-option:not(.first) .landing-option-title { font-size: var(--fs-md); }

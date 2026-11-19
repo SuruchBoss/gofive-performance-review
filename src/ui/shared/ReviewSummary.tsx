@@ -57,7 +57,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
               <button type="button" className="score-tile link input-tile" onClick={() => jump('goals')}>
                 <span className="l">1 · Goal results</span>
                 <span className="v num">{pct(sug.results)}</span>
-                <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
+                <span className="s">of goal targets. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
               </button>
             </Panel>
             <Panel>
@@ -85,7 +85,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             <button type="button" className="score-tile link" onClick={() => jump('goals')}>
               <span className="l">Goal results</span>
               <span className="v num">{pct(sug.results)}</span>
-              <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
+              <span className="s">of goal targets. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
             </button>
           </Panel>
           <Panel>
@@ -114,7 +114,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             {!review.deviationReason && !review.overallEvidence && !review.comment && (<><dt>Comments</dt><dd className="muted">The manager wrote no comments. None were required, because the rating is within 1 of what goal results suggest and is not a 1, 2 or 5.</dd></>)}
             {audience === 'hr' && review.returns?.map((x, i) => (
               <Fragment key={i}>
-                <dt>Returned by HR</dt>
+                <dt>Sent back by HR</dt>
                 <dd>
                   {formatDate(x.on)}: “{x.question}”
                   <br />

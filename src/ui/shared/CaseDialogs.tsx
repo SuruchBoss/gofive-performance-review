@@ -64,12 +64,12 @@ export function ExtendDialog({ personId, onClose }: { personId: string; onClose:
       }
     >
       {p.escalatedOn && (
-        <Notice tone="warning">This review has already escalated to {person(state, p.reviewerId).name}. Extending gives them more time; it does not move the review back.</Notice>
+        <Notice tone="warning">This review has already moved to {person(state, p.reviewerId).name}. Extending gives them more time; it does not move the review back.</Notice>
       )}
       <div className="field">
         <label htmlFor="ext-date">New deadline</label>
         <DateField id="ext-date" min={min} value={until} onChange={setUntil} />
-        {!p.escalatedOn && <span className="hint">If still open, it escalates 3 days after this date.</span>}
+        {!p.escalatedOn && <span className="hint">If still open, it moves to their manager 3 days after this date.</span>}
       </div>
       <div className="field">
         <label htmlFor="ext-reason">Reason</label>
@@ -92,8 +92,8 @@ export function RemoveDialog({ personId, onClose }: { personId: string; onClose:
   const valid = preset === 'other' ? detail.trim().length > 0 : true;
   return (
     <Dialog
-      title={`Remove ${who.name} from the cycle?`}
-      sub="They will not be reviewed this cycle and are left out of all counts and flags."
+      title={`Leave ${who.name} out of this review?`}
+      sub="They will not be reviewed this time and are left out of all counts and checks."
       onClose={onClose}
       footer={
         <>
@@ -103,9 +103,9 @@ export function RemoveDialog({ personId, onClose }: { personId: string; onClose:
             type="button"
             className="btn btn-primary"
             disabled={!valid}
-            onClick={() => { dispatch({ type: 'remove', personId, reason, actorId: 'hr' }); notify(`${who.name} removed from the cycle`); onClose(); }}
+            onClick={() => { dispatch({ type: 'remove', personId, reason, actorId: 'hr' }); notify(`${who.name} left out of this review`); onClose(); }}
           >
-            Remove from cycle
+            Leave out of this review
           </button>
         </>
       }

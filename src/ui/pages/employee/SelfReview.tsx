@@ -42,7 +42,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
           <Notice tone="brand" title="The self-review is closed">
             {mgrReview.status === 'submitted'
               ? <>{manager.name} completed your review on {formatDate(mgrReview.submittedOn!)} without a self-review. This is recorded on the review. <a href="#/me/result">{state.cycle.status === 'released' ? 'See your result →' : 'See when your result is released →'}</a></>
-              : 'You are not part of this review cycle.'}
+              : 'You are not in this review.'}
           </Notice>
         )}
         {window === 'submitted' && (

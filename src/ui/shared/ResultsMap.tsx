@@ -56,7 +56,7 @@ export function ResultsMap({ points, hrefFor }: { points: MapPoint[]; hrefFor: (
             <a
               key={p.personId}
               href={hrefFor(p.personId)}
-              aria-label={`${name}: results ${p.results.toFixed(1)}, behaviour ${p.behaviour.toFixed(1)}, overall ${p.overall}${p.flagged ? ', flagged: far from results' : ''}`}
+              aria-label={`${name}: results ${p.results.toFixed(1)}, behaviour ${p.behaviour.toFixed(1)}, overall ${p.overall}${p.flagged ? ', to check: 1 or more away from results' : ''}`}
               onMouseEnter={() => setHover(p.personId)}
               onMouseLeave={() => setHover(undefined)}
               onFocus={() => setHover(p.personId)}
@@ -82,12 +82,12 @@ export function ResultsMap({ points, hrefFor }: { points: MapPoint[]; hrefFor: (
             <span>Behaviour</span><strong>{hp.behaviour.toFixed(1)}</strong>
             <span>Overall</span><strong>{hp.overall}</strong>
           </div>
-          {hp.flagged && <div className="xs tip-flag">Rating far from results · not reviewed</div>}
+          {hp.flagged && <div className="xs tip-flag">1 or more away from results · not checked</div>}
         </div>
       )}
       <div className="db-legend small muted">
         <span><span className="db-key-dot" /> One reviewed person</span>
-        <span><span className="map-key-flag" /> Rating 1.0+ from results</span>
+        <span><span className="map-key-flag" /> 1 or more away from results</span>
         <span>Select a dot, or a name in the list, to see where each score came from.</span>
       </div>
     </div>

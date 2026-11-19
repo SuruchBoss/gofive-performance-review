@@ -54,7 +54,7 @@ export function HrConsistency() {
     managers.filter((m) => m.flagged && !m.review && !isCovered(m.key)).length +
     far.filter((f) => !f.review && !isCovered(f.key, f.personId)).length;
   const todo = [
-    open ? `${open} flag${open === 1 ? '' : 's'} to check` : '',
+    open ? `${open} rating${open === 1 ? '' : 's'} to check` : '',
     answers.length ? `${answers.length} answer${answers.length === 1 ? '' : 's'} to accept or question` : '',
     waiting.length ? `${waiting.length} review${waiting.length === 1 ? '' : 's'} waiting for a manager` : '',
   ].filter(Boolean);
@@ -63,8 +63,8 @@ export function HrConsistency() {
   return (
     <>
       <PageHead
-        title="Consistency check"
-        sub={todo.length ? `Before release: ${todo.join(', ')}. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every flag has been checked. Each manager is compared only with their own team\'s results.'}
+        title="Check fairness"
+        sub={todo.length ? `Before release: ${todo.join(', ')}. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every rating has been checked. Each manager is compared only with their own team\'s results.'}
       />
 
       {answers.length > 0 && (
@@ -116,7 +116,7 @@ export function HrConsistency() {
               return (
                 <div className="flag-row" key={r.personId}>
                   <div className="stack-sm">
-                    <PersonCell name={person(state, r.personId).name} sub={`Returned to ${person(state, r.reviewerId).name} on ${formatDate(q.on)}`} size="sm" />
+                    <PersonCell name={person(state, r.personId).name} sub={`Sent back to ${person(state, r.reviewerId).name} on ${formatDate(q.on)}`} size="sm" />
                     <p className="quote small">“{q.question}”</p>
                   </div>
                   <div className="row" style={{ alignItems: 'flex-start' }}>
@@ -129,7 +129,7 @@ export function HrConsistency() {
         </div>
       )}
       <h2 className="section-label">Managers</h2>
-      <p className="explain-line" style={{ marginBottom: 12 }}>Manager gap: {TERMS.gap}</p>
+      <p className="explain-line" style={{ marginBottom: 12 }}>Difference from the team's results: {TERMS.gap}</p>
       <div className="grid-3">
         {managers.map((m) => {
           const mgr = person(state, m.reviewerId);
@@ -147,10 +147,10 @@ export function HrConsistency() {
                         className="btn btn-sm"
                         onClick={() => setDialog({ key: m.key, label, context: `${mgr.name}'s average rating is ${signed(m.gap)} from what the team's results suggest.` })}
                       >
-                        Mark reviewed
+                        Mark as checked
                       </button>
                       <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: m.key, personIds: m.reviews.map((r) => r.personId) })}>
-                        Return to manager
+                        Send back with a question
                       </button>
                     </div>
                   )
@@ -189,11 +189,11 @@ export function HrConsistency() {
         })}
       </div>
 
-      <h2 className="section-label" style={{ marginTop: 28 }}>Single ratings 1.0+ from results</h2>
+      <h2 className="section-label" style={{ marginTop: 28 }}>Single ratings 1 or more away from results</h2>
       <p className="explain-line" style={{ marginBottom: 12 }}>{TERMS.far}</p>
       <Panel bodyClass="">
         {far.length === 0 ? (
-          <Empty title="No ratings are far from the results">Nothing to check here.</Empty>
+          <Empty title="No single rating is far from its results">Nothing to check here.</Empty>
         ) : (
           far.map((f) => {
             const who = person(state, f.personId);
@@ -223,11 +223,11 @@ export function HrConsistency() {
                       className="btn btn-sm"
                       onClick={() => setDialog({ key: f.key, label: `${who.name}'s rating: ${f.direction} results`, context: `${who.name} was rated ${f.overall}; results suggest ${f.suggested.toFixed(1)}.` })}
                     >
-                      Mark reviewed
+                      Mark as checked
                     </button>
                   )}
                   {!f.review && !isCovered(f.key, f.personId) && (
-                    <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: f.key, personIds: [f.personId] })}>Return to manager</button>
+                    <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: f.key, personIds: [f.personId] })}>Send back with a question</button>
                   )}
                   <a className="btn btn-sm" href={`#/hr/person/${f.personId}`}>Open review</a>
                 </div>

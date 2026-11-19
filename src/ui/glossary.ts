@@ -4,9 +4,9 @@ import { CONFIG } from '../domain/config';
 export const TERMS = {
   suggested: 'What the measured goal results alone point to. The manager makes the final call.',
   far: `An overall rating ${CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more away from the suggestion. It needs a written reason.`,
-  gap: `How far a manager's average rating sits from what their own team's results suggest. ${CONFIG.MANAGER_GAP_FLAG} or more is flagged.`,
+  gap: `How far a manager's average rating sits from what their own team's results suggest. ${CONFIG.MANAGER_GAP_FLAG} or more needs a check.`,
   escalated: `Moved to the reviewer's own manager, ${CONFIG.ESCALATION_DAYS} days after a missed deadline.`,
-  behaviour: "The average of the manager's four behaviour ratings, each judged against written anchors.",
+  behaviour: "The average of the manager's four behaviour ratings, each judged against a written description of the level.",
   results: 'Goal results as a 1–5 score: 100% of target is a 3.',
   anchors: 'Each level 1–5 has a short written description (shown when you pick it; on a computer, also on hover), so the same number means the same thing for every manager.',
 } as const;

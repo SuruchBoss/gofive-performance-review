@@ -19,7 +19,7 @@ export function useAdvanceDay() {
     dispatch({ type: 'advance_day' });
     notify(
       moved > 0
-        ? `${formatDate(addDays(state.today, 1))}: ${moved} overdue review${moved === 1 ? '' : 's'} moved to the next manager up. See Progress or Activity.`
+        ? `${formatDate(addDays(state.today, 1))}: ${moved} late review${moved === 1 ? '' : 's'} moved to the manager's own manager. HR sees it in Activity.`
         : `Demo date moved to ${formatDate(addDays(state.today, 1))}`,
     );
   };

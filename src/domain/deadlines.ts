@@ -94,7 +94,7 @@ export function applyEscalations(state: DemoState): DemoState {
           actorId: 'system',
           type: 'escalation',
           targetId: p.personId,
-          detail: `Review of ${employee.name} escalated from ${from.name} to ${to.name}: ${CONFIG.ESCALATION_DAYS} days past the deadline.`,
+          detail: `Review of ${employee.name} moved from ${from.name} to ${to.name}: ${CONFIG.ESCALATION_DAYS} days after the deadline.`,
         },
       ],
     };

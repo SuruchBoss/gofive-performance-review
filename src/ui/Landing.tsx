@@ -5,11 +5,11 @@ import { IconMark } from './icons';
 
 const REPO = 'https://github.com/SuruchBoss/gofive-performance-review';
 
-/** Each choice opens the demo in that role, with the guide written for it. */
+/** Each choice opens that person's own home, which lists what they have to do now. */
 const TRY: { role: Role; label: string; sub: string; view: Partial<ViewState>; path: string }[] = [
-  { role: 'hr', label: 'HR', sub: 'Run the review cycle and catch ratings that do not match results', view: {}, path: '/hr' },
-  { role: 'manager', label: 'Manager', sub: 'Review your team as Tom Wattana, Operations Manager', view: { managerId: 'm-ops' }, path: '/manager' },
-  { role: 'employee', label: 'Employee', sub: 'Write your self-review and see your result as Ying Chen', view: { employeeId: 'e12' }, path: '/me' },
+  { role: 'hr', label: 'HR', sub: 'Run the yearly review and catch ratings that do not match results', view: {}, path: '/hr' },
+  { role: 'manager', label: 'Manager', sub: 'Write your team’s reviews as Tom Wattana', view: { managerId: 'm-ops' }, path: '/manager' },
+  { role: 'employee', label: 'Employee', sub: 'Write your self-review as Ying Chen', view: { employeeId: 'e12' }, path: '/me' },
 ];
 
 /** First screen: calm, no demo data, one main action. */
@@ -27,13 +27,13 @@ export function Landing() {
           </div>
         </div>
         <p className="landing-problem">
-          Managers rate on different scales, so the same rating can mean different things in different teams. This lets HR catch that
-          before results reach employees.
+          Managers rate in different ways, so the same rating can mean different things in different teams. This helps HR catch that
+          before people see their results.
         </p>
         {IS_Q2_BUILD && (
           <p className="landing-variant">
-            This version adds one step: managers calibrate ratings together across teams, and no one sees a result until calibration is
-            locked.
+            This version adds one step, calibration: managers meet and agree final ratings across teams. No one sees a result before
+            that is done.
           </p>
         )}
         <div className="landing-try" role="group" aria-label="Try the demo">
@@ -49,6 +49,7 @@ export function Landing() {
             >
               <span className="landing-option-title">Try as {t.label}</span>
               <span className="landing-option-sub">{t.sub}</span>
+              {i === 0 && <span className="landing-option-start">Start here to see a full review cycle.</span>}
             </button>
           ))}
         </div>

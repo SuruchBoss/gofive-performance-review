@@ -30,7 +30,7 @@ describe('return to manager', () => {
 
   it('blocks release while the question is open, and never escalates the returned review', () => {
     let s = ret(createSeed());
-    expect(releaseBlockers(s).find((b) => b.key === 'open:e01')?.text).toMatch(/returned to Daniel Reyes/);
+    expect(releaseBlockers(s).find((b) => b.key === 'open:e01')?.text).toMatch(/sent back to Daniel Reyes/);
     for (let i = 0; i < 6; i++) s = reduce(s, { type: 'advance_day' });
     expect(s.participants.find((p) => p.personId === 'e01')!.reviewerId).toBe('m-sales');
     expect(caseInfo(s, 'e01').status).toBe('returned');

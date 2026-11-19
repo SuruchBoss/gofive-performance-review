@@ -138,10 +138,10 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                 <div className="suggestion">
                   <div className="suggestion-num num">{showSuggestion(suggested)}</div>
                   <div>
-                    <div className="strong">Results suggest</div>
+                    <div className="strong">Goal results suggest</div>
                     <Explain>{TERMS.suggested}</Explain>
                     <div className="xs muted num">
-                      Based on {pct(sug.results)} of goal targets, weighted.
+                      Based on {pct(sug.results)} of goal targets.
                     </div>
                   </div>
                 </div>

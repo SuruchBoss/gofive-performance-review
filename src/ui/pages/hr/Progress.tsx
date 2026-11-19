@@ -33,20 +33,20 @@ export function HrProgress() {
   return (
     <>
       <PageHead
-        title="Progress"
-        sub={`Manager reviews were due ${formatDate(state.cycle.managerDeadline)}. Open reviews escalate to the manager's own manager 3 days after their deadline.${removed ? ` ${removed} removed from the cycle.` : ''}`}
+        title="People"
+        sub={`Manager reviews were due ${formatDate(state.cycle.managerDeadline)}. A late review moves to the manager's own manager 3 days after the deadline.${removed ? ` ${removed} left out of the cycle.` : ''}`}
       />
       <div className="grid-4">
         <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
-        <Stat label="Overdue" value={overdue} sub="Past deadline, not escalated yet" />
-        <Stat label="Escalated" value={escalated} sub={TERMS.escalated} />
+        <Stat label="Overdue" value={overdue} sub="Past the deadline, not moved yet" />
+        <Stat label="Moved to their manager" value={escalated} sub={TERMS.escalated} />
         <Stat label="Self-reviews missing" value={selfMissing} sub="Managers can still review" />
       </div>
       <div style={{ height: 20 }} />
       <Panel
         title={
           <div className="tabs" role="tablist" aria-label="Filter">
-            {([['action', `Needs action (${rows.filter(needsAction).length})`], ['submitted', `Submitted (${submitted})`], ['all', `Everyone (${active.length}${removed ? ` + ${removed} removed` : ''})`]] as [Filter, string][]).map(([k, label]) => (
+            {([['action', `Needs action (${rows.filter(needsAction).length})`], ['submitted', `Submitted (${submitted})`], ['all', `Everyone (${active.length}${removed ? ` + ${removed} left out` : ''})`]] as [Filter, string][]).map(([k, label]) => (
               <button key={k} type="button" role="tab" aria-selected={filter === k} onClick={() => setFilter(k)}>{label}</button>
             ))}
           </div>
@@ -54,7 +54,7 @@ export function HrProgress() {
         bodyClass="table-wrap"
       >
         {shown.length === 0 ? (
-          <Empty icon={<IconCheck size={32} />} title="Nothing needs action">Every manager review in the cycle is submitted.</Empty>
+          <Empty icon={<IconCheck size={32} />} title="Nothing needs action">Every manager review is in.</Empty>
         ) : (
           <table className="data stack-on-phone">
             <thead>
@@ -100,7 +100,7 @@ export function HrProgress() {
                           {/* A late joiner needs removing, not a reminder: show that action directly. */}
                           {eligibilityHint(state, who) && state.cycle.status === 'open' ? (
                             <>
-                              <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remove', personId: p.personId })}>Remove from cycle</button>
+                              <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remove', personId: p.personId })}>Leave out of this review</button>
                               <MoreMenu
                                 label={`More actions for ${who.name}`}
                                 items={[
@@ -116,7 +116,7 @@ export function HrProgress() {
                                 label={`More actions for ${who.name}`}
                                 items={[
                                   { label: 'Extend deadline', onSelect: () => setDialog({ kind: 'extend', personId: p.personId }) },
-                                  ...(state.cycle.status === 'open' ? [{ label: 'Remove from cycle', danger: true, onSelect: () => setDialog({ kind: 'remove', personId: p.personId }) }] : []),
+                                  ...(state.cycle.status === 'open' ? [{ label: 'Leave out of this review', danger: true, onSelect: () => setDialog({ kind: 'remove', personId: p.personId }) }] : []),
                                 ]}
                               />
                             </>

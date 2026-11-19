@@ -9,12 +9,12 @@ const META: Record<LogType, { label: string; icon: ReactNode; tone: string }> = 
   cycle_opened: { label: 'Cycle opened', icon: <IconCycle size={15} />, tone: 'brand' },
   reminder: { label: 'Reminder', icon: <IconBell size={15} />, tone: 'neutral' },
   extension: { label: 'Extension', icon: <IconClock size={15} />, tone: 'neutral' },
-  escalation: { label: 'Escalation', icon: <IconArrowUp size={15} />, tone: 'danger' },
-  removal: { label: 'Removal', icon: <IconUserX size={15} />, tone: 'neutral' },
+  escalation: { label: 'Moved to their manager', icon: <IconArrowUp size={15} />, tone: 'danger' },
+  removal: { label: 'Left out of the review', icon: <IconUserX size={15} />, tone: 'neutral' },
   self_review_late: { label: 'Late self-review', icon: <IconPen size={15} />, tone: 'warning' },
   review_submitted: { label: 'Review submitted', icon: <IconCheck size={15} />, tone: 'success' },
-  flag_reviewed: { label: 'Flag reviewed', icon: <IconFlag size={15} />, tone: 'neutral' },
-  returned_to_manager: { label: 'Returned to manager', icon: <IconFlag size={15} />, tone: 'warning' },
+  flag_reviewed: { label: 'Rating checked', icon: <IconFlag size={15} />, tone: 'neutral' },
+  returned_to_manager: { label: 'Sent back to manager', icon: <IconFlag size={15} />, tone: 'warning' },
   return_answered: { label: 'Manager answered HR', icon: <IconCheck size={15} />, tone: 'neutral' },
   return_accepted: { label: 'HR accepted the answer', icon: <IconCheck size={15} />, tone: 'neutral' },
   demo_shortcut: { label: 'Demo shortcut', icon: <IconLog size={15} />, tone: 'neutral' },
@@ -25,9 +25,9 @@ const META: Record<LogType, { label: string; icon: ReactNode; tone: string }> = 
 const FILTERS: { key: string; label: string; types?: LogType[] }[] = [
   { key: 'all', label: 'All' },
   { key: 'deadlines', label: 'Reminders', types: ['reminder', 'extension', 'deadline_change'] },
-  { key: 'escalation', label: 'Escalations', types: ['escalation'] },
-  { key: 'removal', label: 'Removals', types: ['removal'] },
-  { key: 'flags', label: 'Flags', types: ['flag_reviewed', 'returned_to_manager', 'return_answered', 'return_accepted', 'release'] },
+  { key: 'escalation', label: 'Moved up', types: ['escalation'] },
+  { key: 'removal', label: 'Left out', types: ['removal'] },
+  { key: 'flags', label: 'Checks', types: ['flag_reviewed', 'returned_to_manager', 'return_answered', 'return_accepted', 'release'] },
 ];
 
 export function HrActivity() {
@@ -42,7 +42,7 @@ export function HrActivity() {
 
   return (
     <>
-      <PageHead title="Activity" sub="Every reminder, extension, escalation, removal and flag review in this cycle. Entries cannot be edited." />
+      <PageHead title="Activity" sub="Everything that happened in this review: reminders, extra time, reviews moved up, people left out and checks. Entries cannot be changed." />
       <Panel
         title={
           <div className="tabs" role="tablist" aria-label="Filter">
