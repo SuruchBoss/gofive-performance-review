@@ -1042,3 +1042,31 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Done:** `docs/PLAN-5.md`, with what is kept, cut and rebuilt, mock-ups of the three homes and the review page, 8 commits with a rough time estimate (about 3 hours), and 6 questions. PLAN-4 is marked as replaced; its audit and word list still apply.
 - **Worth noting:** the plan removes the on-screen tips built earlier the same day (PLAN-3). This follows the PO's instruction; the code stays in git history.
 - **Stopped here:** waiting for PO approval.
+
+## PLAN-5 built: task-first homes, no guide (on `main`)
+
+- **PO decision:** PLAN-5 approved, yes to all six questions. Two additions: "Try as HR" is the clear first choice with "Start here to see a full review cycle."; every home and the review page must show a first-time visitor where to start within three seconds, checked in the fresh-reviewer pass on both live builds. The PO also asked for a check that every sentence in `docs/ANSWERS.md` is still true, without editing it.
+- **Time (commit timestamps, 19 Nov 2026, UTC+7):** plan 22:27; build 22:37 → 22:49 for commits 1–6. The estimate for those was 2 h 20 min; the commits are small because most rules and screens were kept.
+- **Commit 1, demo bar:**
+  - The dark bar holds one "You are" list (HR, managers, employees), the date with "+1 day", and "More" (two demo shortcuts, About this prototype, Reset demo, Exit demo). "About" left the product header.
+  - Removed: the step guide (`Intro.tsx`), the tips (`src/ui/coach/`, `e2e/coachmarks.cjs`), "Viewing as…", the dashed demo box on My result, and the `data-tour` names.
+  - New shortcut "Let the managers finish their reviews" (`finishManagerReviews`): the managers' open reviews go in through the normal actions, logged. People who should not be reviewed yet, HR's checks and the release stay with HR. Unit-tested.
+  - One demo tip line that follows the situation.
+- **Commit 2, manager home and review page:**
+  - Home: "2 reviews to write", the due date, how late, and what happens next. One row per person opens the review; HR's questions come first; finished reviews are under "Done".
+  - Review page: "← Back to my team"; three numbered parts (What the data says, Your rating, Send). On phones and tablets the data folds to two lines with "Show details", so "Your rating" starts on the first screen. The empty "Pick a level…" lines are gone.
+- **Commit 3, employee home:** one card with four states (write your self-review; nothing to do now; your result is ready; not in this review), goal results below. Tabs: Home, My result.
+- **Commit 4, HR home:** the status line and "Needs your attention" with a group per kind of work. Eligibility is the first group: "1 person joined less than 3 months ago… The system suggests leaving them out; you decide", with "Leave Fah out". It is the same rule and logged action as before. "Release results" unlocks when the list is empty. Dates and deadlines fold away.
+- **Commit 5, wording:** the PLAN-4 word list across the product; Home, People, Fairness as tab names; start page copy with the "Start here" line and quieter second and third buttons.
+- **Commit 6, tests and README:**
+  - `src/domain/home.ts` holds the home lists as pure functions, with 6 unit tests (for example "the list is empty exactly when release is possible").
+  - The click-through is rewritten for the new flow and asserts, on the start page, each home and the review page, that the first thing to do is on the first screen. It covers both shortcuts.
+  - README "What to try first" describes the homes and the demo bar.
+- **Developer choices** (for the PO to see):
+  - The demo tip line shows on phones too, as a third row of the bar.
+  - Log entries written from now on use the new words ("Left Fah out of this review", "moved from Tom to Anong"). The demo data's own log entries are unchanged.
+  - Leftover styles of the removed guide and tips remain in `styles.css`; they are unused.
+- **What went wrong:**
+  - The new e2e first skipped HR's last checks: it counted buttons before the Fairness page had rendered. A wait on the page heading fixed it. Two result-page checks needed a wait for the same reason.
+  - The longer "1 or more away from results" badge made the Map list scroll sideways from 481 to 494 px; the compact table layout now applies up to 520 px.
+- **Checks:** 125 unit tests passed. e2e PASS at 1280 px and 390 px (17 screens). No sideways scroll on 12 screens from 320 to 500 px. No header or demo-bar overlap from 320 to 900 px.

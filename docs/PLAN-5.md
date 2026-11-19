@@ -1,6 +1,6 @@
 # PLAN-5 — A real product: task-first homes, no guide
 
-**Status:** draft, waiting for PO approval. Nothing here is built yet.
+**Status:** approved by the PO on 19 Nov 2026, with yes to all six questions and two additions (the "Start here" line; the three-second check in the fresh-reviewer pass, on both builds). Built; see `WORKLOG.md`.
 **Replaces:** `docs/PLAN-4.md`. Its audit, word list and the PO's decisions 1–6 carry over where they fit. Its cuts 1–3 (fewer guide steps, one help layer) are replaced by the PO's new direction: no guide at all.
 **Fixed (PO):** the rules, the numbers, the demo data and `docs/ANSWERS.md`. `main` first, then `calibration`.
 
