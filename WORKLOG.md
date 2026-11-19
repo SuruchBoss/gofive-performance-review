@@ -1257,3 +1257,11 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
 - Merged `main` with the fixes from the fresh-reviewer pass. One conflict in the locked-review notice; it keeps this build's "Managers agree final ratings…" wording before release and the release date after.
 - This build's own fixes: "released from Home" (it said "Overview"), and the list of cases is headed "To discuss (as it was when the meeting started)", because a case title keeps the figures from the start of the meeting.
 - Checks: 135 unit tests passed. e2e PASS at 1280 px and 390 px (19 screens).
+## PLAN-5: live check and the check of `docs/ANSWERS.md` (on `main`)
+
+- **Live check (main b23a38c, calibration 425f007):** the deploy runs succeeded. Against the live sites: the click-through PASSES at 1280 px and 390 px on both builds (17 and 19 screens); no sideways scroll from 320 to 500 px; no header or demo-bar overlap from 320 to 900 px. Screenshots at 375 px of the three homes and the review page were taken from the live main build and sent to the PO.
+- **`docs/ANSWERS.md`, sentence by sentence, not edited:** every sentence is still true. Three use words or shapes the product no longer shows:
+  - Q1, "can return a review with a question": true; the button now reads "Send back with a question".
+  - Q1, "Late, missing and ineligible cases are handled and logged": true; the product now says "should not be reviewed yet" and "leave out".
+  - Q3, "In this exam, that is why the first screen guides a reviewer who knows nothing about the product": true of the start page ("Try as HR… Start here to see a full review cycle") and of each home. It is no longer a step-by-step guide, which a reader might picture.
+  - Q2's facts (one gate in `releaseBlockers`, 4 of 97 tests, about an hour, the calibration link) describe what happened and still hold. Q2 says "the map, activity log and person pages worked unchanged", which was true when calibration was built.
