@@ -1310,3 +1310,30 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 /* Dialogs opened from the demo bar are ordinary dialogs: dark text, not the bar's light text. */
 .demo-strip .dialog { color: var(--ink); font-size: var(--fs-md); }
 .demo-tip { color: #d6ece5; }
+/* ---------- Quieter top (PLAN-6): on phones the demo bar is two rows and the header one line ---------- */
+.demo-menu-tip { display: none; margin: 0; }
+@media (max-width: 1100px) {
+  .demo-tip { display: none; }
+  .demo-menu-tip { display: block; }
+}
+@media (max-width: 860px) {
+  .demo-strip-inner { padding-top: 6px; padding-bottom: 6px; }
+  .demo-bar { row-gap: 6px; }
+  .app-header-inner { min-height: 44px; padding-top: 4px; padding-bottom: 4px; }
+  .brand-text { flex-direction: row; align-items: center; gap: var(--s2); }
+  .brand-mark { width: 24px; height: 24px; }
+  .concept-tag { display: none; }
+  .who .avatar { width: 28px; height: 28px; font-size: 11px; }
+}
+/* The suggested rating is labelled on its own button. */
+.scale.has-marker { margin-bottom: 18px; }
+.scale button { position: relative; }
+.scale-suggested { position: absolute; left: 50%; top: calc(100% + 3px); transform: translateX(-50%); font-size: 11px; font-weight: 600; color: var(--mint-900); white-space: nowrap; }
+.scale.has-marker { overflow: visible; }
+.scale.has-marker button:first-child { border-radius: 5px 0 0 5px; }
+.scale.has-marker button:last-child { border-radius: 0 5px 5px 0; }
+/* Fairness: the finding is the headline of each card; managers with nothing to check are one quiet line. */
+.mgr-finding { margin: 0; font-size: var(--fs-md); }
+.mgr-finding strong { color: var(--amber); }
+.mgr-finding.checked strong { color: inherit; }
+.quiet-line { margin: var(--s3) 0 0; }

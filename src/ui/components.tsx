@@ -98,13 +98,13 @@ export function RatingScale({ value, onChange, disabled, label, size, marker, hi
   disabled?: boolean;
   label: string;
   size?: 'lg';
-  /** Integer to mark with a small tick (for example the suggested rating). */
+  /** Integer to label "Suggested" (the rating the goal results point to). */
   marker?: number;
   /** What each level means; shown on hover and to screen readers before choosing. */
   hints?: Record<Rating, string>;
 }) {
   return (
-    <div className={`scale${size ? ` ${size}` : ''}`} role="radiogroup" aria-label={label}>
+    <div className={`scale${size ? ` ${size}` : ''}${marker ? ' has-marker' : ''}`} role="radiogroup" aria-label={label}>
       {([1, 2, 3, 4, 5] as Rating[]).map((r) => (
         <button
           key={r}
@@ -113,10 +113,11 @@ export function RatingScale({ value, onChange, disabled, label, size, marker, hi
           aria-checked={value === r}
           disabled={disabled}
           onClick={() => onChange?.(r)}
-          title={hints ? `${r}: ${hints[r]}` : marker === r ? 'Nearest whole rating to the suggestion' : undefined}
+          aria-label={marker === r ? `${r}, suggested` : undefined}
+          title={hints ? `${r}: ${hints[r]}` : undefined}
         >
           {r}
-          {marker === r && <span className="tick" aria-hidden="true" />}
+          {marker === r && <span className="scale-suggested" aria-hidden="true">Suggested</span>}
         </button>
       ))}
     </div>

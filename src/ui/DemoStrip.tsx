@@ -1,7 +1,7 @@
 import { reduce } from '../domain/actions';
 import { useEffect, useRef, useState } from 'react';
 import { addDays, formatDate, weekday } from '../domain/dates';
-import { employeesForPicker, reviewersForPicker, teamName } from '../domain/selectors';
+import { employeesForPicker, reviewersForPicker } from '../domain/selectors';
 import { useStore, type Role } from '../state/store';
 import { go } from '../state/router';
 import { Dialog } from './components';
@@ -80,16 +80,16 @@ export function DemoStrip() {
         <span>You are</span>
         <select aria-label="You are" value={current} onChange={(e) => become(e.target.value)}>
           <optgroup label="HR">
-            <option value="hr">{hr?.name ?? 'HR'} · HR</option>
+            <option value="hr">{hr?.name ?? 'HR'}</option>
           </optgroup>
           <optgroup label="Managers">
             {reviewersForPicker(state).map((p) => (
-              <option key={p.id} value={`m:${p.id}`}>{p.name} · {p.teamId ? `${teamName(state, p.teamId)} manager` : p.title}</option>
+              <option key={p.id} value={`m:${p.id}`}>{p.name}</option>
             ))}
           </optgroup>
           <optgroup label="Employees">
             {employeesForPicker(state).map((p) => (
-              <option key={p.id} value={`e:${p.id}`}>{p.name} · {p.teamId ? teamName(state, p.teamId) : p.title}</option>
+              <option key={p.id} value={`e:${p.id}`}>{p.name}</option>
             ))}
           </optgroup>
         </select>
@@ -104,6 +104,7 @@ export function DemoStrip() {
       </button>
       {open && (
         <div className="demo-menu" id="demo-menu" role="group" aria-label="More demo controls">
+          <p className="demo-menu-tip small muted">{tip}</p>
           {!released && (
             <div className="demo-menu-sec">
               <div className="demo-menu-label">Demo shortcuts</div>

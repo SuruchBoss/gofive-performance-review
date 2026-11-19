@@ -4,7 +4,7 @@ import type { ManagerReview, SelfReview } from '../domain/types';
 import { Badge } from './components';
 
 export function SelfReviewBadge({ r }: { r: SelfReview }) {
-  if (r.status === 'submitted') return <Badge tone="success">{r.late ? 'Self-review in, late' : 'Self-review in'}</Badge>;
+  if (r.status === 'submitted') return <Badge tone="success">{r.late ? 'Self-review received, late' : 'Self-review received'}</Badge>;
   if (r.status === 'draft') return <Badge tone="brand">Self-review draft</Badge>;
   return <Badge>No self-review yet</Badge>;
 }

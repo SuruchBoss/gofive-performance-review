@@ -131,7 +131,7 @@ export function HrProgress() {
           </table>
         )}
       </Panel>
-      {dialog?.kind === 'remind' && <RemindDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
+      {dialog?.kind === 'remind' && <RemindDialog personIds={[dialog.personId]} onClose={() => setDialog(undefined)} />}
       {dialog?.kind === 'extend' && <ExtendDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
       {dialog?.kind === 'remove' && <RemoveDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
     </>

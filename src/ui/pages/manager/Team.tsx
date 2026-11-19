@@ -40,7 +40,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
     const who = person(state, personId);
     const p = state.participants.find((x) => x.personId === personId)!;
     const self = selfReviewOf(state, personId);
-    const detail = [who.title, p.escalatedFrom ? `moved to you from ${person(state, p.escalatedFrom).name}` : '', note ?? (self.status === 'submitted' ? 'self-review in' : 'no self-review yet')].filter(Boolean).join(' · ');
+    const detail = [who.title, p.escalatedFrom ? `moved to you from ${person(state, p.escalatedFrom).name}` : '', note ?? (self.status === 'submitted' ? 'self-review received' : 'no self-review yet')].filter(Boolean).join(' · ');
     return (
       <a key={personId} className="task-row" href={`#/manager/review/${personId}`}>
         <PersonCell name={who.name} sub={detail} size="sm" />
