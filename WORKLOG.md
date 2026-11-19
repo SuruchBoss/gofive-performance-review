@@ -1035,3 +1035,10 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Audit:** done with the `web-uxui-design` skill in audit mode, on the live main build at 375 px and 1366 px. Findings, scores and measurements (words per screen, page height, position of the first rating control) are in `docs/PLAN-4.md`.
 - **Plan:** `docs/PLAN-4.md` holds the audit next to the PO's findings, five proposed cuts, the word list (old → new), the rewritten guide steps, 8 commits and 5 questions.
 - **Stopped here:** waiting for PO approval, per working rule 4.
+
+## PLAN-5: task-first homes, no guide (plan only, on `main`)
+
+- **PO change of direction** before PLAN-4 was approved: design it as a real HR product. Each role opens on a home that lists what to do now; that list is the guide; the step guide and the tips go; eligibility is a suggestion HR confirms; the review page reads as a form; role switching lives only in a separate demo bar.
+- **Done:** `docs/PLAN-5.md`, with what is kept, cut and rebuilt, mock-ups of the three homes and the review page, 8 commits with a rough time estimate (about 3 hours), and 6 questions. PLAN-4 is marked as replaced; its audit and word list still apply.
+- **Worth noting:** the plan removes the on-screen tips built earlier the same day (PLAN-3). This follows the PO's instruction; the code stays in git history.
+- **Stopped here:** waiting for PO approval.

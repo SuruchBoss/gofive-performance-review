@@ -1,6 +1,6 @@
 # PLAN-4 — Plain and clear: a usability round
 
-**Status:** draft, waiting for PO approval. Nothing in this plan is built yet.
+**Status:** replaced by `docs/PLAN-5.md` after the PO changed direction (task-first homes, no guide). Not built, except decision 6. The audit and the word list below still apply.
 **Already done:** PO decision 6 (the reason needs at least 20 characters, with a counter and a line in the submit list). It was asked for just before this ticket, and it is live on both builds.
 **Fixed scope (PO):** rules, numbers, demo data and `docs/ANSWERS.md` do not change. `main` first, then `calibration`. Tips keep working. The start page changes only in wording.
 
