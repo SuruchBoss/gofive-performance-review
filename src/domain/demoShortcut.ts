@@ -56,7 +56,7 @@ export function skipToRelease(start: DemoState): DemoState {
         type: 'save_review',
         personId: p.personId,
         patch: {
-          deviationReason: problems.includes('deviationReason') ? fill(draft.deviationReason) : draft.deviationReason,
+          deviationReason: problems.includes('deviationReason') ? DEMO_TEXT : draft.deviationReason,
           overallEvidence: problems.includes('overallEvidence') ? fill(draft.overallEvidence) : draft.overallEvidence,
         },
       });

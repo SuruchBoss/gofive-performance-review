@@ -1014,3 +1014,15 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
   - The existing click-through PASS at 1280 px and 390 px on both builds.
   - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
   - Screenshots at 375 px of HR step 1 and Employee step 1 were taken from the live main build and sent to the PO.
+
+## Reason for a far rating needs at least 20 characters (on `main`)
+
+- **PO request:** the "Why does your rating differ from the goal results?" box accepted "aa", so a 5 against a 3.0 suggestion could go through with no real reason.
+- **Done:**
+  - New threshold `REASON_MIN_CHARS: 20` in `src/domain/config.ts`. The rule counts the trimmed text, like the example's 40.
+  - The box shows a counter, "N / 20 characters minimum", the same way "Specific example" does.
+  - The submit list says "Explain why the rating differs from the goal results (at least 20 characters)."
+- **One knock-on change, needed for the rule:** the demo shortcut used to keep whatever reason a draft already held. With a too-short draft reason it would now fail to release, so it replaces a reason that fails the rule with its "Demo shortcut…" text.
+- **Tests:** rule tests for "aa", 17 characters padded with spaces, and exactly 20; a demo-shortcut test with a draft reason of "aa"; the e2e types "aa" and checks the counter, the list line and the blocked submit. One existing test reason ("Covered two roles", 17 characters) was lengthened. The demo data's two reasons are both well over 20.
+- **Checks:** 136 unit tests passed. e2e PASS at 1280 px and 390 px. `e2e:tips` PASS at all four widths.
+- **Not changed:** anything else, as asked.

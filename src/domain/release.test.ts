@@ -61,7 +61,7 @@ describe('release gate', () => {
     // Tom rates Ying 5 against a suggestion of about 2.6: far from results.
     s = reduce(s, { type: 'save_review', personId: 'e11', patch: { behaviour: behaviour(3), overall: 3 } });
     s = reduce(s, { type: 'submit_review', personId: 'e11', actorId: 'm-ops' });
-    s = reduce(s, { type: 'save_review', personId: 'e12', patch: { behaviour: behaviour(5), overall: 5, deviationReason: 'Covered two roles', overallEvidence: 'Ran the night shift alone for six weeks in March and April.' } });
+    s = reduce(s, { type: 'save_review', personId: 'e12', patch: { behaviour: behaviour(5), overall: 5, deviationReason: 'Covered two roles all year', overallEvidence: 'Ran the night shift alone for six weeks in March and April.' } });
     s = reduce(s, { type: 'submit_review', personId: 'e12', actorId: 'm-ops' });
     expect(releaseBlockers(s).map((b) => b.kind)).toContain('flag');
   });

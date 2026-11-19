@@ -97,6 +97,10 @@ describe('evidence rule (overall 1, 2 or 5 only)', () => {
   it('asks for a reason when far from the suggestion', () => {
     expect(reviewProblems({ ...base, overall: 4 }, 3).map((p) => p.field)).toEqual(['deviationReason']);
     expect(reviewProblems({ ...base, overall: 4, deviationReason: 'Strong client feedback' }, 3)).toEqual([]);
+    // The reason must be a real one: at least 20 characters, not counting spaces around it.
+    expect(reviewProblems({ ...base, overall: 4, deviationReason: 'aa' }, 3).map((p) => p.field)).toEqual(['deviationReason']);
+    expect(reviewProblems({ ...base, overall: 4, deviationReason: '   nineteen chars ok   ' }, 3).map((p) => p.message)).toEqual(['Explain why the rating differs from the goal results (at least 20 characters).']);
+    expect(reviewProblems({ ...base, overall: 4, deviationReason: 'exactly twenty chars' }, 3)).toEqual([]);
   });
   it('lists missing ratings', () => {
     const r = { ...base, behaviour: [{ competencyId: 'a' }, { competencyId: 'b', rating: 3 as const }] };

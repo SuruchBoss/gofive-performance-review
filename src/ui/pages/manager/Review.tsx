@@ -216,6 +216,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                     onChange={(e) => save({ deviationReason: e.target.value })}
                     placeholder="For example: results were helped or held back by something outside their control."
                   />
+                  {!locked && <span className="counter num">{(review.deviationReason ?? '').trim().length} / {CONFIG.REASON_MIN_CHARS} characters minimum</span>}
                 </div>
               )}
 
