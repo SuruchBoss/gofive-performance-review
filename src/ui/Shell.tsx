@@ -85,7 +85,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
           </div>
           {aside}
         </nav>
-        <main className="main" id="main">
+        <main className="main" id="main" tabIndex={-1}>
           <div className="main-inner">{children}</div>
         </main>
       </div>

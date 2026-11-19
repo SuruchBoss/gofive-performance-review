@@ -117,7 +117,7 @@ const EMPLOYEE_STEPS: Step[] = [
   },
 ];
 
-const STEPS_FOR: Record<Role, Step[]> = { hr: HR_STEPS, manager: MANAGER_STEPS, employee: EMPLOYEE_STEPS };
+export const STEPS_FOR: Record<Role, Step[]> = { hr: HR_STEPS, manager: MANAGER_STEPS, employee: EMPLOYEE_STEPS };
 
 
 export function Intro() {
