@@ -22,7 +22,7 @@ function ChangeRating({ personId }: { personId: string }) {
   return (
     <div className="cal-change">
       <div className="row" style={{ gap: 12 }}>
-        <RatingScale label={`Calibrated rating for ${person(state, personId).name}`} value={to} onChange={setTo} />
+        <RatingScale label={`Final rating for ${person(state, personId).name}`} value={to} onChange={setTo} />
         <span className="small muted">Now {current}{review.calibratedOverall ? ` (manager rated ${review.overall})` : ''}</span>
       </div>
       {to !== current && (
@@ -111,7 +111,7 @@ function AgendaCard({ item, open, onOpen, onDone }: { item: AgendaItem; open: bo
             <div className="field">
               <label htmlFor={`note-${item.key}`}>What did the group agree?</label>
               <span className="hint">Keep the rating or change it above, then write the outcome. It goes into the activity log.</span>
-              <textarea id={`note-${item.key}`} data-tour="cal-note" className="textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: kept at 5; the Q1 renewal is already signed." />
+              <textarea id={`note-${item.key}`} className="textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: kept at 5; the Q1 renewal is already signed." />
               <div className="row">
                 <button
                   type="button"
@@ -141,14 +141,14 @@ function NotStarted() {
     <div className="stack">
       {open > 0 ? (
         <Notice tone="warning" title={`${open} review${open === 1 ? ' is' : 's are'} still open`}>
-          Calibration starts once every review is submitted, so the group compares complete teams. <a href="#/hr/progress">See Progress</a>
+          The meeting can start when every review is in, so the group compares complete teams. <a href="#/hr">See what is open on Home</a>
         </Notice>
       ) : (
-        <Notice tone="brand" title="Every review is in. Calibration can start.">
-          The flags from the consistency check become the agenda for the session.
+        <Notice tone="brand" title="Every review is in. The meeting can start.">
+          The ratings that do not match results become the list to discuss.
         </Notice>
       )}
-      <Panel title="Who is in the session">
+      <Panel title="Who is in the meeting">
         <fieldset className="field choices">
           <legend className="sr-only">Attendees</legend>
           {reviewers.map((p) => (
@@ -175,7 +175,7 @@ function NotStarted() {
           disabled={!ready}
           onClick={() => { dispatch({ type: 'start_calibration', attendees, actorId: 'hr' }); notify('Calibration session started'); }}
         >
-          Start calibration session
+          Start the meeting
         </button>
       </div>
     </div>
@@ -195,8 +195,8 @@ export function HrCalibration() {
   return (
     <>
       <PageHead
-        title={<span className="row" style={{ gap: 12 }}>Calibration {cal.status === 'locked' ? <Badge tone="success">Locked</Badge> : cal.status === 'in_session' ? <Badge tone="brand">In session</Badge> : <Badge>Not started</Badge>}</span>}
-        sub="Managers align ratings across teams before anyone sees a result. The flags from the consistency check are the agenda. Results stay locked until calibration is locked."
+        title={<span className="row" style={{ gap: 12 }}>Agree final ratings {cal.status === 'locked' ? <Badge tone="success">Locked</Badge> : cal.status === 'in_session' ? <Badge tone="brand">In session</Badge> : <Badge>Not started</Badge>}</span>}
+        sub="This step is called calibration: managers meet and agree final ratings across teams. The ratings that do not match results are the list to discuss. No one sees a result before the final ratings are locked."
       />
 
       {cal.status === 'not_started' && <NotStarted />}
@@ -217,10 +217,10 @@ export function HrCalibration() {
               );
             })}
           </div>
-          <Explain>Each card shows the team's average rating before → after calibration, and what the team's goal results suggest.</Explain>
+          <Explain>Each card shows the team's average rating before → after the meeting, and what the team's goal results suggest.</Explain>
 
           <Panel
-            title="Agenda"
+            title="To discuss"
             actions={<span className="small muted">{cal.agenda.length - unresolved.length} of {cal.agenda.length} agreed</span>}
             bodyClass=""
           >
@@ -265,7 +265,7 @@ export function HrCalibration() {
               )}
               <div className="submit-bar action-bar">
                 <span className="small muted">Next: release results.</span>
-                <button type="button" data-tour="cal-release" className="btn btn-primary" onClick={() => go('/hr')}>Go to release</button>
+                <button type="button" className="btn btn-primary" onClick={() => go('/hr')}>Go to release</button>
               </div>
             </>
           ) : (
@@ -273,8 +273,8 @@ export function HrCalibration() {
               <span className="small muted">
                 {unresolved.length ? `${unresolved.length} case${unresolved.length === 1 ? '' : 's'} left to agree before you can lock.` : 'Every case is agreed. Lock to allow release.'}
               </span>
-              <button type="button" data-tour="cal-lock" className="btn btn-primary" disabled={unresolved.length > 0} onClick={() => setConfirm(true)}>
-                {unresolved.length > 0 && <IconLock size={15} />} Lock calibration
+              <button type="button" className="btn btn-primary" disabled={unresolved.length > 0} onClick={() => setConfirm(true)}>
+                {unresolved.length > 0 && <IconLock size={15} />} Lock final ratings
               </button>
             </div>
           )}
@@ -283,14 +283,14 @@ export function HrCalibration() {
 
       {confirm && (
         <Dialog
-          title="Lock calibration?"
+          title="Lock final ratings?"
           sub="Ratings cannot change after this. Employees still see nothing until HR releases results."
           onClose={() => setConfirm(false)}
           footer={
             <>
               <button type="button" className="btn" onClick={() => setConfirm(false)}>Cancel</button>
               <button type="button" className="btn btn-primary" onClick={() => { dispatch({ type: 'lock_calibration', actorId: 'hr' }); setConfirm(false); notify('Calibration locked'); }}>
-                Lock calibration
+                Lock final ratings
               </button>
             </>
           }

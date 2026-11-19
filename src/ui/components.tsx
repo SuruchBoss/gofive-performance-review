@@ -92,7 +92,7 @@ export function Stat({ label, value, sub, meter }: { label: string; value: React
   );
 }
 
-export function RatingScale({ value, onChange, disabled, label, size, marker, hints, tour }: {
+export function RatingScale({ value, onChange, disabled, label, size, marker, hints }: {
   value?: Rating;
   onChange?: (r: Rating) => void;
   disabled?: boolean;
@@ -102,11 +102,9 @@ export function RatingScale({ value, onChange, disabled, label, size, marker, hi
   marker?: number;
   /** What each level means; shown on hover and to screen readers before choosing. */
   hints?: Record<Rating, string>;
-  /** Name a coachmark can point at (`data-tour`). */
-  tour?: string;
 }) {
   return (
-    <div className={`scale${size ? ` ${size}` : ''}`} role="radiogroup" aria-label={label} data-tour={tour}>
+    <div className={`scale${size ? ` ${size}` : ''}`} role="radiogroup" aria-label={label}>
       {([1, 2, 3, 4, 5] as Rating[]).map((r) => (
         <button
           key={r}

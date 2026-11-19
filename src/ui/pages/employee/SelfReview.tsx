@@ -21,6 +21,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
 
   return (
     <div className="narrow">
+      <a className="btn btn-sm back-btn" href="#/me">← Back to home</a>
       <PageHead
         title="Self-review"
         sub={`Due ${formatDate(state.cycle.selfReviewDeadline)}. ${manager.name} reads this alongside your goal results.`}
@@ -41,7 +42,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
           <Notice tone="brand" title="The self-review is closed">
             {mgrReview.status === 'submitted'
               ? <>{manager.name} completed your review on {formatDate(mgrReview.submittedOn!)} without a self-review. This is recorded on the review. <a href="#/me/result">{state.cycle.status === 'released' ? 'See your result →' : 'See when your result is released →'}</a></>
-              : 'You are not part of this review cycle.'}
+              : 'You are not in this review.'}
           </Notice>
         )}
         {window === 'submitted' && (
@@ -57,7 +58,6 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
                 <label htmlFor="self-text">What did you achieve, and what would you do differently?</label>
                 <span className="hint">Specific examples help your manager most.</span>
                 <textarea
-                  data-tour="self-text"
                   id="self-text"
                   className="textarea tall"
                   disabled={!editable}
@@ -70,7 +70,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
                 <span className="label" id="own-label">Your own rating</span>
                 <span className="hint">Your manager sees it next to your goal results. It does not change the suggested rating, which comes from goal results only.</span>
                 <div className="row" style={{ gap: 12 }}>
-                  <RatingScale tour="self-rating" label="Your own rating" value={self.selfRating} disabled={!editable} hints={LEVEL_WORDS} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
+                  <RatingScale label="Your own rating" value={self.selfRating} disabled={!editable} hints={LEVEL_WORDS} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
                   <span className="small muted">{self.selfRating ? LEVEL_WORDS[self.selfRating] : '1 well below · 2 below · 3 met · 4 above · 5 well above expectations'}</span>
                 </div>
               </div>
@@ -83,7 +83,6 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
             <span className="small muted">{ready ? 'Drafts are saved automatically.' : 'Write a few lines and choose a rating to submit.'}</span>
             <button
               type="button"
-              data-tour="self-submit"
               className="btn btn-primary"
               disabled={!ready}
               onClick={() => setConfirm(true)}

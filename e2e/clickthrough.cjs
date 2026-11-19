@@ -1,5 +1,6 @@
 /*
- * Browser click-through of the guided path for every role, at desktop and phone width.
+ * Browser click-through of one full review cycle, every role, at desktop and phone width.
+ * There is no guide: each step starts from that person's own home.
  * Usage: npm run build && npm run e2e
  * Needs Playwright with Chromium available (`npx playwright install chromium` if not).
  * Screenshots go to screenshots/ (ignored by git).
@@ -38,18 +39,21 @@ async function run(vp) {
     await page.evaluate((h) => { window.location.hash = h; }, hash);
     await page.waitForTimeout(150);
   };
-  // Every prototype control sits behind one "Demo" menu.
-  const demo = async () => {
-    if (!(await page.locator('#demo-menu').count())) await page.getByRole('button', { name: 'Demo', exact: true }).click();
+  // The one place to switch person: the "You are" list in the demo bar.
+  const become = async (name) => {
+    const value = await page.getByLabel('You are').evaluate((el, n) => [...el.options].find((o) => o.textContent.startsWith(n)).value, name);
+    await page.getByLabel('You are').selectOption(value);
+    await page.waitForTimeout(150);
   };
-  const closeDemo = async () => {
-    if (await page.locator('#demo-menu').count()) await page.keyboard.press('Escape');
+  const more = async (item) => {
+    await page.getByRole('button', { name: /^More/ }).click();
+    await page.locator('#demo-menu').getByRole('button', { name: item }).click();
   };
-  const viewAs = async (role, who) => {
-    await demo();
-    await page.getByRole('group', { name: 'View as role' }).getByRole('button', { name: role }).click();
-    if (who) await page.getByLabel(role, { exact: true }).selectOption({ label: who });
-    await closeDemo();
+  // "Where do I start?": the first thing to do must be on the first screen, without scrolling.
+  const startsOnFirstScreen = async (locator, label) => {
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const box = await locator.first().boundingBox();
+    assert(box && box.y + box.height <= vp.height, `${label}: the first thing to do is not on the first screen (${box ? Math.round(box.y + box.height) : 'missing'} of ${vp.height})`);
   };
   const rate = async (overall) => {
     for (const name of ['Quality of work', 'Ownership', 'Collaboration', 'Customer focus']) {
@@ -62,171 +66,200 @@ async function run(vp) {
     await page.getByRole('button', { name: 'Submit review' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Submit review' }).click();
   };
-
+  const checkAllRatings = async () => {
+    while (await page.getByRole('button', { name: 'Mark as checked' }).count()) {
+      await page.getByRole('button', { name: 'Mark as checked' }).first().click();
+      await page.getByLabel('What did you check').fill('Discussed with the manager; reason accepted.');
+      await page.getByRole('dialog').getByRole('button', { name: 'Mark as checked' }).click();
+    }
+  };
 
   await page.goto(BASE);
-  await page.evaluate(() => {
-    localStorage.clear();
-    // Coachmark tips have their own test (e2e/coachmarks.cjs); this path runs with them off.
-    for (const key of ['pr-demo:tips', 'pr-cal:tips']) localStorage.setItem(key, JSON.stringify({ hr: true, manager: true, employee: true }));
-  });
+  await page.evaluate(() => localStorage.clear());
   await page.reload();
-  // Landing page: calm, no demo controls, one main action.
-  assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), 'landing: Try as HR missing');
-  assert((await page.locator('.demo-strip').count()) === 0, 'landing: demo controls should not show');
-  await shot('00-landing');
+  // Start page: calm, no demo bar, HR is the clear first choice.
+  assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), 'start page: Try as HR missing');
+  assert(await page.getByText('Requirement change from question 2').isVisible(), 'start page: build label missing');
+  assert(await page.getByText('Start here to see a full review cycle.').isVisible(), 'start page: "Start here" line missing');
+  assert((await page.locator('.demo-strip').count()) === 0, 'start page: demo bar should not show');
+  await startsOnFirstScreen(page.getByRole('button', { name: /Try as HR/ }), 'start page');
+  await shot('00-start');
   await page.getByRole('button', { name: /Try as HR/ }).click();
-  await page.getByText('Annual performance review, one cycle end to end').waitFor();
-  assert(await page.getByText('Requirement change from question 2').first().isVisible(), 'build label missing');
-  await shot('01-hr-cycle-start');
 
-  // Step 1: HR removes the new joiner.
+  // HR home: what needs attention now. No guide, no tips.
+  await page.getByRole('heading', { name: 'Needs your attention' }).waitFor();
+  assert((await page.locator('.intro, .intro-bar, .coach-card').count()) === 0, 'the guide and tips should be gone');
+  await startsOnFirstScreen(page.getByRole('button', { name: 'Leave Fah out' }), 'HR home');
+  assert(await page.getByRole('button', { name: /Release results/ }).isDisabled(), 'release should be locked at the start');
+  await shot('01-hr-home');
+
+  // Eligibility: HR confirms the system's suggestion to leave the new joiner out.
+  await page.getByRole('button', { name: 'Leave Fah out' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Leave out of this review' }).click();
+  assert((await page.getByRole('button', { name: 'Leave Fah out' }).count()) === 0, 'Fah should be left out');
   await open('/hr/progress');
-  await shot('02-hr-progress');
-  await page.locator('tr', { hasText: 'Fah Inthira' }).getByRole('button', { name: 'Remove from cycle' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Remove from cycle' }).click();
   await page.getByRole('tab', { name: /Everyone/ }).click();
-  assert((await page.locator('tr', { hasText: 'Fah Inthira' }).innerText()).includes('Removed'), 'Fah not removed');
+  assert((await page.locator('tr', { hasText: 'Fah Inthira' }).innerText()).includes('Left out'), 'Fah not marked as left out');
+  await shot('02-hr-people');
 
-  // Step 2: Manager Tom reviews Orn; the reason and evidence rules block a 5.
-  await viewAs('Manager', 'Tom Wattana · Operations');
-  await shot('03-manager-team');
-  await open('/manager/review/e11');
+  // Manager home: a to-do list. A row opens the review; the back button returns.
+  await become('Tom Wattana');
+  await page.getByRole('heading', { name: '2 reviews to write' }).waitFor();
+  await startsOnFirstScreen(page.locator('.task-row'), 'manager home');
+  await shot('03-manager-home');
+  await page.locator('.task-row', { hasText: 'Orn Lertsak' }).click();
+  await page.getByRole('heading', { name: 'What the data says' }).waitFor();
+  assert(await page.getByRole('heading', { name: 'Your rating' }).isVisible(), 'review: "Your rating" heading missing');
+  assert(await page.getByRole('link', { name: '← Back to my team' }).isVisible(), 'review: back button missing');
+  await startsOnFirstScreen(page.getByRole('heading', { name: 'Your rating' }), 'review page');
+  await shot('04-manager-review');
   await rate(5);
   assert(await page.getByLabel('Why does your rating differ from the goal results?').isVisible(), 'reason field missing');
-  assert(await page.getByLabel('Specific example').isVisible(), 'evidence field missing');
+  assert(await page.getByLabel('Specific example').isVisible(), 'example field missing');
   assert(await page.getByRole('button', { name: 'Submit review' }).isDisabled(), 'submit should be blocked');
-  // A two-character reason is not a reason: the counter shows it and the list still asks for it.
+  // A two-character reason is not a reason.
   await page.getByLabel('Why does your rating differ from the goal results?').fill('aa');
   assert(await page.getByText('2 / 20 characters minimum').isVisible(), 'reason counter missing');
   assert((await page.getByText('Explain why the rating differs from the goal results (at least 20 characters).').count()) > 0, 'short reason should still be listed');
   await page.getByLabel('Why does your rating differ from the goal results?').fill('');
-  await shot('04-manager-review-far');
+  await shot('05-manager-review-far');
+  await page.getByRole('link', { name: '← Back to my team' }).click();
+  await page.getByRole('heading', { name: '2 reviews to write' }).waitFor();
+  await page.locator('.task-row', { hasText: 'Orn Lertsak' }).click();
   await rate(3);
   await submitReview();
+  await page.getByRole('heading', { name: '1 review to write' }).waitFor();
   await open('/manager/map');
-  await shot('05-manager-team-map');
+  await shot('06-manager-team-map');
 
-  // Step 3: HR reviews one flag.
-  await viewAs('HR');
+  // HR checks fairness: one rating marked as checked, one sent back with a question.
+  await become('Pim Chaiyaporn');
+  // Calibration build: ratings to check are the list for the final-ratings meeting, so Fairness is reached by its tab.
   await open('/hr/consistency');
-  await shot('06-hr-consistency');
+  await page.getByRole('heading', { name: 'Check fairness' }).waitFor();
+  await shot('07-hr-fairness');
   const sales = page.locator('.panel', { hasText: 'Daniel Reyes' }).first();
-  await sales.getByRole('button', { name: 'Mark reviewed' }).click();
-  await page.getByLabel('What did you check').fill('Talked to Daniel; Q1 renewals explain part of the gap.');
-  await page.getByRole('dialog').getByRole('button', { name: 'Mark reviewed' }).click();
-
-  // Return Nida's rating to her manager with a question; Daniel answers and confirms.
+  await sales.getByRole('button', { name: 'Mark as checked' }).click();
+  await page.getByLabel('What did you check').fill('Talked to Daniel; two large renewals explain part of the difference.');
+  await page.getByRole('dialog').getByRole('button', { name: 'Mark as checked' }).click();
   const nida = page.locator('.flag-row', { hasText: 'Nida Phrom' });
-  await nida.getByRole('button', { name: 'Return to manager' }).click();
+  await nida.getByRole('button', { name: 'Send back with a question' }).click();
   await page.getByLabel(/Your question for/).fill('Is 5 right when results suggest 3.9?');
   await page.getByRole('dialog').getByRole('button', { name: 'Send back with question' }).click();
-  assert(await page.getByText('Waiting for managers').isVisible(), 'returned review not listed');
-  await page.getByRole('link', { name: 'Open as Daniel' }).click();
+  assert(await page.getByText('Waiting for managers').isVisible(), 'sent-back review not listed');
+
+  // Daniel's home shows HR's question first; he answers and keeps the rating.
+  await become('Daniel Reyes');
+  await page.getByRole('heading', { name: '1 question from HR' }).waitFor();
+  await page.locator('.task-row', { hasText: 'Nida Phrom' }).click();
   await page.getByLabel(/Answer to:/).fill('Kept 5: the August contract was the largest of the year.');
   await page.getByRole('button', { name: 'Confirm and send answer' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Submit review' }).click();
-  await viewAs('HR');
-  await open('/hr/activity');
-  assert((await page.locator('.log-item').allInnerTexts()).some((t) => t.includes('Manager answered HR')), 'answer not logged');
-  // HR accepts the answer; until then release stays blocked.
-  await open('/hr/consistency');
-  assert(await page.getByText('Answers from managers', { exact: true }).isVisible(), 'answer not listed for HR');
+
+  // HR home lists the answer; HR accepts it. Until then release stays locked.
+  await become('Pim Chaiyaporn');
+  await page.getByRole('link', { name: 'Read the answer' }).click();
   await page.locator('.flag-row', { hasText: 'Kept 5' }).getByRole('button', { name: 'Accept answer' }).click();
   await open('/hr/activity');
-  assert((await page.locator('.log-item').allInnerTexts()).some((t) => t.includes('HR accepted the answer')), 'acceptance not logged');
+  const log = await page.locator('.log-item').allInnerTexts();
+  assert(log.some((t) => t.includes('Manager answered HR')) && log.some((t) => t.includes('HR accepted the answer')), 'answer or acceptance not logged');
 
-  // Step 4: two days pass; Ying's review escalates.
-  await demo();
+  // Two days pass: Ying's late review moves to the manager's own manager.
   await page.getByRole('region', { name: 'Prototype controls' }).getByRole('button', { name: '+1 day' }).click();
   await page.getByRole('region', { name: 'Prototype controls' }).getByRole('button', { name: '+1 day' }).click();
-  await closeDemo();
   await open('/hr/activity');
-  await page.getByRole('tab', { name: 'Escalations' }).click();
-  const esc = await page.locator('.log-item').allInnerTexts();
-  assert(esc.length === 1 && esc[0].includes('Ying Chen') && esc[0].includes('Anong Rattanakul'), `unexpected escalations: ${esc}`);
-  await shot('07-hr-activity');
+  await page.getByRole('tab', { name: 'Moved up' }).click();
+  const moved = await page.locator('.log-item').allInnerTexts();
+  assert(moved.length === 1 && moved[0].includes('Ying Chen') && moved[0].includes('Anong Rattanakul'), `unexpected moved reviews: ${moved}`);
+  await shot('08-hr-activity');
 
-  // Employee Ying can still submit a late self-review (manager has not finished).
-  await viewAs('Employee', 'Ying Chen');
-  await open('/me/self-review');
+  // Employee home: one card. Ying can still send a late self-review.
+  await become('Ying Chen');
+  await page.getByRole('heading', { name: 'Write your self-review' }).waitFor();
+  await startsOnFirstScreen(page.getByRole('link', { name: 'Write my self-review' }), 'employee home');
+  await shot('09-employee-home');
+  await page.getByRole('link', { name: 'Write my self-review' }).click();
   await page.getByLabel('What did you achieve').fill('Covered the night shift during the carrier change.');
   await page.getByRole('radiogroup', { name: 'Your own rating' }).getByRole('radio', { name: '3' }).click();
   await page.getByRole('button', { name: 'Submit self-review' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Submit self-review' }).click();
   assert((await page.locator('.page-head .badge').innerText()).includes('late'), 'self-review not marked late');
-  await shot('08-employee-self-review');
+  await page.getByRole('link', { name: '← Back to home' }).click();
+  await page.getByRole('heading', { name: 'Nothing to do now' }).waitFor();
   await open('/me/result');
   assert(await page.getByText('Your result is not released yet').isVisible(), 'result should be locked');
-  await shot('09-employee-result-locked');
+  await shot('10-employee-result-locked');
 
-  // Step 5: the head of company finishes the escalated review; HR clears flags and releases.
-  await viewAs('Manager', 'Anong Rattanakul · Managing Director');
-  await shot('10-head-assigned');
-  await open('/manager/review/e12');
+  // The Managing Director writes the review that moved up; HR checks the rest and releases.
+  await become('Anong Rattanakul');
+  await page.getByRole('heading', { name: '1 review to write' }).waitFor();
+  await shot('11-head-home');
+  await page.locator('.task-row', { hasText: 'Ying Chen' }).click();
   await rate(3);
   await submitReview();
-  // Calibration build: the managers calibrate across teams before release.
-  await viewAs('HR');
-  await open('/hr/calibration');
-  await page.getByRole('button', { name: 'Start calibration session' }).click();
-  await shot('11a-hr-calibration');
-  const first = page.locator('.agenda-item.open');
-  await first.getByRole('button', { name: 'Change rating' }).first().click();
-  await first.getByRole('radiogroup', { name: /Calibrated rating for Nida/ }).getByRole('radio', { name: '4' }).click();
-  await first.getByLabel('Why the group changed it').fill('Peers at similar results are at 4.');
-  await first.getByRole('button', { name: 'Save change' }).click();
-  for (let i = 0; i < 6 && (await page.locator('.agenda-item.open textarea').count()); i++) {
+  await become('Pim Chaiyaporn');
+  // Calibration build: managers meet and agree final ratings before release.
+  assert(await page.getByRole('heading', { name: 'Final ratings are not agreed yet' }).isVisible(), 'HR home should ask for final ratings');
+  await page.getByRole('link', { name: 'Agree final ratings' }).click();
+  await page.getByRole('button', { name: 'Start the meeting' }).click();
+  await shot('11a-hr-final-ratings');
+  const changeButtons = page.locator('.agenda-item.open').getByRole('button', { name: 'Change rating' });
+  for (let i = 0; i < (await changeButtons.count()) && !(await page.getByRole('radiogroup', { name: /Final rating for Nida/ }).count()); i++) await changeButtons.nth(i).click();
+  await page.getByRole('radiogroup', { name: /Final rating for Nida/ }).getByRole('radio', { name: '4' }).click();
+  await page.locator('.agenda-item.open').getByLabel('Why the group changed it').first().fill('Peers at similar results are at 4.');
+  await page.locator('.agenda-item.open').getByRole('button', { name: 'Save change' }).first().click();
+  for (let i = 0; i < 8 && (await page.locator('.agenda-item.open textarea').count()); i++) {
     const it = page.locator('.agenda-item.open');
     await it.getByLabel('What did the group agree?').fill('Discussed and agreed.');
     await it.getByRole('button', { name: 'Mark as agreed' }).click();
   }
-  await page.getByRole('button', { name: 'Lock calibration' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Lock calibration' }).click();
-  await shot('11b-hr-calibration-locked');
+  await page.getByRole('button', { name: 'Lock final ratings' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Lock final ratings' }).click();
+  await shot('11b-hr-final-ratings-locked');
   await open('/hr/map');
-  await shot('11-hr-map');
+  await shot('12-hr-map');
   await open('/hr/person/e05');
-  await shot('12-hr-person');
+  await shot('13-hr-person');
   await open('/hr');
-  assert(await page.getByRole('button', { name: 'Release results' }).isEnabled(), 'release should be enabled');
+  assert(await page.getByText('Nothing needs your attention').isVisible(), `HR home should be clear: ${(await page.locator('main .panel').first().innerText()).replace(/\s+/g, ' ').slice(0, 300)}`);
   await page.getByRole('button', { name: 'Release results' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Release results' }).click();
-  assert(await page.getByText(/^Released \d/).isVisible(), 'not released');
-  await shot('13-hr-released');
+  assert(await page.getByText(/^Results released \d/).first().isVisible(), 'not released');
+  await shot('14-hr-released');
 
-  // Employees now see their result and its sources.
-  await viewAs('Employee', 'Nida Phrom');
-  await open('/me/result');
-  assert(await page.getByText('Manager\'s assessment').isVisible(), 'Nida result not visible');
-  assert(await page.getByText('Calibrated from 5 to 4').first().isVisible(), 'calibrated rating not shown to the employee');
-  await shot('14-employee-result');
-  await viewAs('Employee', 'Fah Inthira');
-  await open('/me/result');
-  assert(await page.getByText('You are not part of this review cycle').isVisible(), 'removed employee message missing');
+  // Employees now see their result and where it came from.
+  await become('Nida Phrom');
+  await page.getByRole('heading', { name: 'Your result is ready' }).waitFor();
+  await page.getByRole('link', { name: 'See my result' }).click();
+  await page.getByText("Manager's assessment").waitFor();
+  assert(await page.getByText('Changed from 5 to 4').first().isVisible(), 'Nida should see the agreed change');
+  await shot('15-employee-result');
+  await become('Fah Inthira');
+  assert(await page.getByRole('heading', { name: 'You are not in this review' }).isVisible(), 'left-out employee message missing');
 
-  // Exit goes back to the landing page.
-  await demo();
-  await page.getByRole('button', { name: 'Exit demo' }).click();
+  // Exit goes back to the start page; Reset restores the start.
+  await more('Exit demo');
   await page.getByRole('button', { name: /Try as HR/ }).waitFor({ timeout: 3000 }).catch(() => {});
-  assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), `exit did not return to the landing page (at ${page.url()})`);
+  assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), `exit did not return to the start page (at ${page.url()})`);
   await page.getByRole('button', { name: /Try as HR/ }).click();
-
-  // Reset restores the start.
-  await demo();
-  await page.getByRole('button', { name: 'Reset demo' }).click();
+  await more('Reset demo');
   await page.getByRole('dialog').getByRole('button', { name: 'Reset demo' }).click();
   assert((await page.locator('.demo-date').innerText()).includes('12 Dec 2026'), 'reset failed');
+  await page.getByRole('heading', { name: 'Needs your attention' }).waitFor();
 
-  // Employee path: the labelled demo shortcut reaches a released result under the normal rules.
-  await viewAs('Employee', 'Ying Chen');
-  await open('/me/result');
-  assert(await page.getByText('Demo only, not part of the product').isVisible(), 'demo shortcut not labelled');
-  await page.getByRole('button', { name: 'Demo shortcut: skip to released results' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Skip to released results' }).click();
-  assert(await page.getByText("Manager's assessment").isVisible(), 'shortcut did not release a result');
-  await shot('15-employee-shortcut-result');
-  await viewAs('HR');
+  // Demo shortcut 1: the managers finish their reviews; HR's own work stays.
+  await more('Let the managers finish their reviews');
+  assert((await page.getByRole('button', { name: /^Remind/ }).count()) === 0, 'late reviews should be gone after the shortcut');
+  assert(await page.getByRole('button', { name: 'Leave Fah out' }).isVisible(), 'the new joiner should be left for HR');
+  assert(await page.getByRole('button', { name: /Release results/ }).isDisabled(), 'release should still wait for HR');
+  // Demo shortcut 2, from the employee side: skip to released results under the normal rules.
+  await become('Ying Chen');
+  await more('Skip to released results');
+  await page.getByRole('heading', { name: 'Your result is ready' }).waitFor();
+  await page.getByRole('link', { name: 'See my result' }).click();
+  await page.getByText("Manager's assessment").waitFor();
+  await shot('16-employee-shortcut-result');
+  await become('Pim Chaiyaporn');
   await open('/hr/activity');
   assert((await page.locator('.log-item').allInnerTexts()).some((t) => t.includes('Demo shortcut used')), 'shortcut not logged');
 
@@ -244,7 +277,7 @@ async function run(vp) {
     for (const vp of VIEWPORTS) {
       try {
         const n = await run(vp);
-        console.log(`PASS ${vp.name} (${vp.width}px): guided path complete, ${n} screens checked, no sideways scroll, no console errors`);
+        console.log(`PASS ${vp.name} (${vp.width}px): full review cycle complete, ${n} screens checked, no sideways scroll, no console errors`);
       } catch (e) {
         failed = true;
         console.log(`FAIL ${vp.name} (${vp.width}px): ${e.message}`);

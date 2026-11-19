@@ -24,15 +24,15 @@ export function releaseBlockers(state: DemoState): Blocker[] {
       const who = state.people.find((x) => x.id === p.personId)!;
       // A new joiner usually needs removing, not reviewing: point HR there.
       if (eligibilityHint(state, who)) {
-        return { kind: 'open_review' as const, key: `open:${p.personId}`, text: `${who.name}: joined under 3 months ago and still in the cycle`, href: '#/hr/progress', action: 'Remove in Progress' };
+        return { kind: 'open_review' as const, key: `open:${p.personId}`, text: `${who.name}: joined less than 3 months ago and is still in this review`, href: '#/hr/progress', action: 'Decide on Home' };
       }
       return {
       kind: 'open_review' as const,
       key: `open:${p.personId}`,
       text: state.managerReviews.find((r) => r.personId === p.personId)?.returns?.some((x) => !x.answeredOn)
-        ? `${name(p.personId)}: returned to ${name(p.reviewerId)} with HR's question, waiting for an answer`
+        ? `${name(p.personId)}: sent back to ${name(p.reviewerId)} with HR's question, waiting for an answer`
         : p.escalatedFrom
-        ? `${name(p.personId)}: escalated to ${nameWithRole(state, p.reviewerId)} on ${fmt(p.escalatedOn!)}, waiting for their review`
+        ? `${name(p.personId)}: moved to ${nameWithRole(state, p.reviewerId)} on ${fmt(p.escalatedOn!)}, waiting for their review`
         : `${name(p.personId)}: waiting for ${name(p.reviewerId)}'s review`,
       href: `#/manager/review/${p.personId}?as=${p.reviewerId}`,
       action: `Open as ${first(p.reviewerId)}`,
@@ -44,7 +44,7 @@ export function releaseBlockers(state: DemoState): Blocker[] {
     .flatMap((p) => {
       const r = state.managerReviews.find((x) => x.personId === p.personId);
       if (!r || r.status !== 'submitted' || !answerAwaitingHr(r)) return [];
-      return [{ kind: 'flag' as const, key: `answer:${p.personId}`, text: `${name(p.reviewerId)} answered HR on ${name(p.personId)}'s review: accept the answer or ask again`, href: '#/hr/consistency', action: 'Check in Consistency' }];
+      return [{ kind: 'flag' as const, key: `answer:${p.personId}`, text: `${name(p.reviewerId)} answered HR on ${name(p.personId)}'s review: accept the answer or ask again`, href: '#/hr/consistency', action: 'Check in Fairness' }];
     });
   // With calibration, the flags are dealt with in the calibration session (they are its
   // agenda), so the release gate asks for a locked calibration instead of HR flag notes.
@@ -54,9 +54,9 @@ export function releaseBlockers(state: DemoState): Blocker[] {
       : [{
           kind: 'calibration',
           key: 'calibration',
-          text: state.calibration.status === 'in_session' ? 'Calibration is in session: resolve the agenda and lock it' : 'Calibration has not started',
+          text: state.calibration.status === 'in_session' ? 'Final ratings are being agreed: finish the list and lock it' : 'Final ratings are not agreed yet',
           href: '#/hr/calibration',
-          action: 'Open Calibration',
+          action: 'Agree final ratings',
         }];
   return [...open, ...answers, ...cal];
 }
@@ -67,10 +67,10 @@ export function unreviewedFlags(state: DemoState): Blocker[] {
   const waiting = flagsAwaitingAnswerDecision(state);
   const gaps: Blocker[] = managerConsistency(state)
     .filter((m) => m.flagged && !m.review && !waiting.keys.has(m.key))
-    .map((m) => ({ kind: 'flag', key: m.key, text: `${name(m.reviewerId)}'s ratings: ${m.status} results`, href: '#/hr/consistency', action: 'Check in Consistency' }));
+    .map((m) => ({ kind: 'flag', key: m.key, text: `${name(m.reviewerId)}'s ratings: ${m.status} results`, href: '#/hr/consistency', action: 'Check in Fairness' }));
   const far: Blocker[] = farFlags(state)
     .filter((f) => !f.review && !waiting.keys.has(f.key) && !waiting.personIds.has(f.personId))
-    .map((f) => ({ kind: 'flag', key: f.key, text: `${name(f.personId)}'s rating: ${f.direction} results`, href: '#/hr/consistency', action: 'Check in Consistency' }));
+    .map((f) => ({ kind: 'flag', key: f.key, text: `${name(f.personId)}'s rating: ${f.direction} results`, href: '#/hr/consistency', action: 'Check in Fairness' }));
   return [...gaps, ...far];
 }
 

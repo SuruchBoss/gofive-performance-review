@@ -47,19 +47,19 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
                 {submitted && finalRating(review) && <span className="result-hero-word">{LEVEL_WORDS[finalRating(review)!]}</span>}
               </div>
               <span className="s">on a 1–5 scale · {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}{participant?.escalatedFrom && <> (moved from {person(state, participant.escalatedFrom).name} after a missed deadline)</>}</> : 'Not submitted yet'}
-                {review.calibratedOverall && <><br /><strong className="cal-new">Calibrated from {review.overall} to {review.calibratedOverall}</strong> across teams</>}</span>
+                {review.calibratedOverall && <><br /><strong className="cal-new">Changed from {review.overall} to {review.calibratedOverall}</strong> when managers agreed final ratings</>}</span>
             </div>
           </Panel>
           <div className="inputs-head">
             <h2 className="section-label">The two inputs to this rating</h2>
-            <p className="small muted">Your manager decided the overall rating, informed by these two scores{review.calibratedOverall ? ', and managers then aligned it across teams in calibration' : ''}.</p>
+            <p className="small muted">Your manager decided the overall rating, informed by these two scores{review.calibratedOverall ? ', and managers then agreed the final rating across teams' : ''}.</p>
           </div>
           <div className="grid-2 inputs-row">
             <Panel>
               <button type="button" className="score-tile link input-tile" onClick={() => jump('goals')}>
                 <span className="l">1 · Goal results</span>
                 <span className="v num">{pct(sug.results)}</span>
-                <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
+                <span className="s">of goal targets. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
               </button>
             </Panel>
             <Panel>
@@ -80,7 +80,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
               {submitted && finalRating(review) && <span className="level-word">{LEVEL_WORDS[finalRating(review)!]}</span>}
               <span className="s">
                 {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}{participant?.escalatedFrom && <> (moved from {person(state, participant.escalatedFrom).name} after a missed deadline)</>}</> : 'Not submitted yet'}
-                {review.calibratedOverall && <><br /><strong className="cal-new">Calibrated from {review.overall} to {review.calibratedOverall}</strong> across teams</>}
+                {review.calibratedOverall && <><br /><strong className="cal-new">Changed from {review.overall} to {review.calibratedOverall}</strong> when managers agreed final ratings</>}
               </span>
             </div>
           </Panel>
@@ -88,7 +88,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             <button type="button" className="score-tile link" onClick={() => jump('goals')}>
               <span className="l">Goal results</span>
               <span className="v num">{pct(sug.results)}</span>
-              <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
+              <span className="s">of goal targets. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
             </button>
           </Panel>
           <Panel>
@@ -113,12 +113,12 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             {review.deviationReason && (<><dt>Why it differs from results</dt><dd>{review.deviationReason}</dd></>)}
             {review.overallEvidence && (<><dt>Example</dt><dd>{review.overallEvidence}</dd></>)}
             {review.comment && (<><dt>Comment</dt><dd>{review.comment}</dd></>)}
-            {review.calibratedOverall && (<><dt>Calibration</dt><dd>Changed from {review.overall} to {review.calibratedOverall} when managers aligned ratings across teams. Reason: {review.calibrationReason}</dd></>)}
+            {review.calibratedOverall && (<><dt>Final rating</dt><dd>Changed from {review.overall} to {review.calibratedOverall} when managers agreed final ratings across teams. Reason: {review.calibrationReason}</dd></>)}
             {review.selfReviewMissing && (<><dt>Self-review</dt><dd><Badge tone="warning">Missing when reviewed</Badge></dd></>)}
             {!review.deviationReason && !review.overallEvidence && !review.comment && (<><dt>Comments</dt><dd className="muted">The manager wrote no comments. None were required, because the rating is within 1 of what goal results suggest and is not a 1, 2 or 5.</dd></>)}
             {audience === 'hr' && review.returns?.map((x, i) => (
               <Fragment key={i}>
-                <dt>Returned by HR</dt>
+                <dt>Sent back by HR</dt>
                 <dd>
                   {formatDate(x.on)}: “{x.question}”
                   <br />

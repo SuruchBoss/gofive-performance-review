@@ -25,7 +25,7 @@ describe('removing a person from the cycle', () => {
     expect(reduce(s, { type: 'remove', personId: 'e08', reason: '', actorId: 'hr' })).toBe(s);
     const t = reduce(s, { type: 'remove', personId: 'e08', reason: 'Joined 3 Oct', actorId: 'hr' });
     expect(caseInfo(t, 'e08').status).toBe('removed');
-    expect(t.log.at(-1)).toMatchObject({ type: 'removal', detail: 'Removed Fah Inthira from the cycle. Reason: Joined 3 Oct' });
+    expect(t.log.at(-1)).toMatchObject({ type: 'removal', detail: 'Left Fah Inthira out of this review. Reason: Joined 3 Oct' });
   });
 
   it('drops the person out of the manager gap and the flags', () => {

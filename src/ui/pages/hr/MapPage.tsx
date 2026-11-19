@@ -54,7 +54,7 @@ export function MapPage({ reviewerId }: { reviewerId?: string }) {
                       <a href={hrefFor(p.personId)} className="plain-link">
                         <PersonCell name={who.name} sub={teamName(state, p.teamId)} size="sm" />
                       </a>
-                      {p.flagged && <div style={{ marginTop: 4 }}><Badge tone="warning">Rating 1.0+ from results</Badge></div>}
+                      {p.flagged && <div style={{ marginTop: 4 }}><Badge tone="warning">1 or more away from results</Badge></div>}
                     </td>
                     <td className="num">{p.results.toFixed(1)}</td>
                     <td className="num">{p.behaviour.toFixed(1)}</td>

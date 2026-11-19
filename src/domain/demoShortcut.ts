@@ -15,28 +15,17 @@ import type { DemoState, Rating } from './types';
  */
 export const DEMO_TEXT = 'Demo shortcut: filled in automatically so the demo can reach release.';
 
-export function skipToRelease(start: DemoState): DemoState {
-  if (start.cycle.status !== 'open') return start;
-  let s = reduce(start, {
-    type: 'demo_note',
-    detail: 'Demo shortcut used. The demo did the remaining steps below, each under the normal rules and logged as usual.',
-  });
-  const active = () => s.participants.filter((p) => !p.removed);
-
-  // 1. People who joined too late are removed with a reason, as HR would.
-  for (const p of active()) {
-    const r = s.managerReviews.find((x) => x.personId === p.personId);
-    const who = s.people.find((x) => x.id === p.personId)!;
-    if (r?.status !== 'submitted' && eligibilityHint(s, who)) {
-      s = reduce(s, { type: 'remove', personId: p.personId, reason: `${eligibilityHint(s, who)} (${DEMO_TEXT})`, actorId: 'hr' });
-    }
-  }
-
-  // 2. Open reviews are finished by their current reviewer. Ratings already chosen are kept;
-  //    a missing overall rating takes the rounded suggestion, so no reason is needed.
-  for (const p of active()) {
+/**
+ * Open reviews are finished by their current reviewer, through the normal actions.
+ * Ratings already chosen are kept; a missing overall rating takes the rounded
+ * suggestion, so no reason is needed.
+ */
+function finishOpenReviews(start: DemoState, leaveIneligibleToHr: boolean): DemoState {
+  let s = start;
+  for (const p of s.participants.filter((x) => !x.removed)) {
     const r = s.managerReviews.find((x) => x.personId === p.personId)!;
     if (r.status === 'submitted') continue;
+    if (leaveIneligibleToHr && eligibilityHint(s, s.people.find((x) => x.id === p.personId)!)) continue;
     const suggested = suggestionFor(s, p.personId);
     const fill = (v?: string) => (v?.trim() ? v : DEMO_TEXT);
     s = reduce(s, {
@@ -67,6 +56,40 @@ export function skipToRelease(start: DemoState): DemoState {
       answer: openReturn(draft) ? `Rating kept. ${DEMO_TEXT}` : undefined,
     });
   }
+  return s;
+}
+
+/**
+ * Demo shortcut for someone playing HR: the managers finish the reviews they still owe.
+ * People who should not be reviewed yet are left for HR to decide, and so are HR's own
+ * checks and the release.
+ */
+export function finishManagerReviews(start: DemoState): DemoState {
+  if (start.cycle.status !== 'open') return start;
+  const s = reduce(start, { type: 'demo_note', detail: 'Demo shortcut used: the managers finished their open reviews. Each one is logged below as usual.' });
+  const out = finishOpenReviews(s, true);
+  return out === s ? start : out;
+}
+
+export function skipToRelease(start: DemoState): DemoState {
+  if (start.cycle.status !== 'open') return start;
+  let s = reduce(start, {
+    type: 'demo_note',
+    detail: 'Demo shortcut used. The demo did the remaining steps below, each under the normal rules and logged as usual.',
+  });
+  const active = () => s.participants.filter((p) => !p.removed);
+
+  // 1. People who joined too late are removed with a reason, as HR would.
+  for (const p of active()) {
+    const r = s.managerReviews.find((x) => x.personId === p.personId);
+    const who = s.people.find((x) => x.id === p.personId)!;
+    if (r?.status !== 'submitted' && eligibilityHint(s, who)) {
+      s = reduce(s, { type: 'remove', personId: p.personId, reason: `${eligibilityHint(s, who)} (${DEMO_TEXT})`, actorId: 'hr' });
+    }
+  }
+
+  // 2. Open reviews are finished by their current reviewer.
+  s = finishOpenReviews(s, false);
 
   // 3. HR accepts any answers from managers.
   for (const r of s.managerReviews) {

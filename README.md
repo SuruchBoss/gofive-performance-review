@@ -4,40 +4,45 @@ A clickable prototype of one annual performance review cycle, with HR, manager a
 
 **Live prototype:** https://suruchboss.github.io/gofive-performance-review/
 
-**Requirement change from question 2 (calibration):** https://suruchboss.github.io/gofive-performance-review/calibration/ is built from the `calibration` branch. It is not merged into `main`. On that build, release needs a locked calibration instead of HR flag notes, because the flags become the calibration agenda; the other release conditions are the same.
+**Requirement change from question 2 (calibration):** https://suruchboss.github.io/gofive-performance-review/calibration/ is built from the `calibration` branch. It is not merged into `main`. On that build, release needs a locked calibration instead of HR's notes on ratings to check, because those ratings become the calibration agenda; the other release conditions are the same.
 
-Demo data only. The company, people and numbers are fictional. There is no backend, no login and no email. State is kept in your browser; **Demo ▾ → Reset demo** restores the starting data. This is a concept for empeo, not an empeo product, and uses none of empeo's branding.
+Demo data only. The company, people and numbers are fictional. There is no backend, no login and no email. State is kept in your browser; **More → Reset demo** in the dark demo bar restores the starting data. This is a concept for empeo, not an empeo product, and uses none of empeo's branding.
 
 ## What to try first
 
-The link opens a short start page with three choices: **Try as HR**, **Try as Manager** (Tom Wattana) and **Try as Employee** (Ying Chen). Each opens the demo in that role, with a guide for it: five steps for HR, three for the manager and three for the employee. Each step names the role it uses, switches to it for you, and ticks itself off when done. After the first screen the guide shrinks to one line with the next step. All prototype controls (switch role or person, **+1 day**, **Reset demo**, **Exit demo** back to the start page) sit in the **Demo ▾** menu at the top.
+The link opens a short start page. **Try as HR** is the place to start: it shows a full review cycle. **Try as Manager** (Tom Wattana) and **Try as Employee** (Ying Chen) open the same review from the other sides.
 
-The first time you open a guide, on-screen tips highlight the exact control to use next, with a short note. **Skip** turns them off for that guide; **Demo ▾ → Show tips again** turns them back on.
+There is no guide to follow. Each person opens on a home that lists what they have to do now:
 
-The HR guide:
+- **HR (Pim):** the review's status and **Needs your attention**:
+  1. one person joined less than 3 months ago, and the system suggests leaving them out (**Leave Fah out**);
+  2. two reviews are late (**Remind**);
+  3. four ratings do not match results (**Check fairness**: mark a rating as checked, or **send it back with a question**, then accept the manager's answer or ask again).
+  
+  **Release results** unlocks when the list is empty.
+- **Manager (Tom):** "2 reviews to write", one row per person. A row opens the review, a three-part form: what the data says, your rating, send. **← Back to my team** returns to the list.
+- **Employee (Ying):** one card, "Write your self-review". After release it becomes "Your result is ready".
 
-1. **HR → Progress:** three reviews are overdue. One is for Fah, a new joiner who should not be in this cycle: remove Fah with a reason.
-2. **Manager (Tom Wattana) → Orn's review:** goal results suggest a 3. Try a 5 to see the reason and evidence rules.
-3. **HR → Consistency:** Sales rates above its own results and Support rates below. Mark a flag reviewed, or **Return to manager** with a question. When the manager answers, **accept the answer or ask again**.
-4. **Press +1 day twice:** an open review escalates to the reviewer's own manager 3 days after its deadline. If you did steps 1 and 2, only Ying's review is still open, and it moves to Anong Rattanakul, the Managing Director. See it in **Activity**.
-5. **Release:** clear what the **Overview** checklist lists, release, then see a result as an employee.
+Everything that exists only for the demo sits in the dark bar at the top, apart from the product:
 
-On the Employee path, the locked **My result** page has a clearly marked **Demo shortcut: skip to released results**. It plays HR and the managers for you through the normal actions, so every rule still applies, and logs each step.
+- **You are:** switch person.
+- **+1 day:** move the date. A late review moves to the manager's own manager 3 days after its deadline.
+- **More:** two shortcuts ("Let the managers finish their reviews" and "Skip to released results"), About, Reset and Exit. The shortcuts use the normal actions, as the people who would do them, so every rule still applies and every step is logged.
 
 ## How fairness works here
 
 - **Anchors:** every rating level of every behaviour has a written description.
 - **Suggested rating from measured goal results:** 100% of target suggests a 3, and each 20 points moves it one level (shown to one decimal). It uses goal results only, so it stays independent of the manager's own ratings. A rating 1.0 or more away from the suggestion needs a written reason.
 - **Evidence:** an overall rating of 1, 2 or 5 needs a specific example (at least 40 characters).
-- **Consistency check:** each manager's average rating is compared with what their own team's results suggest. A gap of 0.75 or more (with at least 3 submitted reviews) is flagged for HR, and so is any single rating 1.0 or more from its suggestion. There is no forced distribution and no comparison across teams.
-- **Return to manager:** HR can send a flagged review back with a question. The review reopens for its manager, who changes the rating or keeps it and answers. HR then accepts the answer or asks again. Every step is logged.
+- **Fairness check:** each manager's average rating is compared with what their own team's results suggest. A gap of 0.75 or more (with at least 3 submitted reviews) needs a check by HR, and so does any single rating 1.0 or more from its suggestion. There is no forced distribution and no comparison across teams.
+- **Send back with a question:** HR can send a review back to its manager with a question. The review reopens for its manager, who changes the rating or keeps it and answers. HR then accepts the answer or asks again. Every step is logged.
 - **Results map:** measured results against manager-rated behaviour. Every score links to where it came from.
 - **When things go wrong:**
   - a missing self-review is recorded, and the employee can still submit late until the manager finishes;
   - HR can remind, or extend a deadline per person with a reason;
-  - an open review escalates to the manager's own manager 3 days after its deadline;
-  - HR can remove an ineligible person (joined under 3 months before the period end) with a reason.
-- **Release gate:** results stay locked until every manager review is submitted (ineligible people removed), every flag is reviewed by HR, every review returned to a manager has been answered, and HR has accepted each answer. Everyone then sees their result at the same time.
+  - an open review moves to the manager's own manager 3 days after its deadline;
+  - HR can leave out a person who should not be reviewed yet (joined under 3 months before the period end), with a reason. The system suggests it; HR confirms.
+- **Release gate:** results stay locked until every manager review is submitted (ineligible people removed), every rating that needs a check has been checked by HR, every review sent back to a manager has been answered, and HR has accepted each answer. Everyone then sees their result at the same time.
 
 All thresholds are in [`src/domain/config.ts`](src/domain/config.ts). The full design is in [`docs/DESIGN.md`](docs/DESIGN.md).
 
@@ -82,10 +87,9 @@ From the first commit after the brief (21:43) to the deploy workflow (22:32): **
 ```bash
 npm ci
 npm run dev        # http://localhost:5173
-npm test           # unit tests for the rating, flag, deadline, return and release rules
+npm test           # unit tests for the rules and for what each home lists
 npm run build
 npm run e2e        # browser click-through at 1280px and 390px (needs Playwright + Chromium)
-npm run e2e:tips   # the three guides with on-screen tips at 320, 375, 412 and 1366px
 ```
 
 Stack: React 18, TypeScript, Vite and Vitest, with plain CSS. Each push to `main` runs the tests and deploys to GitHub Pages ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).

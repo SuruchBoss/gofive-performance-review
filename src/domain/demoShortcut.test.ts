@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSeed } from '../data/seed';
 import { reduce } from './actions';
-import { skipToRelease } from './demoShortcut';
+import { finishManagerReviews, skipToRelease } from './demoShortcut';
 import { allFlags } from './flags';
 import { reviewProblems } from './rating';
 
@@ -54,6 +54,19 @@ describe('demo shortcut: skip to released results', () => {
     const out = skipToRelease(s);
     expect(out.cycle.status).toBe('released');
     expect(out.managerReviews.find((r) => r.personId === 'e11')!.deviationReason).toMatch(/^Demo shortcut/);
+  });
+
+  it('"managers finish their reviews" leaves HR\'s work to HR', () => {
+    const s = finishManagerReviews(createSeed());
+    // Tom's two open reviews are in; the new joiner is left for HR to decide.
+    expect(s.managerReviews.filter((r) => r.status !== 'submitted').map((r) => r.personId)).toEqual(['e08']);
+    expect(s.participants.find((p) => p.personId === 'e08')!.removed).toBeUndefined();
+    expect(s.cycle.status).toBe('open');
+    expect(allFlags(s).some((f) => !f.reviewed)).toBe(true);
+    for (const r of s.managerReviews.filter((x) => x.status === 'submitted')) expect(reviewProblems(r, r.suggestedAtSubmit!)).toEqual([]);
+    expect(s.log.some((l) => l.type === 'demo_shortcut')).toBe(true);
+    // Nothing left for managers: a second use changes nothing.
+    expect(finishManagerReviews(s)).toBe(s);
   });
 
   it('does nothing once results are released', () => {

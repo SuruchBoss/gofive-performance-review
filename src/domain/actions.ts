@@ -133,7 +133,7 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
         actorId: action.actorId,
         type: 'removal',
         targetId: action.personId,
-        detail: `Removed ${person(state, p.personId).name} from the cycle. Reason: ${reason}`,
+        detail: `Left ${person(state, p.personId).name} out of this review. Reason: ${reason}`,
       });
     }
     case 'start_calibration': {
@@ -221,7 +221,7 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
         actorId: action.actorId,
         type: 'returned_to_manager',
         targetId: action.personId,
-        detail: `${again ? 'Asked again about' : 'Returned'} ${person(state, action.personId).name}'s review ${again ? 'with' : 'to'} ${person(state, review.reviewerId).name}. Question: ${question}`,
+        detail: `${again ? 'Asked again about' : 'Sent back'} ${person(state, action.personId).name}'s review ${again ? 'with' : 'to'} ${person(state, review.reviewerId).name}. Question: ${question}`,
       });
     }
     case 'accept_answer': {
@@ -254,7 +254,7 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
       const note = action.note.trim();
       if (!note || state.flagReviews.some((f) => f.flagKey === action.flagKey)) return state;
       const next = { ...state, flagReviews: [...state.flagReviews, { flagKey: action.flagKey, note, by: action.actorId, on: state.today }] };
-      return withLog(next, { actorId: action.actorId, type: 'flag_reviewed', detail: `Reviewed flag: ${action.label}. Note: ${note}` });
+      return withLog(next, { actorId: action.actorId, type: 'flag_reviewed', detail: `Checked: ${action.label}. Note: ${note}` });
     }
     case 'reset':
       return createSeed();

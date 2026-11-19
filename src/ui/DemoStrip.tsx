@@ -5,7 +5,7 @@ import { employeesForPicker, reviewersForPicker, teamName } from '../domain/sele
 import { useStore, type Role } from '../state/store';
 import { go } from '../state/router';
 import { Dialog } from './components';
-import { tips } from './coach/tips';
+import { AboutDialog } from './shared/About';
 
 export const HOME: Record<Role, string> = { hr: '/hr', manager: '/manager', employee: '/me' };
 
@@ -19,19 +19,24 @@ export function useAdvanceDay() {
     dispatch({ type: 'advance_day' });
     notify(
       moved > 0
-        ? `${formatDate(addDays(state.today, 1))}: ${moved} overdue review${moved === 1 ? '' : 's'} moved to the next manager up. See Progress or Activity.`
+        ? `${formatDate(addDays(state.today, 1))}: ${moved} late review${moved === 1 ? '' : 's'} moved to the manager's own manager. HR sees it in Activity.`
         : `Demo date moved to ${formatDate(addDays(state.today, 1))}`,
     );
   };
 }
 
-export function DemoStrip({ who }: { who: string }) {
+/**
+ * Everything that exists only for the demo lives in this one bar: who you are,
+ * the demo date, and shortcuts. Nothing here is part of the product below it.
+ */
+export function DemoStrip() {
   const { state, dispatch, view, setView, notify } = useStore();
   const advanceDay = useAdvanceDay();
   const [confirmReset, setConfirmReset] = useState(false);
+  const [about, setAbout] = useState(false);
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
-  const roleName = { hr: 'HR', manager: 'Manager', employee: 'Employee' } as const;
+  const released = state.cycle.status === 'released';
 
   // The menu closes on Escape or a tap outside it.
   useEffect(() => {
@@ -48,65 +53,85 @@ export function DemoStrip({ who }: { who: string }) {
     };
   }, [open]);
 
-  const switchRole = (role: Role) => {
-    setView({ role });
-    // After release, an employee's first question is their result.
-    go(role === 'employee' && state.cycle.status === 'released' ? '/me/result' : HOME[role]);
+  // One list of people: choosing a name switches to that person's own home.
+  const current = view.role === 'hr' ? 'hr' : view.role === 'manager' ? `m:${view.managerId}` : `e:${view.employeeId}`;
+  const become = (value: string) => {
+    if (value === 'hr') { setView({ role: 'hr' }); go(HOME.hr); return; }
+    const id = value.slice(2);
+    if (value.startsWith('m:')) { setView({ role: 'manager', managerId: id }); go(HOME.manager); return; }
+    setView({ role: 'employee', employeeId: id });
+    go(HOME.employee);
   };
+  const hr = state.people.find((p) => p.id === 'hr');
+  // One short line of demo help, never more.
+  const managersOwe = state.participants.some((p) => !p.removed && state.managerReviews.find((r) => r.personId === p.personId)?.status !== 'submitted');
+  const tip = released
+    ? 'Results are released. Switch person to see a result.'
+    : view.role === 'hr' && managersOwe
+    ? 'Demo tip: reviews still open? “More” can let the managers finish them.'
+    : view.role === 'employee'
+    ? 'Demo tip: result locked? “More” can skip to released results.'
+    : 'Demo tip: switch person to see the same review from the other side.';
 
   return (
     <div className="demo-bar" ref={wrap}>
-      <span className="demo-label">Prototype</span>
-      <span className="demo-summary">
-        <span className="demo-who">{roleName[view.role]} · {who}</span>
+      <span className="demo-label">Demo</span>
+      <label className="demo-you">
+        <span>You are</span>
+        <select aria-label="You are" value={current} onChange={(e) => become(e.target.value)}>
+          <optgroup label="HR">
+            <option value="hr">{hr?.name ?? 'HR'} · HR</option>
+          </optgroup>
+          <optgroup label="Managers">
+            {reviewersForPicker(state).map((p) => (
+              <option key={p.id} value={`m:${p.id}`}>{p.name} · {p.teamId ? `${teamName(state, p.teamId)} manager` : p.title}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Employees">
+            {employeesForPicker(state).map((p) => (
+              <option key={p.id} value={`e:${p.id}`}>{p.name} · {p.teamId ? teamName(state, p.teamId) : p.title}</option>
+            ))}
+          </optgroup>
+        </select>
+      </label>
+      <span className="demo-tip">{tip}</span>
+      <span className="demo-clock">
         <span className="demo-date num">{weekday(state.today)} {formatDate(state.today)}</span>
+        <button type="button" className="demo-btn" onClick={advanceDay}>+1 day</button>
       </span>
       <button type="button" className="demo-btn demo-menu-btn" aria-expanded={open} aria-controls="demo-menu" onClick={() => setOpen((o) => !o)}>
-        Demo <span aria-hidden="true">{open ? '▴' : '▾'}</span>
+        More <span aria-hidden="true">{open ? '▴' : '▾'}</span>
       </button>
       {open && (
-        <div className="demo-menu" id="demo-menu" role="group" aria-label="Demo controls">
-          <div className="demo-menu-sec">
-            <div className="demo-menu-label">View as</div>
-            <div className="seg" role="group" aria-label="View as role">
-              {(['hr', 'manager', 'employee'] as Role[]).map((r) => (
-                <button key={r} type="button" aria-pressed={view.role === r} onClick={() => switchRole(r)}>
-                  {roleName[r]}
-                </button>
-              ))}
+        <div className="demo-menu" id="demo-menu" role="group" aria-label="More demo controls">
+          {!released && (
+            <div className="demo-menu-sec">
+              <div className="demo-menu-label">Demo shortcuts</div>
+              <p className="small muted">Each shortcut uses the normal actions, as the people who would do them, and logs every step.</p>
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={() => { dispatch({ type: 'demo_finish_reviews' }); setOpen(false); notify('Demo: the managers finished their open reviews'); }}
+              >
+                Let the managers finish their reviews
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={() => { dispatch({ type: 'demo_skip_to_release' }); setOpen(false); notify('Demo: results released. Every step is in HR → Activity.'); }}
+              >
+                Skip to released results
+              </button>
             </div>
-            {view.role === 'manager' && (
-              <select className="select" aria-label="Manager" value={view.managerId} onChange={(e) => { setView({ managerId: e.target.value }); go(HOME.manager); setOpen(false); }}>
-                {reviewersForPicker(state).map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}{p.teamId ? ` · ${teamName(state, p.teamId)}` : ` · ${p.title}`}</option>
-                ))}
-              </select>
-            )}
-            {view.role === 'employee' && (
-              <select className="select" aria-label="Employee" value={view.employeeId} onChange={(e) => { setView({ employeeId: e.target.value }); go(HOME.employee); setOpen(false); }}>
-                {employeesForPicker(state).map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-            )}
-          </div>
-          <div className="demo-menu-sec">
-            <div className="demo-menu-label">Demo date</div>
-            <div className="row">
-              <span className="strong num">{weekday(state.today)} {formatDate(state.today)}</span>
-              <button type="button" className="btn btn-sm" onClick={advanceDay}>+1 day</button>
-            </div>
-          </div>
+          )}
           <div className="demo-menu-sec demo-menu-actions">
-            {view.introHidden && (
-              <button type="button" className="btn btn-sm" onClick={() => { setView({ introHidden: false }); setOpen(false); window.scrollTo(0, 0); }}>Show the guide</button>
-            )}
-            <button type="button" className="btn btn-sm" onClick={() => { tips.showAgain(); setOpen(false); notify('Tips are on again for every guide'); }}>Show tips again</button>
+            <button type="button" className="btn btn-sm" onClick={() => { setAbout(true); setOpen(false); }}>About this prototype</button>
             <button type="button" className="btn btn-sm" onClick={() => { setConfirmReset(true); setOpen(false); }}>Reset demo</button>
             <button type="button" className="btn btn-sm" onClick={() => go('/')} title="Back to the start page">Exit demo</button>
           </div>
         </div>
       )}
+      {about && <AboutDialog onClose={() => setAbout(false)} />}
       {confirmReset && (
         <Dialog
           title="Reset the demo?"
@@ -120,7 +145,6 @@ export function DemoStrip({ who }: { who: string }) {
                 className="btn btn-primary"
                 onClick={() => {
                   dispatch({ type: 'reset' });
-                  setView({ introHidden: false });
                   setConfirmReset(false);
                   go(HOME[view.role]);
                   notify('Demo reset to the starting data');
@@ -131,7 +155,7 @@ export function DemoStrip({ who }: { who: string }) {
             </>
           }
         >
-          <p className="small muted">Use this to start the guided path again.</p>
+          <p className="small muted">Use this to start again from the beginning.</p>
         </Dialog>
       )}
     </div>

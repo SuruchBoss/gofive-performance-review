@@ -7,7 +7,7 @@ export function FlagReviewDialog({ flagKey, label, context, onClose }: { flagKey
   const [note, setNote] = useState('');
   return (
     <Dialog
-      title="Mark flag as reviewed"
+      title="Mark as checked"
       sub={context}
       onClose={onClose}
       footer={
@@ -20,18 +20,18 @@ export function FlagReviewDialog({ flagKey, label, context, onClose }: { flagKey
             disabled={!note.trim()}
             onClick={() => {
               dispatch({ type: 'review_flag', flagKey, note, actorId: 'hr', label });
-              notify('Flag marked as reviewed');
+              notify('Marked as checked');
               onClose();
             }}
           >
-            Mark reviewed
+            Mark as checked
           </button>
         </>
       }
     >
       <div className="field">
         <label htmlFor="flag-note">What did you check, and what was the outcome?</label>
-        <span className="hint">Saved in the activity log. Reviewing a flag does not change any rating.</span>
+        <span className="hint">Saved in the activity log. Marking it as checked does not change any rating.</span>
         <textarea id="flag-note" className="textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: talked to the manager; the reason holds because…" />
       </div>
     </Dialog>

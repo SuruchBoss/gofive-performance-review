@@ -20,11 +20,11 @@ export function CaseBadge({ c }: { c: CaseInfo }) {
     case 'submitted':
       return <Badge tone="success">Review submitted</Badge>;
     case 'removed':
-      return <Badge>Removed</Badge>;
+      return <Badge>Left out</Badge>;
     case 'returned':
-      return <Badge tone="warning">Returned by HR</Badge>;
+      return <Badge tone="warning">Sent back by HR</Badge>;
     case 'escalated':
-      return <Badge tone="danger">Review escalated</Badge>;
+      return <Badge tone="danger">Moved to their manager</Badge>;
     case 'overdue':
       return <Badge tone="warning">Review {c.daysOverdue} day{c.daysOverdue === 1 ? '' : 's'} overdue</Badge>;
     default:

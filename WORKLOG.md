@@ -1190,3 +1190,28 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
 - The reason for a rating change in calibration is a different field and was not touched.
 - Checks: 146 unit tests passed. e2e PASS at 1280 px and 390 px. `e2e:tips` PASS at all four widths.
 - The merge was interrupted once by a new PO message and finished afterwards; nothing was lost.
+## PLAN-4: plain and clear (plan only, on `main`)
+
+- **Started:** 19 Nov 2026, about 22:30 UTC+7.
+- **PO request:** a usability round before submitting. Six findings from the PO's own test and six decisions; the plan must also say what to cut, hide or merge.
+- **Decision 6** (reason needs 20 characters) was already built and deployed on both builds in the entry above. Its `calibration` merge was interrupted by this ticket and finished afterwards.
+- **Audit:** done with the `web-uxui-design` skill in audit mode, on the live main build at 375 px and 1366 px. Findings, scores and measurements (words per screen, page height, position of the first rating control) are in `docs/PLAN-4.md`.
+- **Plan:** `docs/PLAN-4.md` holds the audit next to the PO's findings, five proposed cuts, the word list (old → new), the rewritten guide steps, 8 commits and 5 questions.
+- **Stopped here:** waiting for PO approval, per working rule 4.
+
+## PLAN-5: task-first homes, no guide (plan only, on `main`)
+
+- **PO change of direction** before PLAN-4 was approved: design it as a real HR product. Each role opens on a home that lists what to do now; that list is the guide; the step guide and the tips go; eligibility is a suggestion HR confirms; the review page reads as a form; role switching lives only in a separate demo bar.
+- **Done:** `docs/PLAN-5.md`, with what is kept, cut and rebuilt, mock-ups of the three homes and the review page, 8 commits with a rough time estimate (about 3 hours), and 6 questions. PLAN-4 is marked as replaced; its audit and word list still apply.
+- **Worth noting:** the plan removes the on-screen tips built earlier the same day (PLAN-3). This follows the PO's instruction; the code stays in git history.
+- **Stopped here:** waiting for PO approval.
+
+## PLAN-5 on the `calibration` build
+
+- **Merged** `main` (4eef2fb). The guide, the tips and their tests were deleted on `main`; this branch's edited copies were deleted too. `release.ts` kept this build's gate with the new wording.
+- **This build's own changes:**
+  - HR home has one more attention group, "Final ratings are not agreed yet". It explains calibration once ("managers meet and agree final ratings across teams") and links to the step when every review is in.
+  - On this build, ratings that do not match results are the list for that meeting, so HR home does not list them as a separate group.
+  - Tab "Final ratings"; page "Agree final ratings"; "Start the meeting", "To discuss", "Lock final ratings". Results and manager screens say "Changed from 5 to 4 when managers agreed final ratings".
+  - The manager home shows whether final ratings are being agreed, and any change to a team member's rating.
+- **Tests:** 135 unit tests passed (the home-list tests are adjusted for this build's gate). e2e PASS at 1280 px and 390 px (19 screens, including the meeting, a 5 → 4 change, lock and release). No sideways scroll on 13 screens from 320 to 500 px. No header or demo-bar overlap from 320 to 900 px.

@@ -7,9 +7,7 @@ import { Shell, type NavItem } from './ui/Shell';
 import { DemoStrip } from './ui/DemoStrip';
 import { IconCheck } from './ui/icons';
 import { navFor, routeFor } from './ui/routes';
-import { Intro } from './ui/shared/Intro';
 import { Landing } from './ui/Landing';
-import { Coachmarks } from './ui/coach/Coachmarks';
 
 function roleOfPath(path: string): Role | undefined {
   if (path.startsWith('/hr')) return 'hr';
@@ -32,11 +30,6 @@ function Frame() {
     if (!pathRole) go('/');
     else if (pathRole !== view.role) setView({ role: pathRole });
   }, [isLanding, pathRole, view.role, setView]);
-  // Remember visited screens for guide steps that are about seeing something.
-  useEffect(() => {
-    const base = path.split('?')[0];
-    if (!isLanding && !(view.seen ?? []).includes(base)) setView({ seen: [...(view.seen ?? []), base] });
-  }, [path, isLanding, view.seen, setView]);
   // Links such as "Open as Anong" carry ?as=<person> so the right manager is selected.
   useEffect(() => {
     if (pathRole === 'manager' && asId && asId !== view.managerId) setView({ managerId: asId });
@@ -53,21 +46,14 @@ function Frame() {
   return (
     <>
       <Shell
-        demoStrip={<DemoStrip who={user.name} />}
+        demoStrip={<DemoStrip />}
         user={{ name: user.name, role: user.title }}
         navTitle={role === 'hr' ? 'HR' : role === 'manager' ? 'Manager' : 'My review'}
         nav={nav}
         current={`#${route.navKey}`}
       >
-        <Intro />
-        {role !== 'hr' && (
-          <p className="viewing-as">
-            Viewing as <strong>{user.name}</strong>, {user.title}. To be someone else, open Demo ▾ at the top.
-          </p>
-        )}
         {route.element}
       </Shell>
-      <Coachmarks role={role} userId={userId} path={path} />
       {toast && (
         <div className="toast" role="status">
           <IconCheck size={16} /> {toast}

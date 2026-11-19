@@ -1,11 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from 'react';
 import { createSeed, SEED_VERSION } from '../data/seed';
 import { reduce, type Action } from '../domain/actions';
-import { skipToRelease } from '../domain/demoShortcut';
+import { finishManagerReviews, skipToRelease } from '../domain/demoShortcut';
 
 /** Store actions: the product's actions plus the demo shortcut, which only replays product actions. */
-export type StoreAction = Action | { type: 'demo_skip_to_release' };
-const storeReduce = (s: DemoState, a: StoreAction): DemoState => (a.type === 'demo_skip_to_release' ? skipToRelease(s) : reduce(s, a));
+export type StoreAction = Action | { type: 'demo_skip_to_release' } | { type: 'demo_finish_reviews' };
+const storeReduce = (s: DemoState, a: StoreAction): DemoState => (a.type === 'demo_skip_to_release' ? skipToRelease(s) : a.type === 'demo_finish_reviews' ? finishManagerReviews(s) : reduce(s, a));
 import type { DemoState } from '../domain/types';
 
 // The calibration build lives on the same site as the main build, so it keeps
@@ -19,14 +19,9 @@ export interface ViewState {
   role: Role;
   managerId: string;
   employeeId: string;
-  introHidden: boolean;
-  /** Which guide is shown (chosen on the landing page). */
-  track?: Role;
-  /** Screens visited, so guide steps such as "see why your result is locked" can tick themselves off. */
-  seen?: string[];
 }
 
-const DEFAULT_VIEW: ViewState = { role: 'hr', managerId: 'm-ops', employeeId: 'e12', introHidden: false };
+const DEFAULT_VIEW: ViewState = { role: 'hr', managerId: 'm-ops', employeeId: 'e12' };
 
 function read<T>(key: string): T | undefined {
   try {

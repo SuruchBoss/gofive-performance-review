@@ -32,7 +32,7 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
         <div className="about-cal">
           <div className="strong">You are in the build for the requirement change from question 2</div>
           <p>
-            Managers calibrate ratings together across teams before results open, and no employee sees a result until calibration is
+            Managers meet and agree final ratings across teams (calibration) before results open, and no employee sees a result until that is
             locked. Built on its own branch (<code>calibration</code>), not merged into the main version.
           </p>
           <a href="../" className="btn btn-sm">← Open the main version</a>

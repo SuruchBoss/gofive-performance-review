@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { AboutDialog } from './shared/About';
 import { IconMark } from './icons';
 import { Avatar } from './components';
 
@@ -22,7 +21,6 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
   aside?: ReactNode;
   children: ReactNode;
 }) {
-  const [about, setAbout] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const [more, setMore] = useState({ left: false, right: false });
 
@@ -61,9 +59,6 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
             </div>
           </div>
           <div className="spacer" />
-          <button type="button" className="link-btn about-link" onClick={() => setAbout(true)} aria-label="About this prototype">
-            About
-          </button>
           <div className="who">
             <div className="who-text" style={{ textAlign: 'right' }}>
               <span className="who-name">{user.name}</span>
@@ -92,7 +87,6 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
           <div className="main-inner">{children}</div>
         </main>
       </div>
-      {about && <AboutDialog onClose={() => setAbout(false)} />}
     </>
   );
 }

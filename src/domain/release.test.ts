@@ -30,7 +30,7 @@ describe('release gate (calibration build)', () => {
     let s = finishAllReviews(createSeed());
     s = reduce(s, { type: 'start_calibration', attendees: ['m-sales', 'm-ops'], actorId: 'hr' });
     expect(canRelease(s)).toBe(false);
-    expect(releaseBlockers(s)[0].text).toMatch(/in session/);
+    expect(releaseBlockers(s)[0].text).toMatch(/being agreed/);
   });
 
   it('releases once calibration is locked, and then locks the cycle', () => {
