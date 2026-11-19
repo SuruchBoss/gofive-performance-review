@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ReviewPatch } from '../../../domain/actions';
 import { CONFIG } from '../../../domain/config';
 import { formatDate } from '../../../domain/dates';
-import { achievement, isFarFromSuggestion, LEVEL_WORDS, ratingsWithoutReason, showSuggestion, needsEvidence, reviewProblems, suggestionFor } from '../../../domain/rating';
+import { achievement, isFarFromSuggestion, LEVEL_WORDS, showSuggestion, needsEvidence, reviewProblems, suggestionFor } from '../../../domain/rating';
 import { firstName, goalsOf, managerReviewOf, person, selfReviewOf, teamName } from '../../../domain/selectors';
 import type { Goal, Rating } from '../../../domain/types';
 import { useStore } from '../../../state/store';
@@ -175,7 +175,6 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
         <div className="stack">
           <h2 className="form-step"><span className="form-step-n" aria-hidden="true">2</span> Your rating</h2>
           <Panel title="Behaviours">
-            <div style={{ marginTop: -4, marginBottom: 16 }}><Explain>{TERMS.anchors}</Explain></div>
             <div className="stack-lg">
               {state.competencies.map((c) => {
                 const b = review.behaviour.find((x) => x.competencyId === c.id)!;
@@ -193,28 +192,18 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             </div>
           </Panel>
 
-          <Panel title="Overall rating" actions={<span className="small muted">Underlined: nearest whole rating to {showSuggestion(suggested)}</span>}>
+          <Panel title="Overall rating">
             <div className="stack">
               <div className="row" style={{ gap: 16 }}>
                 <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} hints={LEVEL_WORDS} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
-                {review.overall !== undefined && (
-                  <span className={`small ${far ? 'strong' : 'muted'} num`}>
-                    {LEVEL_WORDS[review.overall]} · {far && evidence ? 'needs a reason and an example (below)' : far ? 'needs a reason (below)' : evidence ? 'needs an example (below)' : 'nothing else needed'}
-                  </span>
-                )}
+                {review.overall !== undefined && <span className="small strong">{LEVEL_WORDS[review.overall]}</span>}
               </div>
 
-              {!locked && review.overall === undefined && (
-                <p className="rule-line">
-                  Within 1 of the suggestion ({ratingsWithoutReason(suggested).join(' or ')}): no reason needed. Further away: a written reason.
-                  Any 1, 2 or 5: also a specific example.
-                </p>
-              )}
               {far && (
                 <div className="field">
                   <label htmlFor="reason">Why does your rating differ from the goal results?</label>
                   <span className="hint" id="reason-hint">
-                    Required when the rating is {CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more from the suggestion. HR sees it when checking consistency, and the employee sees it with their result.
+                    Your rating is far from the suggested {showSuggestion(suggested)}. HR and {first} will read this.
                   </span>
                   <textarea
                     id="reason"
@@ -233,7 +222,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                 <div className="field">
                   <label htmlFor="evidence">Specific example</label>
                   <span className="hint" id="evidence-hint">
-                    An overall {review.overall} needs a real example: what happened, when, and the effect.
+                    A {review.overall} needs a real example: what happened, and when.
                   </span>
                   <textarea
                     id="evidence"
@@ -287,11 +276,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
               </ul>
             )}
             <div className={`submit-bar${problems.length === 0 ? ' action-bar' : ''}`}>
-              <span className="small muted">
-                {problems.length > 0 ? (
-                  <>{problems.length} thing{problems.length === 1 ? '' : 's'} left before you can submit (listed above).</>
-                ) : 'Ready to submit. Drafts save automatically.'}
-              </span>
+              <span className="small muted">{problems.length > 0 ? '' : 'Ready to submit.'}</span>
               <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>{pending ? (review.overall === pending.ratingBefore ? 'Confirm and send answer' : 'Resubmit with answer') : 'Submit review'}</button>
             </div>
             </>

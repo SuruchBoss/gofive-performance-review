@@ -1289,3 +1289,10 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .concept-tag { display: none; }
   .who .avatar { width: 28px; height: 28px; font-size: 11px; }
 }
+/* The suggested rating is labelled on its own button. */
+.scale.has-marker { margin-bottom: 18px; }
+.scale button { position: relative; }
+.scale-suggested { position: absolute; left: 50%; top: calc(100% + 3px); transform: translateX(-50%); font-size: 11px; font-weight: 600; color: var(--mint-900); white-space: nowrap; }
+.scale.has-marker { overflow: visible; }
+.scale.has-marker button:first-child { border-radius: 5px 0 0 5px; }
+.scale.has-marker button:last-child { border-radius: 0 5px 5px 0; }
