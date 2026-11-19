@@ -1036,3 +1036,61 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
 ## Merge of the final answers into `calibration`
 
 - Merged `main` (927baa6) with no conflicts. On this branch the copied C1–C4 block was replaced by a pointer, because the original entries are already in this log.
+### C2 — HR calibration screen (branch `calibration`)
+
+- **Done:**
+  - **Navigation:** a new HR tab, "Calibration" ("Calibrate" on phones), with a count of cases still to agree.
+  - **Before the session:** says why it cannot start ("3 reviews are still open… See Progress"), lets HR choose who is in the session, and has one main action, "Start calibration session".
+  - **In session:**
+    - Team cards show the average rating before → after against what results suggest, with the gap.
+    - The agenda lists the frozen flags. The next case to discuss is open. A team case lists the team, and each person has "Change rating" (new rating plus a required reason). "Mark as agreed" needs an outcome note.
+    - "Show all 11 people across teams" lets the group change anyone else.
+    - Main action: "Lock calibration", enabled once every case is agreed, with a confirmation.
+  - **After locking:** the list of agreed changes and "Go to release".
+  - **Cycle overview:** the release checklist now asks for "Calibration across teams locked" instead of "Every flag reviewed by HR", and the third figure shows the calibration status.
+- **Checked in the browser (1366 px and 390 px):**
+  - Started blocked (open reviews). Tom submitted Orn and Ying, and HR removed Fah. Then: start, change Nida 5 → 4 with a reason, agree all 4 cases, lock.
+  - The Sales card showed 4.00 → 3.75.
+  - "Go to release" opened the Cycle overview with Release enabled.
+  - No sideways scroll, no console errors.
+- **Tests:** 106 passed.
+- **Who decided:** Developer, under the approved plan and UX rules.
+- **What went wrong:** On phones the team-card text wrapped into four lines. "Results suggest" was shortened to "Results".
+
+### C3 — Manager and employee views of calibration (branch `calibration`)
+
+- **Done:**
+  - **Manager "My team":** a banner while calibration is in progress or locked ("…any change to your team is shown below with the reason. Nothing to do here"). Changed rows show "Calibrated 5 → 4".
+  - **Manager review page:** a notice "Calibrated from 5 to 4" with the group's reason. The submitted notice now says managers calibrate before release.
+  - **Employee "My result":**
+    - While locked, it names calibration as a step ("Results open after every review is in, the managers have calibrated ratings across teams, and HR releases them") and shows its status (not started / in progress / done).
+    - After release, the overall tile shows the final rating with "Calibrated from 5 to 4 across teams", and the assessment lists the reason (PO assumption: employees see it).
+  - **Results map:** uses the final (calibrated) rating.
+  - **Build label:** a filled header tag "Requirement change from question 2" that links back to the main version, and a page title saying it is the calibration build. The About box says which build this is and links to the main version.
+- **Tests:** 106 passed. Checked the label and the locked result at 1366, 390 and 320 px; no sideways scroll.
+- **Who decided:** PO: the label wording. Developer: the placement. Assumption: employees see the calibration change.
+- **What went wrong:** Nothing.
+
+### C4 — Guide and browser test for calibration (branch `calibration`)
+
+- **Done:**
+  - Guide step 5 is now "Calibrate, then release" and opens the Calibration screen. The guide's heading says this is the requirement-change build.
+  - The e2e click-through has these additions:
+    1. It checks the build label.
+    2. After all reviews are in, HR starts calibration, changes Nida 5 → 4 with a reason, agrees every case, and locks.
+    3. HR releases.
+    4. Nida's result shows "Calibrated from 5 to 4".
+  - The old "mark every flag" step was dropped, because flags are now agreed in calibration.
+- **Result:**
+  ```
+  PASS desktop (1280px): guided path complete, 16 screens checked, no sideways scroll, no console errors
+  PASS phone (390px): guided path complete, 16 screens checked, no sideways scroll, no console errors
+  ```
+  Unit tests: 106 passed.
+- **Note:** The `docs/ANSWERS.md` update for Q2 is written on `main`, not on this branch, because that is the document that is submitted. See the next entry on `main`.
+- **Live check (main 927baa6, calibration 15319e2):**
+  - The deploy run succeeded. The `main` push run was cancelled when the calibration-triggered run replaced it; that run builds both.
+  - Both live builds return 200.
+  - The About dialog's links, opened in the live app on each build, all return 200: "Open the calibration build" / "Open the main version", "How this was built" (the README anchor exists), "Full work log" and "Design".
+  - The README's links (BRIEF, DESIGN, PLAN, WORKLOG, ANSWERS, config) return 200.
+  - The live `docs/ANSWERS.md` starts "# Part 2 — Answers", and the live `WORKLOG.md` on `main` holds the C1–C4 calibration notes.
