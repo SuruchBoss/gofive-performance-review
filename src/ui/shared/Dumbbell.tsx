@@ -25,8 +25,9 @@ export function Dumbbell({ rows }: { rows: { label: string; href?: string; overa
         );
       })}
       <div className="db-legend small muted">
-        <span><span className="db-key-sug" /> Suggested from results</span>
+        <span><span className="db-key-sug" /> Results suggest</span>
         <span><span className="db-key-dot" /> Manager's rating</span>
+        <span><span className="db-key-dot far" /> Rating 1.0 or more away</span>
       </div>
     </div>
   );

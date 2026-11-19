@@ -325,3 +325,99 @@ Tested every role. In HR: removed a person, marked a flag reviewed, returned one
 **Keep:** the start page (one primary, two secondary); the release checklist with links; disabled buttons that say why; the Remove and Return dialogs; the locked My result; written-out escalation dates; behaviour levels shown once picked; consistent colours (green done/primary, amber attention); the collapsible guide that switches role.
 
 **UX score: 7/10.** The flows and locked/blocked states are well thought through. Points off for phone density and touch targets, competing actions on Consistency, and drifting labels.
+
+
+---
+
+# Final round (round 3), 19 Nov 2026
+
+**Build tested:** live main after the PO's decisions on round 2 were built (commit 208339b): HR accepts or asks again, the "Demo ▾" menu with one label per nav item, and the labelled demo shortcut to released results.
+**Method:** the same briefs as round 2 (score, ease-of-use score, hardest screen), run as fresh agents. Personas 4 and 5 and the senior product designer only, as the PO asked.
+
+## Scores
+
+| # | Persona | Screen | Round 1 | Round 2 | Round 3 | Ease of use (R2 → R3) | Hardest screen (R3) |
+|---|---|---|---|---|---|---|---|
+| 4 | Employee, 2 years in, not technical, on the bus | phone | 6 | 6.5 | **7** | 6 → **7** | My result |
+| 5 | Employee who felt underrated last year, sceptical | phone | 6 | 6 | **5** | 6 → **7** | My result |
+| 6 | Senior product designer, UX/UI only | both | – | UX 7 | UX **7.5** | – | Guide panel, labels, Map on phone |
+
+**Reading the scores:** ease of use rose for both employees (6 → 7). Persona 5's overall score fell from 6 to 5, mostly because of one bug: after the demo shortcut, the "Manager's assessment" card was empty. Their other points are about policy (no way to answer back, the formula feels harsh), which are outside v1 by the PO's earlier decisions. Both employees named My result as the hardest screen: three numbers on different scales (3, 92%, 3.0).
+
+## Fixed after round 3 (clear UX issues)
+
+| Finding | From | Fix |
+|---|---|---|
+| "Manager's assessment" was an empty box after the demo shortcut (and showed only "Self-review · Missing when reviewed" for a review without comments) | 4, 5, 6 | The shortcut writes "Demo shortcut: the demo finished this review, so no real comment was written." Any review without written text now says: "The manager wrote no comments. None were required, because the rating is within 1 of what goal results suggest and is not a 1, 2 or 5." |
+| The guide card took the top of every screen (about 750 px on desktop Progress; the whole first phone screen on Consistency) | 6, 4 | The full guide shows once, on the first screen. After that it is a slim bar with the next step, its instruction, its link (and "+1 day" on the clock step), and "Show all steps" / "Show less". On a phone, when you are on the step's own screen, the bar is used even on the first screen. |
+| "Remove from cycle" was hidden under "More ▾" for the new joiner the guide asks to remove | 6 | Rows flagged "under 3 months" show "Remove from cycle" as the button; Remind and Extend move under "More". |
+| Amber used for plain counts; the legend did not explain the amber dot | 6 | Nav counts use the brand tint (amber stays for problems). The Consistency legend reads "Results suggest", "Manager's rating", "Rating 1.0 or more away" (amber). |
+| Labels for the same idea varied | 6 | "Suggested from results" and "Suggested overall rating" → "Results suggest". Map list: "Behav." → "Behaviour", "Far from results" → "1.0+ from results". |
+| "Click a dot" on phones; small links in the Overview checklist, breadcrumbs and the logo | 6 | "Select a dot, or a name in the list…". On phones the checklist and breadcrumb links are 44 px tall, and the logo has a larger tap area. |
+
+**Checks after the fixes:** 117 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px (the longer "Behaviour" header needed the compact table layout up to 480 px). No header overlap from 320 to 900 px.
+
+## Raised again or new, not changed (scope, or already decided)
+
+- **No way for the employee to reply or disagree** (4, 5). Already on the Q1 "next" list (employee response).
+- **The demo starts Ying 15 days late** (4, 5). The PO chose to keep the demo data (round 2, item 8).
+- **The formula feels harsh** (4, 5): 92% of target suggests 2.6. This is the agreed rule (each 20 points is one level).
+- **The manager should refer to the self-review where the ratings differ** (5). This would be a new rule.
+- **My result shows three numbers on different scales** (4, 5). Possible design change for the PO: lead with the overall rating and show goal results and behaviours as its two inputs, in a smaller style. Not done here because it reshapes the main employee screen.
+- **Map dots on a phone** (6). The dots already have a larger invisible hit area, but the chart scales down on a phone. The list under the chart is the tap-friendly route. A phone-specific chart is a larger change.
+- **Smaller points** (6): "Calibration version (question 2)" on the landing page means little to a new visitor; no Undo on the removal toast; the phone footer separator. Left as is.
+
+# The round-3 reports
+
+## Persona 4 (round 3) — Employee, 2 years in, not technical, on the bus (phone, Pixel 7)
+
+Took the Employee path as Ying Chen from start to finish: wrote and submitted the self-review, used the demo shortcut, read the released result.
+
+**First 10 seconds:** HR's performance review demo. The home screen says it straight: "Managers rate on different scales… This lets HR catch that before results reach employees." I knew to tap "Try as Employee".
+
+**Where I got stuck or confused:**
+- **Late before I'd started.** "Past the deadline… It will be marked as 15 days late." The header says "Sat 12 Dec 2026", which isn't today. After submitting: "Submitted late", and the result still shows "Your own rating 4 · late".
+- **The manager's comments were missing.** Before release: "You will then see your overall rating, the rating for each behaviour, and your manager's comments here." After release the "Manager's assessment" card held only "The overall rating is the manager's call, informed by both scores above" and an empty white box.
+- **The maths felt harsh.** "92% of goal targets… That suggests 2.6 on the 1–5 scale." 92% feels nearly there, but rates below "met". I understood it only after "How is this calculated?".
+- **Two different 92%s.** "Orders dispatched on time 92%" and the overall "92% of targets" are the same number but mean different things.
+- **The guide step counter jumped around.** "1 of 3 done" before I had submitted anything, then from step 2 straight to "step 3 of 3: See a released result".
+- **Boxes stacked on top of each other.** The guide, then "Viewing as Ying Chen… open Demo ▾", then the warnings. On a phone the form starts below the first screen.
+
+**Fair from my role?** Mostly. Goal numbers come "from company systems" and I see the same figures as my manager. My own 4 "does not change the suggested rating", and I was told why. "HR… checked every rating 1.0 or more away" made me trust the 3. But no manager comments and no way to ask or disagree makes the 3 feel handed down.
+
+**One thing I would change:** Always show the manager's written comments (say so if there are none, rather than an empty box), plus a "Discuss with my manager" button.
+
+**Score:** 7/10 · **Ease of use:** 7/10 · **Hardest screen:** My result (three big numbers, 3, 92% and 3.0, on different scales, an empty assessment box, and three collapsed sections).
+
+## Persona 5 (round 3) — Employee who felt underrated last year, sceptical (phone, Pixel 7)
+
+Used the app as Ying Chen: wrote and submitted a self-review with a self-rating of 4, then used the demo shortcut to release results.
+
+**First 10 seconds:** An HR tool for checking managers, not something for me ("This lets HR catch that before results reach employees."). The Employee card was the third option, after HR and the manager.
+
+**Where I got stuck or confused:**
+- The first thing I saw as the employee was a telling-off: "Past the deadline", "It will be marked as 15 days late." The demo starts me late, and after I submitted, my result still said "Your own rating 4 · late". That felt like a mark on me that nobody explained.
+- On the result page, the "Manager's assessment" card is empty. The page had promised "your manager's comments here". After release there was only the subtitle "The overall rating is the manager's call, informed by both scores above" and a blank box. For someone who felt underrated, missing reasons is the worst gap.
+- Three numbers compete: "Overall rating 3", "92% … That suggests 2.6", "Behaviours 3.0". It is also confusing that the 92% overall score equals my "Orders dispatched on time 92 %".
+- The guide panel and deadline warnings push the text box below the first screen on a phone.
+
+**Fair from my role?** Partly. Good: each goal shows its source and date ("Warehouse system, 30 Nov 2026"), "How is this calculated?" is plain, and there is a consistency check before release. Bad: the formula is harsh ("Every 20 points above or below moves the suggestion one level"); my own rating "does not change the suggested rating" and nothing shows the manager responded to it; all four behaviours came back as exactly 3 with generic anchors, which reads like box-ticking; no way to reply; the check protects the company's consistency, not my understanding of why I got a 3 and not a 4.
+
+**One thing I would change:** The manager writes a short reason referring to my self-review, especially where our ratings differ; and a "discuss / disagree" button on the result.
+
+**Score:** 5/10 · **Ease of use:** 7/10 · **Hardest screen:** My result (three competing scores, an empty assessment card, collapsed sections, and the toast "Demo shortcut used: results released…" covering the header).
+
+## Agent 6 (round 3) — Senior product designer, UX/UI only (desktop 1366×900 and phone 412 px)
+
+**Top 5 issues**
+1. **The guide panel takes the top of every screen.** Desktop, HR → Progress: the guide card ("Annual performance review, one cycle end to end", "The problem: …", step cards, "0 of 5 done…", "Guide for: HR Manager Employee") fills about 750 px and pushes the "Progress" heading below the fold. Phone, HR → Consistency: the whole first screen is guide step "1 See who is late / Open Progress →" although the user is already on Consistency. Manager and Employee views repeat the HR-focused "This shows how HR catches that…". *Fix:* full guide once on first entry, then the slim banner; on phone, the step that matches the page.
+2. **The same idea has different labels.** Suggested score: "Results suggest", "Suggested from results" (Consistency), "Goal results (suggested rating) →" and "RESULTS" (Map), "Suggested overall rating" (review form). Flag: "Above results" / "Below results", "Far from results", "Open flag: overall rating far from results". Lateness: "overdue", "Late or escalated, still open", "Past the deadline", "15 days late". Map list header "BEHAV.". *Fix:* one term per idea.
+3. **Colours don't match the legends.** Consistency: the legend says "● Manager's rating" in green, but flagged rows (Nida, Mai) show an amber dot. Amber is also used for plain count badges ("Consistency 4", "My team 2", "Self-review 1"), for warnings, and for both "Above" and "Below results". *Fix:* amber for problems only; neutral count badges; add the amber "flagged" dot to the legend.
+4. **Small touch targets and mouse wording on phone.** HR → Map: dots are 19×19 px, two almost overlap (James 3.2/3.8, Arthit 3.1/3.8); copy says "Click a dot…". Also the logo link (28×28), the "My team" breadcrumb (50×17), and the inline "Check in Consistency →" / "Open as Tom →" links in the Overview checklist (17 px tall). *Fix:* 44 px hit areas, "Tap" on touch, full-row checklist targets.
+5. **Key actions hidden; next step unclear.** HR → Progress: the guide says "remove Fah with a reason", but "Remove from cycle" is under "More ▾" next to an equal "Remind". HR Overview has about 12 competing links and only the greyed-out "Release results" looks like a button. Released Employee result (desktop): "Manager's assessment" contains only "Self-review · Missing when reviewed", which looks empty or broken. *Fix:* show the action a row's state calls for; group the checklist by destination; a real empty state ("No comment from your manager").
+
+**Keep:** blocked and locked states (lock icon, checklist, "7 items left before release."; "Submit review" lists what is left; the employee's locked result explains why); the review form's reactive reason and example fields with a character counter and anchors; phone tables as cards, tabs, no sideways scroll, good rating buttons; the landing page's one primary action; confirmation dialogs that explain the consequence; demo-only controls fenced off ("DEMO ONLY, NOT PART OF THE PRODUCT").
+
+**Smaller points:** "Calibration version (question 2)" on the landing page means nothing to a new visitor; the removal toast has no Undo; the phone footer's "·" floats above the line.
+
+**UX score: 7.5/10.** Strong states and flows; held back by the guide taking over every screen, inconsistent labels and colours, and small phone targets on the Map.

@@ -84,8 +84,7 @@ async function run(vp) {
   // Step 1: HR removes the new joiner.
   await open('/hr/progress');
   await shot('02-hr-progress');
-  await page.getByRole('button', { name: 'More actions for Fah Inthira' }).click();
-  await page.getByRole('menuitem', { name: 'Remove from cycle' }).click();
+  await page.locator('tr', { hasText: 'Fah Inthira' }).getByRole('button', { name: 'Remove from cycle' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Remove from cycle' }).click();
   await page.getByRole('tab', { name: /Everyone/ }).click();
   assert((await page.locator('tr', { hasText: 'Fah Inthira' }).innerText()).includes('Removed'), 'Fah not removed');

@@ -776,3 +776,27 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - *Why:* the designer found the old bar took about a third of a phone screen and labels changed with width.
 - **6.** Q1 now says the suggestion uses measured goal results only, on purpose, so it stays independent of the manager's own ratings. **2, 3, 5** were added to Q1 "Next, from user testing", one line each with the reason.
 - **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px (16 screens). No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+
+## Final round (personas 4, 5 and the designer) and fixes (on `main`)
+
+- **Scores** (recorded in `docs/blind-test-2.md`, "Final round"):
+  - Persona 4: 7/10 (round 2: 6.5), ease of use 7 (was 6).
+  - Persona 5: 5/10 (was 6), ease of use 7 (was 6).
+  - Designer: UX 7.5 (was 7).
+  - Persona 5's drop came mainly from one bug: the "Manager's assessment" card was empty after the demo shortcut.
+- **Fixed** (design latitude; each with its reason in the doc):
+  - The empty assessment now says why there are no comments, and the shortcut writes a placeholder comment.
+  - The guide shows in full only on the first screen, then as a slim bar with the step's instruction.
+  - "Remove from cycle" is the visible button for late joiners.
+  - Nav counts use the brand tint, and the Consistency legend explains the amber dot.
+  - Labels unified ("Results suggest", "Behaviour", "1.0+ from results").
+  - Tap wording on the Map; 44 px checklist and breadcrumb links and a larger logo tap area on phones.
+  - The compact table layout now applies up to 480 px, so the Map list fits.
+- **Not changed, listed for the PO:**
+  - employee reply (already on the Q1 next list);
+  - the late start (kept by the PO);
+  - the formula (agreed rule);
+  - a manager note on the self-review (new rule);
+  - the three numbers on My result (a reshaping of the main employee screen);
+  - a phone-specific Map.
+- **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.

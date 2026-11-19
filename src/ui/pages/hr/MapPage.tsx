@@ -20,7 +20,7 @@ export function MapPage({ reviewerId }: { reviewerId?: string }) {
     <>
       <PageHead
         title={reviewerId ? 'Team map' : 'Map'}
-        sub="Each dot is one person: goal results across, the manager's behaviour rating up. Strong and weak performers stand out in the shaded corners. Click a dot to see where the scores came from."
+        sub="Each dot is one person: goal results across, the manager's behaviour rating up. Strong and weak performers stand out in the shaded corners. Select a dot, or a name in the list, to see where the scores came from."
       />
       {!reviewerId && (
         <div className="tabs filter-row" role="tablist" aria-label="Team">
@@ -43,7 +43,7 @@ export function MapPage({ reviewerId }: { reviewerId?: string }) {
         <Panel title="As a list" bodyClass="table-wrap">
           <table className="data compact">
             <thead>
-              <tr><th>Person</th><th>Results</th><th>Behav.</th><th>Overall</th></tr>
+              <tr><th>Person</th><th>Results</th><th>Behaviour</th><th>Overall</th></tr>
             </thead>
             <tbody>
               {sorted.map((p) => {
@@ -54,7 +54,7 @@ export function MapPage({ reviewerId }: { reviewerId?: string }) {
                       <a href={hrefFor(p.personId)} className="plain-link">
                         <PersonCell name={who.name} sub={teamName(state, p.teamId)} size="sm" />
                       </a>
-                      {p.flagged && <div style={{ marginTop: 4 }}><Badge tone="warning">Far from results</Badge></div>}
+                      {p.flagged && <div style={{ marginTop: 4 }}><Badge tone="warning">1.0+ from results</Badge></div>}
                     </td>
                     <td className="num">{p.results.toFixed(1)}</td>
                     <td className="num">{p.behaviour.toFixed(1)}</td>

@@ -97,14 +97,30 @@ export function HrProgress() {
                     <td className="actions">
                       {open && (
                         <div className="row" style={{ justifyContent: 'flex-end' }}>
-                          <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>Remind</button>
-                          <MoreMenu
-                            label={`More actions for ${who.name}`}
-                            items={[
-                              { label: 'Extend deadline', onSelect: () => setDialog({ kind: 'extend', personId: p.personId }) },
-                              ...(state.cycle.status === 'open' ? [{ label: 'Remove from cycle', danger: true, onSelect: () => setDialog({ kind: 'remove', personId: p.personId }) }] : []),
-                            ]}
-                          />
+                          {/* A late joiner needs removing, not a reminder: show that action directly. */}
+                          {eligibilityHint(state, who) && state.cycle.status === 'open' ? (
+                            <>
+                              <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remove', personId: p.personId })}>Remove from cycle</button>
+                              <MoreMenu
+                                label={`More actions for ${who.name}`}
+                                items={[
+                                  { label: 'Remind', onSelect: () => setDialog({ kind: 'remind', personId: p.personId }) },
+                                  { label: 'Extend deadline', onSelect: () => setDialog({ kind: 'extend', personId: p.personId }) },
+                                ]}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>Remind</button>
+                              <MoreMenu
+                                label={`More actions for ${who.name}`}
+                                items={[
+                                  { label: 'Extend deadline', onSelect: () => setDialog({ kind: 'extend', personId: p.personId }) },
+                                  ...(state.cycle.status === 'open' ? [{ label: 'Remove from cycle', danger: true, onSelect: () => setDialog({ kind: 'remove', personId: p.personId }) }] : []),
+                                ]}
+                              />
+                            </>
+                          )}
                         </div>
                       )}
                     </td>
