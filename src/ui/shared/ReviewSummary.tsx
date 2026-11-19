@@ -36,33 +36,70 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
 
   return (
     <div className="stack">
-      <div className="grid-3">
-        <Panel>
-          <div className="score-tile">
-            <span className="l">Overall rating</span>
-            <span className="v num">{submitted ? finalRating(review) : '–'}</span>
-            {submitted && finalRating(review) && <span className="level-word">{LEVEL_WORDS[finalRating(review)!]}</span>}
-            <span className="s">
-              {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}{participant?.escalatedFrom && <> (moved from {person(state, participant.escalatedFrom).name} after a missed deadline)</>}</> : 'Not submitted yet'}
-              {review.calibratedOverall && <><br /><strong className="cal-new">Calibrated from {review.overall} to {review.calibratedOverall}</strong> across teams</>}
-            </span>
+      {audience === 'employee' ? (
+        // My result leads with the rating itself; the two scores below are its inputs.
+        <>
+          <Panel>
+            <div className="result-hero">
+              <span className="l">Your overall rating</span>
+              <div className="result-hero-main">
+                <span className="v num">{submitted ? finalRating(review) : '–'}</span>
+                {submitted && finalRating(review) && <span className="result-hero-word">{LEVEL_WORDS[finalRating(review)!]}</span>}
+              </div>
+              <span className="s">on a 1–5 scale · {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}{participant?.escalatedFrom && <> (moved from {person(state, participant.escalatedFrom).name} after a missed deadline)</>}</> : 'Not submitted yet'}
+                {review.calibratedOverall && <><br /><strong className="cal-new">Calibrated from {review.overall} to {review.calibratedOverall}</strong> across teams</>}</span>
+            </div>
+          </Panel>
+          <div className="inputs-head">
+            <h2 className="section-label">The two inputs to this rating</h2>
+            <p className="small muted">Your manager decided the overall rating, informed by these two scores{review.calibratedOverall ? ', and managers then aligned it across teams in calibration' : ''}.</p>
           </div>
-        </Panel>
-        <Panel>
-          <button type="button" className="score-tile link" onClick={() => jump('goals')}>
-            <span className="l">Goal results</span>
-            <span className="v num">{pct(sug.results)}</span>
-            <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
-          </button>
-        </Panel>
-        <Panel>
-          <button type="button" className="score-tile link" onClick={() => jump('behaviours')}>
-            <span className="l">Behaviours</span>
-            <span className="v num">{b !== undefined ? b.toFixed(1) : '–'}</span>
-            <span className="s">{TERMS.behaviour}</span>
-          </button>
-        </Panel>
-      </div>
+          <div className="grid-2 inputs-row">
+            <Panel>
+              <button type="button" className="score-tile link input-tile" onClick={() => jump('goals')}>
+                <span className="l">1 · Goal results</span>
+                <span className="v num">{pct(sug.results)}</span>
+                <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
+              </button>
+            </Panel>
+            <Panel>
+              <button type="button" className="score-tile link input-tile" onClick={() => jump('behaviours')}>
+                <span className="l">2 · Behaviours</span>
+                <span className="v num">{b !== undefined ? b.toFixed(1) : '–'}</span>
+                <span className="s">Average of your manager's four behaviour ratings, on the same 1–5 scale.</span>
+              </button>
+            </Panel>
+          </div>
+        </>
+      ) : (
+        <div className="grid-3">
+          <Panel>
+            <div className="score-tile">
+              <span className="l">Overall rating</span>
+              <span className="v num">{submitted ? finalRating(review) : '–'}</span>
+              {submitted && finalRating(review) && <span className="level-word">{LEVEL_WORDS[finalRating(review)!]}</span>}
+              <span className="s">
+                {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}{participant?.escalatedFrom && <> (moved from {person(state, participant.escalatedFrom).name} after a missed deadline)</>}</> : 'Not submitted yet'}
+                {review.calibratedOverall && <><br /><strong className="cal-new">Calibrated from {review.overall} to {review.calibratedOverall}</strong> across teams</>}
+              </span>
+            </div>
+          </Panel>
+          <Panel>
+            <button type="button" className="score-tile link" onClick={() => jump('goals')}>
+              <span className="l">Goal results</span>
+              <span className="v num">{pct(sug.results)}</span>
+              <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
+            </button>
+          </Panel>
+          <Panel>
+            <button type="button" className="score-tile link" onClick={() => jump('behaviours')}>
+              <span className="l">Behaviours</span>
+              <span className="v num">{b !== undefined ? b.toFixed(1) : '–'}</span>
+              <span className="s">{TERMS.behaviour}</span>
+            </button>
+          </Panel>
+        </div>
+      )}
 
       {audience === 'hr' && flag && (
         <Notice tone={flag.review ? 'brand' : 'warning'} title={`Rated ${flag.direction} results${flag.review ? ' · reviewed by HR' : ''}`}>
@@ -71,7 +108,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
       )}
 
       {submitted && (
-        <Panel title="Manager's assessment" actions={<span className="small muted">The overall rating is the manager's call, informed by both scores above</span>}>
+        <Panel title="Manager's assessment" actions={audience === 'employee' ? undefined : <span className="small muted">The overall rating is the manager's call, informed by both scores above</span>}>
           <dl className="kv">
             {review.deviationReason && (<><dt>Why it differs from results</dt><dd>{review.deviationReason}</dd></>)}
             {review.overallEvidence && (<><dt>Example</dt><dd>{review.overallEvidence}</dd></>)}

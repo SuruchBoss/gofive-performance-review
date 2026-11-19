@@ -954,3 +954,16 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - Checks: 127 unit tests passed. e2e PASS at 1280 px and 390 px (18 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.
 - On this build the full guide likewise shows only on the first screen, and "Calibrate, then release" stays the last HR step.
 - **Live check (main 123dafd, calibration 621f601):** the scripted click-through passed on the live main build (16 screens) and the live calibration build (18 screens) at 1280 px and 390 px, with no console errors. This includes accepting a manager's answer, the Demo menu and the demo shortcut. No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
+
+## Last two changes from the PO (on `main`); testing rounds closed
+
+- **1. My result leads with the overall rating** (PO decision). One large number with its level word ("3 Met expectations", "on a 1–5 scale · By Tom Wattana, 12 Dec 2026"). Below it, "The two inputs to this rating" ("Your manager decided the overall rating, informed by these two scores.") with two smaller tiles: "1 · Goal results" and "2 · Behaviours". The HR person page keeps its three-tile row.
+- **2. Landing link renamed** (PO decision): "See the requirement change: calibration before release". On the calibration build, the link back reads "See the version without calibration". On phones the two links stack left-aligned, so the "·" separator no longer floats.
+- **Found while checking, fixed:** after the demo shortcut, the Employee guide still asked Ying to "Write your self-review", which is impossible once the manager's review is done. Step 1 now counts as done when the self-review window has closed, so the guide reads "Guide complete".
+- **No more persona rounds**, as the PO asked.
+- **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px. Landing and released result checked at 412 px (Pixel 7) and 1366 px: no sideways scroll, no page errors.
+
+## Merge of the last two changes into `calibration`
+
+- Merged `main` (467ae2d). The My result conflict kept the new layout, with this build's calibrated rating as the large number. "Calibrated from X to Y across teams" sits under it. When a rating was calibrated, the inputs line adds "and managers then aligned it across teams in calibration". The HR person page keeps the calibrated rating in its tile.
+- Checks: 127 unit tests passed. e2e PASS at 1280 px and 390 px (18 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.

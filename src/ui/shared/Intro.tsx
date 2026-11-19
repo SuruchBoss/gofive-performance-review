@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { formatDate } from '../../domain/dates';
+import { selfReviewWindow } from '../../domain/selfReview';
 import type { DemoState } from '../../domain/types';
 import { useStore, type Role, type ViewState } from '../../state/store';
 import { useAdvanceDay } from '../DemoStrip';
@@ -95,7 +96,8 @@ const EMPLOYEE_STEPS: Step[] = [
   {
     title: 'Write your self-review',
     body: 'The deadline has passed, but you can still submit until your manager finishes your review. It will be marked late.',
-    done: (s) => s.selfReviews.find((r) => r.personId === 'e12')?.status === 'submitted',
+    // Done once submitted, or once the window has closed (the manager finished the review).
+    done: (s) => s.selfReviews.find((r) => r.personId === 'e12')?.status === 'submitted' || selfReviewWindow(s, 'e12') === 'closed',
     links: [{ ...YING, path: '/me/self-review', cta: 'Open Self-review' }],
   },
   {
