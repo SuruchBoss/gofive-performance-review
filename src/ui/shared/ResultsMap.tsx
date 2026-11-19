@@ -87,8 +87,8 @@ export function ResultsMap({ points, hrefFor }: { points: MapPoint[]; hrefFor: (
       )}
       <div className="db-legend small muted">
         <span><span className="db-key-dot" /> One reviewed person</span>
-        <span><span className="map-key-flag" /> Open flag: overall rating far from results</span>
-        <span>Click a dot to see where each score came from.</span>
+        <span><span className="map-key-flag" /> Rating 1.0+ from results</span>
+        <span>Select a dot, or a name in the list, to see where each score came from.</span>
       </div>
     </div>
   );

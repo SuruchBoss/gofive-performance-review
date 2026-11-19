@@ -47,7 +47,7 @@ const HR_STEPS: Step[] = [
   },
   {
     title: 'Let a deadline slip',
-    body: "Move the demo date on by two days. Ying's open review moves to Anong Rattanakul, the Managing Director, and the log records it.",
+    body: "Press +1 day twice. Ying's open review moves to Anong Rattanakul, the Managing Director, and the log records it.",
     done: (s) => s.log.some((l) => l.type === 'escalation'),
     clock: true,
     links: [{ ...HR, path: '/hr/activity', cta: 'Open Activity' }],
@@ -74,7 +74,7 @@ const MANAGER_STEPS: Step[] = [
   },
   {
     title: 'Watch a deadline slip',
-    body: "Ying's review is overdue. Move the date on two days and it moves to your own manager, Anong Rattanakul.",
+    body: "Ying's review is overdue. Press +1 day twice and it moves to your own manager, Anong Rattanakul.",
     done: (s) => s.log.some((l) => l.type === 'escalation' && l.targetId === 'e12') || s.managerReviews.find((r) => r.personId === 'e12')?.status === 'submitted',
     clock: true,
     links: [{ ...TOM, path: '/manager', cta: 'Open My team' }],
@@ -185,14 +185,9 @@ export function Intro() {
         <div>
           <div className="intro-kicker">Prototype · a concept for empeo · requirement change from question 2</div>
           <h2 id="intro-title">Annual performance review, one cycle end to end</h2>
-          <p className="intro-problem">
-            <strong>The problem:</strong> every manager rates on their own scale, so a 4 in one team is not a 4 in another. This shows
-            how HR catches that before results reach employees.
-          </p>
           <p>
-            A clickable prototype for a fictional company, {state.company}, with HR, manager and employee views. Demo data only: nothing
-            is saved outside this browser and no email is sent. The demo starts on {formatDate('2026-12-12')}, the day after manager
-            reviews were due, so there is work waiting.
+            Demo data for a fictional company, {state.company}. The demo starts on {formatDate('2026-12-12')}, the day after manager
+            reviews were due, so there is work waiting. Follow the steps below.
           </p>
         </div>
         <span className="row" style={{ gap: 4, alignSelf: 'flex-start' }}>

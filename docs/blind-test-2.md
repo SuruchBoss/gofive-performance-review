@@ -421,3 +421,76 @@ Used the app as Ying Chen: wrote and submitted a self-review with a self-rating 
 **Smaller points:** "Calibration version (question 2)" on the landing page means nothing to a new visitor; the removal toast has no Undo; the phone footer's "·" floats above the line.
 
 **UX score: 7.5/10.** Strong states and flows; held back by the guide taking over every screen, inconsistent labels and colours, and small phone targets on the Map.
+
+
+---
+
+# Verification round, 19 Nov 2026
+
+**Build tested:** live main after the PO's last two changes (commit 467ae2d): My result leads with the overall rating, and the clearer landing link.
+**Method:** persona 4 and the senior product designer only, with the same briefs plus one line asking plainly for bugs and for any screen where a first-time visitor could not tell what to do next.
+**Pass condition (PO):** no bugs and no screen where a first-time visitor gets stuck. Scores do not need to go up.
+
+| # | Persona | Score | Ease of use / UX | Bugs | Stuck screens |
+|---|---|---|---|---|---|
+| 4 | Employee, not technical, on the bus (phone) | 7/10 | ease 7/10 | None functional. A toast briefly covered "Demo ▾". | None ("The guide always told me the next step") |
+| 6 | Senior product designer (1366 px and 412 px) | – | UX 7.5/10 | None functional ("Every flow I tried worked"). Cosmetic: a repeated "(+1 more)" blocker line on the phone review form; a toast covering the header on the phone. | One minor dead end: the closed Self-review page after release had no link to My result. |
+
+## Fixed (clear issues only)
+
+| Finding | From | Fix |
+|---|---|---|
+| Closed Self-review page had no next step | 6 | It ends with "See your result →" (before release: "See when your result is released →"). |
+| Phone review form repeated the first blocker with "(+1 more)" under the list | 6 | Both widths say "N things left before you can submit (listed above)." |
+| Toasts covered "Demo ▾", the header and the tabs on the phone | 4, 6 | On phones toasts sit at the bottom, above any sticky action bar. |
+| Demo shortcut dialog used jargon ("removes the new joiner… marks the remaining flags reviewed") | 4 | "The demo plays HR and the managers for you: it finishes the reviews that are still open with placeholder text, does HR's checks with a note saying it was the demo, and publishes everyone's results." |
+| Self-rating scale explained only 1, 3 and 5 | 4 | "1 well below · 2 below · 3 met · 4 above · 5 well above expectations". |
+| First-screen guide repeated the landing page's problem paragraph (620–710 px tall) | 6 | The paragraph is gone; one short line remains. |
+| "Move the date on two days" next to a "+1 day" button | 6 | "Press +1 day twice." |
+| "Click a dot" still on the Map legend; several names for a far rating | 6 | "Select a dot, or a name in the list…"; one term, "Rating 1.0+ from results", on Consistency, the Map and the legend. |
+| Grey "Show all steps" looked disabled | 6 | Shown as a normal link. |
+
+**Not changed** (not bugs or stuck points, or already decided): the late start (kept by the PO), the employee reply (Q1 next list), the two "92%" figures (the blended score and one goal happen to match in the demo data), the guide showing other roles' steps (it is a guided tour across roles by design), amber for both time and rating problems, and a phone-specific Map.
+
+**Result:** the pass condition is met. Neither tester found a functional bug. The one minor dead end and the two cosmetic faults are fixed. Testing stops here, as the PO asked.
+
+## Persona 4 (verification) — Employee, 2 years in, not technical, on the bus (phone, Pixel 7)
+
+Chose "Try as Employee" (Ying Chen); checked goals, the self-review, its submission and My result.
+
+**First 10 seconds:** A performance review app from HR. "Managers rate on different scales… This lets HR catch that before results reach employees." made sense; picked "Try as Employee".
+
+**Where I got stuck or confused:**
+- Already late before doing anything: "Past the deadline", "It will be marked as 15 days late." (demo date "Sat 12 Dec 2026"). Felt like a gotcha.
+- Had to guess what 4 meant: the scale says only "1 = well below expectations, 3 = met, 5 = well above"; "Above expectations" appears only after tapping a number.
+- After submitting: "Your result is not released yet… Nothing to do now." was clear. The "Demo shortcut: skip to released results" pop-up says "it removes the new joiner with a reason… marks the remaining flags reviewed": jargon.
+- Two different "92%": the blended goal score ("92% of targets, weighted") and one goal ("Orders dispatched on time 92%").
+- "92%… suggests 2.6" only made sense after "How is this calculated?".
+
+**Fair from my role?** Mostly yes: numbers "from company systems", the same figures as my manager, everything checked before release. But I rated myself 4, got "3 Met expectations", the comment read "the demo finished this review, so no real comment was written", and there is no way to reply.
+
+**One thing I'd change:** A "Talk to my manager / disagree" option on My result, and a line explaining the gap between my rating and theirs.
+
+**Score:** 7/10 · **Ease of use:** 7/10 · **Hardest screen:** Self-review on a phone (guide bar, "Viewing as…", "Past the deadline" badge and the yellow warning all come before the text box).
+
+**Bugs:** none broke; no errors. Small: the "Self-review submitted (late)" toast briefly covers the "Demo ▾" button. **Stuck with no next step:** none ("The guide always told me the next step").
+
+## Agent 6 (verification) — Senior product designer, UX/UI only (desktop 1366×900 and phone 412 px)
+
+Covered the landing page, all five HR tabs, the remove, mark-reviewed and return dialogs, Tom's review of Orn (tried an overall 5), Daniel's "Answer HR" queue, all three employee tabs, the demo shortcut and the Demo menu. No sideways scroll on the phone.
+
+**Top 5 issues**
+1. **The guide panel takes over each role's home screen on first visit.** Desktop HR Overview, Manager "My team" and Employee "Self-review" open with a 620–710 px "Annual performance review, one cycle end to end" panel that repeats the landing page's "The problem: every manager rates on their own scale…". For Tom the team table starts at about y=990. *Fix:* one line after the first visit; drop the problem paragraph.
+2. **The guide competes with the page's own action and mixes roles.** On HR Consistency and Map: "Guide, step 1 of 5: See who is late… Open Progress →". Manager step 3: "This step is for HR. You are viewing as Manager…". Employee guide ends "Switch to HR and switch to the HR guide →". The grey "Show all steps" looks disabled. *Fix:* only the current role's steps; a quiet chip when the step is elsewhere.
+3. **One concept, many labels; one colour, many meanings.** "Single ratings far from results", "Above results" / "Below results", "Rating 1.0 or more away", "1.0+ from results", "Open flag: overall rating far from results". Overview "Late or escalated, still open" vs Progress "Overdue". Amber marks overdue, above, below and "Past the deadline". *Fix:* one term and badge, ↑/↓ for direction, amber for time problems.
+4. **Review form blocker text repeats on the phone.** After overall 5: bullets "Explain why the rating differs from the goal results." and "Give a specific example (at least 40 characters).", then "Explain why the rating differs from the goal results. (+1 more)" above the disabled "Submit review"; desktop says "2 things left before you can submit.". Unrated behaviours show an 80 px "Pick a level to see what it means." placeholder. *Fix:* bullets plus "2 things left"; description only after a pick.
+5. **The Map on a phone.** Dots about 16 px; James and Arthit overlap at 3.8; copy says "Click a dot…"; the logo link is 28×28. *Fix:* list rows as tap targets, "Tap", 44 px hit areas.
+
+Also: the guide says "Move the date on two days" next to a "+1 day" button.
+
+**Keep:** the landing page; the Overview release checklist with direct links and the locked "Release results" ("7 items left before release."); the locked result state; dialogs that state consequences; tables as cards on phones; most phone targets 44 px+; written behaviour levels; the return-to-manager flow.
+
+**UX score:** 7.5/10.
+
+**Bugs:** none functional. On-screen faults: the duplicated "(+1 more)" message on the phone; the "Demo shortcut used: results released…" toast covers the header and tabs for a few seconds on the phone.
+**Stuck screens:** one minor dead end. After release, Employee Self-review says "The self-review is closed. Tom Wattana completed your review on 12 Dec 2026 without a self-review." with no link to My result.

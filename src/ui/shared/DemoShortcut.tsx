@@ -22,7 +22,7 @@ export function DemoShortcut({ compact }: { compact?: boolean }) {
       {confirm && (
         <Dialog
           title="Skip to released results?"
-          sub="The demo finishes what is left, as the people who would do it: it removes the new joiner with a reason, completes open reviews with placeholder text, accepts managers' answers, runs calibration with every manager without changing any rating, locks it with notes that say it was the demo, and releases."
+          sub="The demo plays HR and the managers for you: it finishes the reviews that are still open with placeholder text, runs calibration without changing any rating, with notes saying it was the demo, and publishes everyone's results."
           onClose={() => setConfirm(false)}
           footer={
             <>

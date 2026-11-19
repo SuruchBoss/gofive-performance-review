@@ -283,10 +283,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             <div className={`submit-bar${problems.length === 0 ? ' action-bar' : ''}`}>
               <span className="small muted">
                 {problems.length > 0 ? (
-                  <>
-                    <span className="only-desktop">{problems.length} thing{problems.length === 1 ? '' : 's'} left before you can submit.</span>
-                    <span className="only-phone">{problems[0].message}{problems.length > 1 ? ` (+${problems.length - 1} more)` : ''}</span>
-                  </>
+                  <>{problems.length} thing{problems.length === 1 ? '' : 's'} left before you can submit (listed above).</>
                 ) : 'Ready to submit. Drafts save automatically.'}
               </span>
               <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>{pending ? (review.overall === pending.ratingBefore ? 'Confirm and send answer' : 'Resubmit with answer') : 'Submit review'}</button>

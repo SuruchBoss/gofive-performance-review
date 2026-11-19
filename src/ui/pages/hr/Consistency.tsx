@@ -189,7 +189,7 @@ export function HrConsistency() {
         })}
       </div>
 
-      <h2 className="section-label" style={{ marginTop: 28 }}>Single ratings far from results</h2>
+      <h2 className="section-label" style={{ marginTop: 28 }}>Single ratings 1.0+ from results</h2>
       <p className="explain-line" style={{ marginBottom: 12 }}>{TERMS.far}</p>
       <Panel bodyClass="">
         {far.length === 0 ? (
