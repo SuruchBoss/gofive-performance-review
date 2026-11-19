@@ -748,3 +748,4 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Not re-scored:** the round-2 fixes were checked by tests and scans, not by a third persona round.
 - **Checks:** 107 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
 - **What went wrong:** the container restarted during a build and e2e run (exit 137) and one persona agent stopped mid-test. Uncommitted work survived. The agent was resumed and re-ran its steps, and the build and e2e were rerun.
+- **Live check (both builds, after deploy runs 22 and the calibration rebuild):** the scripted click-through passed on the live main build (15 screens) and the live calibration build (17 screens) at 1280 px and 390 px, with no console errors. No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build. The calibration merge (4feeca2) is logged on that branch.
