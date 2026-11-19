@@ -1106,3 +1106,10 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Removed after it:** the "7 things left" count (it counted items, not the three groups shown); the second filled button on HR home; "Tap a name to open the review"; the overdue box on the review page (now part of the line under the name); hover tints that stuck after a tap. The finding now reads "0.90 points above".
 - **What went wrong:** one edit left an unused variable, so the type check failed and the build was skipped; the click-through then ran against the old build and timed out. Fixed and rerun.
 - **Checks:** 125 unit tests passed. e2e PASS at 1280 px and 390 px.
+
+## PLAN-6: live check (main 3f19061, calibration 6b3362b)
+
+- The deploy runs succeeded. Against the live sites: the click-through PASSES at 1280 px and 390 px on both builds (17 and 19 screens); no sideways scroll from 320 to 500 px; no header overlap from 320 to 900 px.
+- **Full-page length on the live main build at 375 px, before → after:** HR home 1,516 → 1,133 px; Fairness 2,726 → 1,661 px; review page 2,125 → 1,771 px. Content starts 215 px down; it was 279 px. Words on the page: 203 → 116, 332 → 209, 246 → 169.
+- The calibration build measures within 45 px of these (its header keeps the build tag on a second line).
+- Full-page screenshots of the three screens were sent to the PO.
