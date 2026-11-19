@@ -54,6 +54,7 @@ export function SuggestionExplainer() {
 export function ManagerReviewPage({ personId, userId }: { personId: string; userId: string }) {
   const { state, dispatch, notify } = useStore();
   const [confirm, setConfirm] = useState(false);
+  const [showData, setShowData] = useState(false);
   const [answer, setAnswer] = useState('');
   const participant = state.participants.find((p) => p.personId === personId);
   if (!participant || participant.reviewerId !== userId) {
@@ -91,8 +92,8 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
 
   return (
     <>
+      <a className="btn btn-sm back-btn" href="#/manager">← Back to {person(state, userId).kind === 'head' ? 'my reviews' : 'my team'}</a>
       <PageHead
-        crumbs={<a href="#/manager">{person(state, userId).kind === 'head' ? 'Assigned to me' : 'My team'}</a>}
         title={<span className="row" style={{ gap: 12 }}>{who.name} <ReviewBadge r={review} /></span>}
         sub={`${who.title} · ${teamName(state, who.teamId)} · ${state.cycle.name}`}
       />
@@ -120,6 +121,14 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
       )}
       <div className="review-layout">
         <div className="stack">
+          <h2 className="form-step"><span className="form-step-n" aria-hidden="true">1</span> What the data says</h2>
+          {/* On a phone the data folds to two lines, so the rating starts on the first screen. */}
+          <div className="data-summary">
+            <div>Goal results: <strong className="num">{pct(sug.results)}</strong> of targets. That suggests a <strong className="num">{showSuggestion(suggested)}</strong>.</div>
+            <div>{first}'s self-review: {self.status === 'submitted' ? <>own rating <strong className="num">{self.selfRating}</strong></> : 'not sent'}.</div>
+            <button type="button" className="link-btn" aria-expanded={showData} onClick={() => setShowData((v) => !v)}>{showData ? 'Hide details' : 'Show details'}</button>
+          </div>
+          <div className={`data-details stack${showData ? ' open' : ''}`}>
           <Panel
             title="Goal results"
             actions={<span className="small muted">From company systems</span>}
@@ -160,9 +169,11 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
               </Notice>
             )}
           </Panel>
+          </div>
         </div>
 
         <div className="stack">
+          <h2 className="form-step"><span className="form-step-n" aria-hidden="true">2</span> Your rating</h2>
           <Panel title="Behaviours">
             <div style={{ marginTop: -4, marginBottom: 16 }}><Explain>{TERMS.anchors}</Explain></div>
             <div className="stack-lg">
@@ -175,9 +186,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                       <div className="small muted">{c.description}</div>
                     </div>
                     <RatingScale label={c.name} value={b.rating} disabled={locked} hints={c.anchors} onChange={(r) => setBehaviour(c.id, r)} />
-                    <div className={`anchor${b.rating ? '' : ' empty'}`}>
-                      {b.rating ? <><strong>{b.rating} ·</strong> {c.anchors[b.rating]}</> : 'Pick a level to see what it means.'}
-                    </div>
+                    {b.rating && <div className="anchor"><strong>{b.rating} ·</strong> {c.anchors[b.rating]}</div>}
                   </div>
                 );
               })}
@@ -260,6 +269,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
           )}
           {locked ? null : (
             <>
+            <h2 className="form-step"><span className="form-step-n" aria-hidden="true">3</span> Send</h2>
             {pending && (
               <Panel title="Your answer to HR">
                 <div className="field">
