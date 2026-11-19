@@ -43,7 +43,7 @@ export function Landing() {
               type="button"
               className={`landing-option${i === 0 ? ' first' : ''}`}
               onClick={() => {
-                setView({ ...t.view, role: t.role, track: t.role, introHidden: false });
+                setView({ ...t.view, role: t.role });
                 go(t.path);
               }}
             >

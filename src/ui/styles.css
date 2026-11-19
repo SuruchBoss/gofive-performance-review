@@ -1211,3 +1211,17 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 }
 @keyframes coach-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .main:focus { outline: none; }
+/* ---------- Demo bar (PLAN-5): who you are, the date, shortcuts. Never part of the product. ---------- */
+.demo-bar { flex-wrap: wrap; row-gap: var(--s2); }
+.demo-you { display: flex; align-items: center; gap: var(--s2); min-width: 0; color: var(--chrome-text); }
+.demo-you select { max-width: 320px; min-width: 0; font-weight: 600; }
+.demo-tip { flex: 1; min-width: 0; color: #9aa8a3; font-size: var(--fs-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.demo-clock { display: flex; align-items: center; gap: var(--s2); margin-left: auto; }
+.demo-clock .demo-date { color: var(--chrome-text); font-weight: 400; }
+.demo-label { display: inline !important; }
+@media (max-width: 1100px) { .demo-tip { display: none; } }
+@media (max-width: 860px) {
+  .demo-you { flex: 1 1 60%; }
+  .demo-you select { flex: 1; max-width: none; }
+  .demo-clock { margin-left: 0; flex: 1 1 60%; }
+}

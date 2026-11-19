@@ -57,7 +57,6 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
                 <label htmlFor="self-text">What did you achieve, and what would you do differently?</label>
                 <span className="hint">Specific examples help your manager most.</span>
                 <textarea
-                  data-tour="self-text"
                   id="self-text"
                   className="textarea tall"
                   disabled={!editable}
@@ -70,7 +69,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
                 <span className="label" id="own-label">Your own rating</span>
                 <span className="hint">Your manager sees it next to your goal results. It does not change the suggested rating, which comes from goal results only.</span>
                 <div className="row" style={{ gap: 12 }}>
-                  <RatingScale tour="self-rating" label="Your own rating" value={self.selfRating} disabled={!editable} hints={LEVEL_WORDS} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
+                  <RatingScale label="Your own rating" value={self.selfRating} disabled={!editable} hints={LEVEL_WORDS} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
                   <span className="small muted">{self.selfRating ? LEVEL_WORDS[self.selfRating] : '1 well below · 2 below · 3 met · 4 above · 5 well above expectations'}</span>
                 </div>
               </div>
@@ -83,7 +82,6 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
             <span className="small muted">{ready ? 'Drafts are saved automatically.' : 'Write a few lines and choose a rating to submit.'}</span>
             <button
               type="button"
-              data-tour="self-submit"
               className="btn btn-primary"
               disabled={!ready}
               onClick={() => setConfirm(true)}

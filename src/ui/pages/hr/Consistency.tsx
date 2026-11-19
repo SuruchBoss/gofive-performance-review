@@ -92,7 +92,6 @@ export function HrConsistency() {
                   <div className="row" style={{ alignItems: 'flex-start' }}>
                     <button
                       type="button"
-                      data-tour="accept-answer"
                       className="btn btn-sm"
                       onClick={() => { dispatch({ type: 'accept_answer', personId: r.personId, actorId: 'hr' }); notify(`Accepted ${mgr.name}'s answer on ${who.name}`); }}
                     >
@@ -121,7 +120,7 @@ export function HrConsistency() {
                     <p className="quote small">“{q.question}”</p>
                   </div>
                   <div className="row" style={{ alignItems: 'flex-start' }}>
-                    <a data-tour="open-returned" className="btn btn-sm" href={`#/manager/review/${r.personId}?as=${r.reviewerId}`}>Open as {person(state, r.reviewerId).name.split(' ')[0]}</a>
+                    <a className="btn btn-sm" href={`#/manager/review/${r.personId}?as=${r.reviewerId}`}>Open as {person(state, r.reviewerId).name.split(' ')[0]}</a>
                   </div>
                 </div>
               );
@@ -145,7 +144,6 @@ export function HrConsistency() {
                     <div className="row">
                       <button
                         type="button"
-                        data-tour="flag-mark"
                         className="btn btn-sm"
                         onClick={() => setDialog({ key: m.key, label, context: `${mgr.name}'s average rating is ${signed(m.gap)} from what the team's results suggest.` })}
                       >
@@ -222,7 +220,6 @@ export function HrConsistency() {
                   {!f.review && !isCovered(f.key, f.personId) && (
                     <button
                       type="button"
-                      data-tour="flag-mark"
                       className="btn btn-sm"
                       onClick={() => setDialog({ key: f.key, label: `${who.name}'s rating: ${f.direction} results`, context: `${who.name} was rated ${f.overall}; results suggest ${f.suggested.toFixed(1)}.` })}
                     >
@@ -230,7 +227,7 @@ export function HrConsistency() {
                     </button>
                   )}
                   {!f.review && !isCovered(f.key, f.personId) && (
-                    <button type="button" data-tour={`return-${f.personId}`} className="btn btn-sm" onClick={() => setReturning({ key: f.key, personIds: [f.personId] })}>Return to manager</button>
+                    <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: f.key, personIds: [f.personId] })}>Return to manager</button>
                   )}
                   <a className="btn btn-sm" href={`#/hr/person/${f.personId}`}>Open review</a>
                 </div>

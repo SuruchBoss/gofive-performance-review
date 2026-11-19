@@ -100,7 +100,7 @@ export function HrProgress() {
                           {/* A late joiner needs removing, not a reminder: show that action directly. */}
                           {eligibilityHint(state, who) && state.cycle.status === 'open' ? (
                             <>
-                              <button type="button" data-tour="remove-ineligible" className="btn btn-sm" onClick={() => setDialog({ kind: 'remove', personId: p.personId })}>Remove from cycle</button>
+                              <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remove', personId: p.personId })}>Remove from cycle</button>
                               <MoreMenu
                                 label={`More actions for ${who.name}`}
                                 items={[

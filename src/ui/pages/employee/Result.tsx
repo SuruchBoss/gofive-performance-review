@@ -6,7 +6,6 @@ import { useStore } from '../../../state/store';
 import { Notice, PageHead, Panel } from '../../components';
 import { IconLock } from '../../icons';
 import { ReviewSummary } from '../../shared/ReviewSummary';
-import { DemoShortcut } from '../../shared/DemoShortcut';
 
 export function EmployeeResult({ userId }: { userId: string }) {
   const { state } = useStore();
@@ -30,7 +29,7 @@ export function EmployeeResult({ userId }: { userId: string }) {
       <>
         <PageHead title="My result" sub={state.cycle.name} />
         <Panel>
-          <div className="locked" data-tour="result-locked">
+          <div className="locked">
             <span className="locked-icon"><IconLock size={22} /></span>
             <div className="stack-sm">
               <h3>Your result is not released yet</h3>
@@ -49,7 +48,6 @@ export function EmployeeResult({ userId }: { userId: string }) {
             </div>
           </div>
         </Panel>
-        <DemoShortcut />
       </>
     );
   }
