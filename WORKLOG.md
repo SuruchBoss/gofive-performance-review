@@ -1079,3 +1079,12 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Left, for the PO:** on a 740 px tall phone the review page shows the headings on the first screen but the first rating control is one scroll down; the two demo shortcuts sit next to each other in "More"; on Fairness the buttons come after the chart.
 - **What went wrong:** my live test runs left a test server running in the scratch folder, on the port the local click-through uses. The next local run then loaded an empty page and failed at its first step, twice. Stopping that server fixed it; the app was fine.
 - **Checks:** 125 unit tests passed. e2e PASS at 1280 px and 390 px.
+
+## PLAN-5: live check and the check of `docs/ANSWERS.md` (on `main`)
+
+- **Live check (main b23a38c, calibration 425f007):** the deploy runs succeeded. Against the live sites: the click-through PASSES at 1280 px and 390 px on both builds (17 and 19 screens); no sideways scroll from 320 to 500 px; no header or demo-bar overlap from 320 to 900 px. Screenshots at 375 px of the three homes and the review page were taken from the live main build and sent to the PO.
+- **`docs/ANSWERS.md`, sentence by sentence, not edited:** every sentence is still true. Three use words or shapes the product no longer shows:
+  - Q1, "can return a review with a question": true; the button now reads "Send back with a question".
+  - Q1, "Late, missing and ineligible cases are handled and logged": true; the product now says "should not be reviewed yet" and "leave out".
+  - Q3, "In this exam, that is why the first screen guides a reviewer who knows nothing about the product": true of the start page ("Try as HR… Start here to see a full review cycle") and of each home. It is no longer a step-by-step guide, which a reader might picture.
+  - Q2's facts (one gate in `releaseBlockers`, 4 of 97 tests, about an hour, the calibration link) describe what happened and still hold. Q2 says "the map, activity log and person pages worked unchanged", which was true when calibration was built.
