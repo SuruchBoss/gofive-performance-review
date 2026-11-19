@@ -4,28 +4,28 @@ import type { ManagerReview, SelfReview } from '../domain/types';
 import { Badge } from './components';
 
 export function SelfReviewBadge({ r }: { r: SelfReview }) {
-  if (r.status === 'submitted') return <Badge tone="success">{r.late ? 'Submitted late' : 'Submitted'}</Badge>;
-  if (r.status === 'draft') return <Badge tone="brand">Draft</Badge>;
-  return <Badge>Not submitted</Badge>;
+  if (r.status === 'submitted') return <Badge tone="success">{r.late ? 'Self-review in, late' : 'Self-review in'}</Badge>;
+  if (r.status === 'draft') return <Badge tone="brand">Self-review draft</Badge>;
+  return <Badge>No self-review yet</Badge>;
 }
 
 export function ReviewBadge({ r }: { r: ManagerReview }) {
-  if (r.status === 'submitted') return <Badge tone="success">Submitted</Badge>;
-  if (r.status === 'draft') return <Badge tone="brand">In progress</Badge>;
-  return <Badge>Not started</Badge>;
+  if (r.status === 'submitted') return <Badge tone="success">Review submitted</Badge>;
+  if (r.status === 'draft') return <Badge tone="brand">Review in progress</Badge>;
+  return <Badge>Review not started</Badge>;
 }
 
 export function CaseBadge({ c }: { c: CaseInfo }) {
   switch (c.status) {
     case 'submitted':
-      return <Badge tone="success">Submitted</Badge>;
+      return <Badge tone="success">Review submitted</Badge>;
     case 'removed':
       return <Badge>Removed</Badge>;
     case 'escalated':
-      return <Badge tone="danger">Escalated</Badge>;
+      return <Badge tone="danger">Review escalated</Badge>;
     case 'overdue':
-      return <Badge tone="warning">{c.daysOverdue} day{c.daysOverdue === 1 ? '' : 's'} overdue</Badge>;
+      return <Badge tone="warning">Review {c.daysOverdue} day{c.daysOverdue === 1 ? '' : 's'} overdue</Badge>;
     default:
-      return <Badge tone="brand" plain>Due {fmt(c.deadline, true)}</Badge>;
+      return <Badge tone="brand" plain>Review due {fmt(c.deadline, true)}</Badge>;
   }
 }

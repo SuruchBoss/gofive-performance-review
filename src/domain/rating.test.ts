@@ -123,3 +123,13 @@ describe('seed data lands where the design says', () => {
     expect(far).toEqual(['e01', 'e05']);
   });
 });
+
+describe('ratings that need no reason', () => {
+  it('lists the whole ratings less than 1.0 from the suggestion', async () => {
+    const { ratingsWithoutReason } = await import('./rating');
+    expect(ratingsWithoutReason(2.6)).toEqual([2, 3]);
+    expect(ratingsWithoutReason(3.0)).toEqual([3]);
+    expect(ratingsWithoutReason(3.05)).toEqual([3, 4]);
+    expect(ratingsWithoutReason(4.17)).toEqual([4, 5]);
+  });
+});

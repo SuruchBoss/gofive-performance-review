@@ -92,7 +92,7 @@ export function Stat({ label, value, sub, meter }: { label: string; value: React
   );
 }
 
-export function RatingScale({ value, onChange, disabled, label, size, marker }: {
+export function RatingScale({ value, onChange, disabled, label, size, marker, hints }: {
   value?: Rating;
   onChange?: (r: Rating) => void;
   disabled?: boolean;
@@ -100,6 +100,8 @@ export function RatingScale({ value, onChange, disabled, label, size, marker }: 
   size?: 'lg';
   /** Integer to mark with a small tick (for example the suggested rating). */
   marker?: number;
+  /** What each level means; shown on hover and to screen readers before choosing. */
+  hints?: Record<Rating, string>;
 }) {
   return (
     <div className={`scale${size ? ` ${size}` : ''}`} role="radiogroup" aria-label={label}>
@@ -111,7 +113,7 @@ export function RatingScale({ value, onChange, disabled, label, size, marker }: 
           aria-checked={value === r}
           disabled={disabled}
           onClick={() => onChange?.(r)}
-          title={marker === r ? 'Suggested from goal results' : undefined}
+          title={hints ? `${r}: ${hints[r]}` : marker === r ? 'Nearest whole rating to the suggestion' : undefined}
         >
           {r}
           {marker === r && <span className="tick" aria-hidden="true" />}

@@ -1,6 +1,6 @@
 import { formatDate } from '../../domain/dates';
 import { farFlags } from '../../domain/flags';
-import { behaviourScore, suggestionFor } from '../../domain/rating';
+import { behaviourScore, LEVEL_WORDS, showSuggestion, suggestionFor } from '../../domain/rating';
 import { goalsOf, managerReviewOf, person, selfReviewOf } from '../../domain/selectors';
 import { useStore } from '../../state/store';
 import { useState } from 'react';
@@ -39,6 +39,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
           <div className="score-tile">
             <span className="l">Overall rating</span>
             <span className="v num">{submitted ? review.overall : '–'}</span>
+            {submitted && review.overall && <span className="level-word">{LEVEL_WORDS[review.overall]}</span>}
             <span className="s">
               {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}</> : 'Not submitted yet'}
             </span>
@@ -48,7 +49,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
           <button type="button" className="score-tile link" onClick={() => jump('goals')}>
             <span className="l">Goal results</span>
             <span className="v num">{pct(sug.results)}</span>
-            <span className="s">of goal targets, weighted. That suggests an overall {Math.round(suggested)} (100% of target is a 3).</span>
+            <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
           </button>
         </Panel>
         <Panel>

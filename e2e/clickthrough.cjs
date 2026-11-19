@@ -119,6 +119,7 @@ async function run(vp) {
   await page.getByLabel('What did you achieve').fill('Covered the night shift during the carrier change.');
   await page.getByRole('radiogroup', { name: 'Your own rating' }).getByRole('radio', { name: '3' }).click();
   await page.getByRole('button', { name: 'Submit self-review' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Submit self-review' }).click();
   assert((await page.locator('.page-head .badge').innerText()).includes('late'), 'self-review not marked late');
   await shot('08-employee-self-review');
   await open('/me/result');

@@ -2,9 +2,11 @@ import { formatDate } from '../../../domain/dates';
 import { daysLate, selfReviewWindow } from '../../../domain/selfReview';
 import { managerReviewOf, person, selfReviewOf } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
-import { Badge, Notice, PageHead, Panel, RatingScale } from '../../components';
+import { useState } from 'react';
+import { LEVEL_WORDS } from '../../../domain/rating';
+import { Badge, Dialog, Notice, PageHead, Panel, RatingScale } from '../../components';
 
-const OWN_LABELS = ['', 'Well below expectations', 'Below expectations', 'Met expectations', 'Above expectations', 'Well above expectations'];
+
 
 export function EmployeeSelfReview({ userId }: { userId: string }) {
   const { state, dispatch, notify } = useStore();
@@ -15,6 +17,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
   const mgrReview = managerReviewOf(state, userId);
   const editable = window === 'open' || window === 'open_late';
   const ready = self.text.trim().length > 0 && !!self.selfRating;
+  const [confirm, setConfirm] = useState(false);
 
   return (
     <div className="narrow">
@@ -64,10 +67,10 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
               </div>
               <div className="field">
                 <span className="label" id="own-label">Your own rating</span>
-                <span className="hint">For information only. It does not change the rating your manager is suggested.</span>
+                <span className="hint">Your manager sees it next to your goal results. It does not change the suggested rating, which comes from goal results only.</span>
                 <div className="row" style={{ gap: 12 }}>
                   <RatingScale label="Your own rating" value={self.selfRating} disabled={!editable} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
-                  {self.selfRating && <span className="small muted">{OWN_LABELS[self.selfRating]}</span>}
+                  {self.selfRating && <span className="small muted">{LEVEL_WORDS[self.selfRating]}</span>}
                 </div>
               </div>
             </div>
@@ -81,16 +84,38 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
               type="button"
               className="btn btn-primary"
               disabled={!ready}
-              onClick={() => {
-                dispatch({ type: 'submit_self_review', personId: userId });
-                notify(window === 'open_late' ? 'Self-review submitted (late)' : 'Self-review submitted');
-              }}
+              onClick={() => setConfirm(true)}
             >
               Submit self-review
             </button>
           </div>
         )}
       </div>
+      {confirm && (
+        <Dialog
+          title="Submit your self-review?"
+          sub={`You cannot change it after submitting. ${manager.name} can read it straight away.`}
+          onClose={() => setConfirm(false)}
+          footer={
+            <>
+              <button type="button" className="btn" onClick={() => setConfirm(false)}>Keep editing</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  dispatch({ type: 'submit_self_review', personId: userId });
+                  setConfirm(false);
+                  notify(window === 'open_late' ? 'Self-review submitted (late)' : 'Self-review submitted');
+                }}
+              >
+                Submit self-review
+              </button>
+            </>
+          }
+        >
+          <p className="small">Your own rating: <strong>{self.selfRating} · {self.selfRating ? LEVEL_WORDS[self.selfRating] : ''}</strong></p>
+        </Dialog>
+      )}
     </div>
   );
 }
