@@ -76,7 +76,12 @@ export function DemoStrip() {
         {view.introHidden && (
           <button type="button" className="demo-btn" onClick={() => { setView({ introHidden: false }); window.scrollTo(0, 0); }}>Guide</button>
         )}
-        <button type="button" className="demo-btn" onClick={() => setConfirmReset(true)}>Reset demo</button>
+        <button type="button" className="demo-btn" aria-label="Reset demo" onClick={() => setConfirmReset(true)}>
+          <span className="lbl-long">Reset demo</span><span className="lbl-short" aria-hidden="true">Reset</span>
+        </button>
+        <button type="button" className="demo-btn" aria-label="Exit demo" onClick={() => go('/')} title="Back to the start page">
+          <span className="lbl-long">Exit demo</span><span className="lbl-short" aria-hidden="true">Exit</span>
+        </button>
       </div>
       {confirmReset && (
         <Dialog

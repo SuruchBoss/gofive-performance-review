@@ -105,6 +105,11 @@ export function Intro() {
               <div className="stack-sm" style={{ gap: 4 }}>
                 <span className="strong">{s.title}{done && <span className="sr-only"> (done)</span>}</span>
                 <span className="intro-as">As {s.links.map((l) => l.as).join(', then ')}</span>
+                {!done && s.links[0].view.role !== view.role && (
+                  <span className="intro-elsewhere">
+                    This step is for {roleName[s.links[0].view.role]}. You are viewing as {roleName[view.role]}: the link below switches for you.
+                  </span>
+                )}
                 <span className="small">{s.body}</span>
                 {s.clock && (
                   <button type="button" className="btn btn-sm intro-clock" onClick={advanceDay}>+1 day <span className="muted">(now {formatDate(state.today, true)})</span></button>

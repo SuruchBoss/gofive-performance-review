@@ -57,7 +57,12 @@ async function run(vp) {
 
   await page.goto(BASE);
   await page.evaluate(() => localStorage.clear());
-  await page.goto(BASE + '#/hr');
+  await page.reload();
+  // Landing page: calm, no demo controls, one main action.
+  assert(await page.getByRole('button', { name: 'Open demo' }).isVisible(), 'landing: Open demo missing');
+  assert((await page.locator('.demo-strip').count()) === 0, 'landing: demo controls should not show');
+  await shot('00-landing');
+  await page.getByRole('button', { name: 'Open demo' }).click();
   await page.getByText('Annual performance review, one cycle end to end').waitFor();
   assert(await page.getByText('Requirement change from question 2').first().isVisible(), 'build label missing');
   await shot('01-hr-cycle-start');
@@ -159,6 +164,12 @@ async function run(vp) {
   await viewAs('Employee', 'Fah Inthira');
   await open('/me/result');
   assert(await page.getByText('You are not part of this review cycle').isVisible(), 'removed employee message missing');
+
+  // Exit goes back to the landing page.
+  await page.getByRole('button', { name: 'Exit demo' }).click();
+  await page.getByRole('button', { name: 'Open demo' }).waitFor({ timeout: 3000 }).catch(() => {});
+  assert(await page.getByRole('button', { name: 'Open demo' }).isVisible(), `exit did not return to the landing page (at ${page.url()})`);
+  await page.getByRole('button', { name: 'Open demo' }).click();
 
   // Reset restores the start.
   await page.getByRole('button', { name: 'Reset demo' }).click();

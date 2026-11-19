@@ -49,7 +49,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
       <header className="app-header">
         <div className="app-header-inner">
           <div className="brand">
-            <span className="brand-mark"><IconMark size={18} /></span>
+            <a className="brand-mark" href="#/" title="Back to the start page" aria-label="Back to the start page"><IconMark size={18} /></a>
             <div className="brand-text">
               <span className="brand-name">Performance Review</span>
               <span className="brand-tags">
