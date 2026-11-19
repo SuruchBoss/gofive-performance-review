@@ -953,3 +953,4 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - Merged `main` (123dafd). The one test conflict kept both checks: calibration locked with no rating change, and the placeholder comment.
 - Checks: 127 unit tests passed. e2e PASS at 1280 px and 390 px (18 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.
 - On this build the full guide likewise shows only on the first screen, and "Calibrate, then release" stays the last HR step.
+- **Live check (main 123dafd, calibration 621f601):** the scripted click-through passed on the live main build (16 screens) and the live calibration build (18 screens) at 1280 px and 390 px, with no console errors. This includes accepting a manager's answer, the Demo menu and the demo shortcut. No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
