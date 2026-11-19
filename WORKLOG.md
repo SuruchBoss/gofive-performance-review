@@ -1009,3 +1009,8 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
   - One e2e expectation was wrong, not the app: after "Submit review" the manager lands on My team, which is already the screen for Manager step 2.
 - **Checks:** 135 unit tests passed. `e2e:tips` PASS at 320, 375, 412 and 1366 px. Existing e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
 - **Engine tweak after the calibration merge (on `main`):** a target that is off to the side is scrolled into view before its tip shows, and the e2e fails if a target is off screen sideways. Details are in the `calibration` branch's log.
+- **Live check (main 82a8877, calibration 33074d9):** all deploy runs succeeded. Run against the live sites:
+  - `e2e:tips` PASS at 320, 375, 412 and 1366 px on both builds (45 tips per width on main, 54 on calibration).
+  - The existing click-through PASS at 1280 px and 390 px on both builds.
+  - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
+  - Screenshots at 375 px of HR step 1 and Employee step 1 were taken from the live main build and sent to the PO.
