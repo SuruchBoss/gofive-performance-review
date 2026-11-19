@@ -945,3 +945,9 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
   ```
   Unit tests: 106 passed.
 - **Note:** The `docs/ANSWERS.md` update for Q2 is written on `main`, not on this branch, because that is the document that is submitted. See the next entry on `main`.
+- **Live check (main 927baa6, calibration 15319e2):**
+  - The deploy run succeeded. The `main` push run was cancelled when the calibration-triggered run replaced it; that run builds both.
+  - Both live builds return 200.
+  - The About dialog's links, opened in the live app on each build, all return 200: "Open the calibration build" / "Open the main version", "How this was built" (the README anchor exists), "Full work log" and "Design".
+  - The README's links (BRIEF, DESIGN, PLAN, WORKLOG, ANSWERS, config) return 200.
+  - The live `docs/ANSWERS.md` starts "# Part 2 — Answers", and the live `WORKLOG.md` on `main` holds the C1–C4 calibration notes.
