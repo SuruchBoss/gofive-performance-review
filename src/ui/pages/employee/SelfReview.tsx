@@ -40,7 +40,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
         {window === 'closed' && self.status !== 'submitted' && (
           <Notice tone="brand" title="The self-review is closed">
             {mgrReview.status === 'submitted'
-              ? `${manager.name} completed your review on ${formatDate(mgrReview.submittedOn!)} without a self-review. This is recorded on the review.`
+              ? <>{manager.name} completed your review on {formatDate(mgrReview.submittedOn!)} without a self-review. This is recorded on the review. <a href="#/me/result">{state.cycle.status === 'released' ? 'See your result →' : 'See when your result is released →'}</a></>
               : 'You are not part of this review cycle.'}
           </Notice>
         )}
@@ -70,7 +70,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
                 <span className="hint">Your manager sees it next to your goal results. It does not change the suggested rating, which comes from goal results only.</span>
                 <div className="row" style={{ gap: 12 }}>
                   <RatingScale label="Your own rating" value={self.selfRating} disabled={!editable} hints={LEVEL_WORDS} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
-                  <span className="small muted">{self.selfRating ? LEVEL_WORDS[self.selfRating] : '1 = well below expectations, 3 = met, 5 = well above'}</span>
+                  <span className="small muted">{self.selfRating ? LEVEL_WORDS[self.selfRating] : '1 well below · 2 below · 3 met · 4 above · 5 well above expectations'}</span>
                 </div>
               </div>
             </div>

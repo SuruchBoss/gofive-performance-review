@@ -813,3 +813,22 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - At 412 px (Pixel 7) and 1366 px on both builds: the landing link shows the new wording; the demo shortcut releases results; My result leads with the overall rating (3, "Met expectations") above its two inputs; no sideways scroll; no page errors.
   - The full click-through passed live at 1280 px and 390 px (main 16 screens, calibration 18).
   - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
+
+## Verification round (persona 4 and the designer) and last fixes (on `main`)
+
+- **Pass condition (PO):** no bugs and no screen where a first-time visitor gets stuck. **Met.** Neither tester found a functional bug. Persona 4: 7/10, ease of use 7, "The guide always told me the next step". Designer: UX 7.5, "Every flow I tried worked".
+- **Fixed** (clear issues only; details in `docs/blind-test-2.md`, "Verification round"):
+  - the closed Self-review page now links to My result (the one minor dead end);
+  - the phone review form no longer repeats a blocker;
+  - phone toasts moved to the bottom so they no longer cover "Demo ▾";
+  - plain words in the demo shortcut dialog;
+  - all five words on the self-rating scale;
+  - a shorter first-screen guide;
+  - "Press +1 day twice";
+  - one term, "Rating 1.0+ from results";
+  - "Select a dot" on the Map legend;
+  - "Show all steps" shown as a link.
+- **Not changed:** the late start (PO decision), employee reply (Q1 next), and the design-level points listed in the doc.
+- **What went wrong:** the first e2e run after these edits failed at its first step ("landing: Try as HR missing"), before the app had loaded. A rerun passed at both widths without any change, so it was preview-server start-up timing, not the app.
+- **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+- **Testing stops here**, as the PO asked.
