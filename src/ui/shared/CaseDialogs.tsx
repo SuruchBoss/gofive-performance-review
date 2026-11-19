@@ -6,30 +6,37 @@ import { useStore } from '../../state/store';
 import { DateField, Dialog, Notice } from '../components';
 import { eligibilityHint } from '../../domain/eligibility';
 
-export function RemindDialog({ personId, onClose }: { personId: string; onClose: () => void }) {
+/** One reminder to a manager, about one or several of their open reviews. */
+export function RemindDialog({ personIds, onClose }: { personIds: string[]; onClose: () => void }) {
   const { state, dispatch, notify } = useStore();
-  const p = state.participants.find((x) => x.personId === personId)!;
-  const reviewer = person(state, p.reviewerId);
-  const who = person(state, personId);
+  const ps = personIds.map((id) => state.participants.find((x) => x.personId === id)!);
+  const reviewer = person(state, ps[0].reviewerId);
+  const names = personIds.map((id) => person(state, id).name);
+  const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
+  const last = ps.map((p) => p.lastRemindedOn).filter(Boolean).sort().at(-1);
   return (
     <Dialog
       title={`Remind ${reviewer.name}?`}
-      sub={`About the review of ${who.name}.`}
+      sub={`About the review${names.length === 1 ? '' : 's'} of ${list}.`}
       onClose={onClose}
       footer={
         <>
           <button type="button" className="btn" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn btn-primary" onClick={() => { dispatch({ type: 'remind', personId, actorId: 'hr' }); notify(`Reminder recorded for ${reviewer.name}`); onClose(); }}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => { for (const personId of personIds) dispatch({ type: 'remind', personId, actorId: 'hr' }); notify(`Reminder recorded for ${reviewer.name}`); onClose(); }}
+          >
             Send reminder
           </button>
         </>
       }
     >
       <p className="small">
-        {reviewer.name.split(' ')[0]} gets an in-app reminder that the review of {who.name} was due {formatDate(effectiveDeadline(state, p))}.
-        {p.lastRemindedOn && <> Last reminded {formatDate(p.lastRemindedOn)}.</>}
+        {reviewer.name.split(' ')[0]} gets a reminder in the app. The review{names.length === 1 ? ' was' : 's were'} due {formatDate(effectiveDeadline(state, ps[0]))}.
+        {last && <> Last reminded {formatDate(last)}.</>}
       </p>
-      <p className="xs muted">Prototype: no email is sent. The reminder is recorded in the activity log.</p>
+      <p className="xs muted">Prototype: no email is sent. The reminder is recorded in Activity.</p>
     </Dialog>
   );
 }

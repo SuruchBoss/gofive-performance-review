@@ -72,7 +72,7 @@ function DeadlineField({ field, label }: { field: 'selfReviewDeadline' | 'manage
 export function HrCycle() {
   const { state, dispatch, notify } = useStore();
   const [confirm, setConfirm] = useState(false);
-  const [dialog, setDialog] = useState<{ kind: 'remind' | 'remove'; personId: string }>();
+  const [dialog, setDialog] = useState<{ kind: 'remind' | 'remove'; personIds: string[] }>();
   const released = state.cycle.status === 'released';
   const active = state.participants.filter((p) => !p.removed);
   const review = (id: string) => state.managerReviews.find((r) => r.personId === id)!;
@@ -98,17 +98,17 @@ export function HrCycle() {
         </Notice>
       ) : (
         <div className="stack">
-          <Panel title="Needs your attention" actions={<span className="small muted">{groups ? 'Results can be released when this list is empty' : ''}</span>} bodyClass="">
+          <Panel title="Needs your attention" bodyClass="">
             {groups === 0 && <div className="attention-empty"><IconCheck size={16} /> Nothing needs your attention. You can release results.</div>}
 
             {tooNew.length > 0 && (
               <section className="attention">
                 <h3>{tooNew.length} {tooNew.length === 1 ? 'person' : 'people'} joined less than 3 months ago</h3>
-                <p className="small muted">Someone that new should not be reviewed yet. The system suggests leaving them out; you decide.</p>
+                <p className="small muted">Too new to review. Suggested: leave out.</p>
                 {tooNew.map((p) => (
                   <div className="attention-row" key={p.personId}>
                     <PersonCell name={name(p.personId)} sub={`Joined ${formatDate(person(state, p.personId).startDate)} · ${teamName(state, person(state, p.personId).teamId)}`} size="sm" />
-                    <button type="button" className="btn btn-sm btn-primary" onClick={() => setDialog({ kind: 'remove', personId: p.personId })}>Leave {first(p.personId)} out</button>
+                    <button type="button" className="btn btn-sm btn-primary" onClick={() => setDialog({ kind: 'remove', personIds: [p.personId] })}>Leave {first(p.personId)} out</button>
                   </div>
                 ))}
               </section>
@@ -117,21 +117,22 @@ export function HrCycle() {
             {toWrite.length > 0 && (
               <section className="attention">
                 <h3>{late.length === toWrite.length ? `${toWrite.length} review${toWrite.length === 1 ? ' is' : 's are'} late` : `${toWrite.length} review${toWrite.length === 1 ? ' is' : 's are'} not in yet`}</h3>
-                <p className="small muted">A late review moves to the manager's own manager 3 days after the deadline. You can remind the manager, or give more time in People. This group clears when the reviews are in.</p>
-                {toWrite.map((p) => {
-                  const c = caseInfo(state, p.personId);
+                {[...new Set(toWrite.map((p) => p.reviewerId))].map((reviewerId) => {
+                  const theirs = toWrite.filter((p) => p.reviewerId === reviewerId);
+                  const c = caseInfo(state, theirs[0].personId);
+                  const reminded = theirs.map((p) => p.lastRemindedOn).filter(Boolean).sort().at(-1);
+                  const boss = person(state, reviewerId).managerId;
+                  const when = c.status === 'escalated'
+                    ? `moved to ${first(reviewerId)} on ${formatDate(theirs[0].escalatedOn!, true)}`
+                    : c.status === 'overdue'
+                    ? `${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} late${boss ? ` · ${theirs.length === 1 ? 'goes' : 'go'} to ${first(boss)} on ${formatDate(c.escalatesOn!, true)}` : ''}`
+                    : `due ${formatDate(c.deadline, true)}`;
                   return (
-                    <div className="attention-row" key={p.personId}>
-                      <PersonCell
-                        name={name(p.personId)}
-                        sub={c.status === 'escalated'
-                          ? `Moved to ${name(p.reviewerId)} on ${formatDate(p.escalatedOn!, true)}`
-                          : c.status === 'overdue'
-                          ? `${name(p.reviewerId)} · ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} late · moves up on ${formatDate(c.escalatesOn!, true)}${p.lastRemindedOn ? ` · reminded ${formatDate(p.lastRemindedOn, true)}` : ''}`
-                          : `${name(p.reviewerId)} · due ${formatDate(c.deadline, true)}${p.lastRemindedOn ? ` · reminded ${formatDate(p.lastRemindedOn, true)}` : ''}`}
-                        size="sm"
-                      />
-                      <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personId: p.personId })}>{p.lastRemindedOn === state.today ? `Remind ${first(p.reviewerId)} again` : `Remind ${first(p.reviewerId)}`}</button>
+                    <div className="attention-row" key={reviewerId}>
+                      <PersonCell name={theirs.map((p) => name(p.personId)).join(', ')} sub={`${name(reviewerId)} · ${when}${reminded ? ` · reminded ${formatDate(reminded, true)}` : ''}`} size="sm" />
+                      <button type="button" className="btn btn-sm" onClick={() => setDialog({ kind: 'remind', personIds: theirs.map((p) => p.personId) })}>
+                        Remind {first(reviewerId)}{theirs.length > 1 ? ` (${theirs.length} reviews)` : ''}{reminded === state.today ? ' again' : ''}
+                      </button>
                     </div>
                   );
                 })}
@@ -153,7 +154,6 @@ export function HrCycle() {
             {toCheck.length > 0 && (
               <section className="attention">
                 <h3>{toCheck.length} rating{toCheck.length === 1 ? ' does' : 's do'} not match results</h3>
-                <p className="small muted">A manager's ratings are far from what their own team's goal results suggest. Check each one before release.</p>
                 <ul className="attention-list">
                   {toCheck.map((b) => <li key={b.key}>{b.text}</li>)}
                 </ul>
@@ -205,8 +205,8 @@ export function HrCycle() {
         </div>
       </details>
 
-      {dialog?.kind === 'remind' && <RemindDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
-      {dialog?.kind === 'remove' && <RemoveDialog personId={dialog.personId} onClose={() => setDialog(undefined)} />}
+      {dialog?.kind === 'remind' && <RemindDialog personIds={dialog.personIds} onClose={() => setDialog(undefined)} />}
+      {dialog?.kind === 'remove' && <RemoveDialog personId={dialog.personIds[0]} onClose={() => setDialog(undefined)} />}
       {confirm && (
         <Dialog
           title={`Release results to ${active.length} employees?`}
