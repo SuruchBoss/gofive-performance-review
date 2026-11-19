@@ -837,3 +837,111 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - The full click-through passed live at 1280 px and 390 px (main 16 screens, calibration 18).
   - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
   - Testing stopped.
+
+
+## Final answers (PO wording) and fact checks (on `main`)
+
+- **Done:** Replaced `docs/ANSWERS.md` with the PO's final wording for all three answers, exactly as written.
+- **Fact checks against git, before committing:**
+  - *"About an hour from written plan to working build."* **Correct.** The plan commit `e7f3098` ("Add plan for UX pass, calibration branch and blind test", `docs/PLAN-2.md`) is 15:36:12 UTC, which is 22:36 in UTC+7. The last calibration build commit `167d994` (C4, guide and browser test) is 16:43:43 UTC, 23:43 in UTC+7. The Q2 note on that branch, `4afcfc6`, is 16:44:33 UTC (23:44). That is 67–68 minutes.
+  - *"4 of 97 tests failed as expected."* **Correct**, and checked by running it. Before the change, `main` (`8f1a96f`) had 97 tests, and all passed. With the pre-change `release.test.ts` restored on top of the calibration rules commit `5cd35fa`, exactly 4 tests failed, all release-gate tests:
+    1. "is blocked at the start by open reviews and unreviewed flags";
+    2. "stays blocked while the new joiner is neither reviewed nor removed";
+    3. "releases once everything is resolved, and locks the cycle";
+    4. "a new flag raised by a late review blocks release again".
+    
+    The other 93 still passed. Those 4 were rewritten for the new rule in `5cd35fa`.
+- **Calibration build notes:** the Q2 answer points to this log. The detailed notes were written on the `calibration` branch, so until now they existed only in that branch's copy of this file. They are copied below unchanged, with the timing table from the earlier Q2 draft.
+
+### Timing (commit timestamps, 18 Nov 2026, UTC+7)
+
+| Step | Time |
+|---|---|
+| Plan written (`docs/PLAN-2.md`) | 22:36 |
+| Plan approved by the PO | in chat; the approval time is not in git |
+| Deploy setup for the second build (on `main`) | 23:36 |
+| Branch created from `main` | 23:36 |
+| Rules and tests (C1) | 23:39 |
+| HR calibration screen (C2) | 23:41 |
+| Manager and employee views, build label (C3) | 23:42 |
+| Guide and browser test (C4) | 23:43 |
+
+Build time from branch to last commit: about 8 minutes, for 4 commits. From written plan to working build: about an hour. The changes were 24 files, +726 / −80 lines in `src/`.
+
+### C1 — Calibration rules and tests (branch `calibration`)
+
+- **Done:**
+  - **New types:** `Calibration` (not_started → in_session → locked), `AgendaItem` and `CalibrationChange`. `ManagerReview` gets `calibratedOverall` and `calibrationReason`. The manager's own rating is never overwritten.
+  - **`src/domain/calibration.ts`:**
+    - `finalRating`.
+    - Start rules: every review submitted, at least 2 attendees.
+    - The agenda is every flag at the moment the session starts, frozen then.
+    - Lock rule: every agenda item resolved with a note.
+    - Per-team average before and after calibration, against what results suggest.
+  - **Reducer actions:**
+    - `start_calibration`.
+    - `calibrate_rating`: needs a reason, records from/to, is logged. Changing back to the manager's rating clears the calibrated value but keeps the history.
+    - `resolve_item`: needs a note.
+    - `lock_calibration`.
+  - Removing people is blocked once calibration has started.
+  - **Release gate:** every review submitted **and** calibration locked. HR flag notes are no longer a gate on their own, because the flags become the calibration agenda.
+  - Separate storage keys (`pr-cal:*`), so this build never shares demo state with the main build on the same site.
+- **Tests:** 106 passed.
+  - The release tests were rewritten for the new rule. For example: "all flags noted but calibration not locked" is still blocked.
+  - 11 new calibration tests: start rules, a 4-item agenda, a change with reason and log, reverting a change, Sales average 4.0 → 3.5 after two changes, lock rules, and no change after lock.
+  - Shared test steps moved to `src/domain/testing.ts`.
+- **Who decided:** PO set the requirement (exam Q2) and approved the plan. Developer assumptions, logged earlier: HR records the session for the group; the agenda is frozen at start.
+- **What went wrong:** The first version imported test helpers from a test file. That made its tests run twice (112 counted). The helpers were moved to a plain module.
+
+### C2 — HR calibration screen (branch `calibration`)
+
+- **Done:**
+  - **Navigation:** a new HR tab, "Calibration" ("Calibrate" on phones), with a count of cases still to agree.
+  - **Before the session:** says why it cannot start ("3 reviews are still open… See Progress"), lets HR choose who is in the session, and has one main action, "Start calibration session".
+  - **In session:**
+    - Team cards show the average rating before → after against what results suggest, with the gap.
+    - The agenda lists the frozen flags. The next case to discuss is open. A team case lists the team, and each person has "Change rating" (new rating plus a required reason). "Mark as agreed" needs an outcome note.
+    - "Show all 11 people across teams" lets the group change anyone else.
+    - Main action: "Lock calibration", enabled once every case is agreed, with a confirmation.
+  - **After locking:** the list of agreed changes and "Go to release".
+  - **Cycle overview:** the release checklist now asks for "Calibration across teams locked" instead of "Every flag reviewed by HR", and the third figure shows the calibration status.
+- **Checked in the browser (1366 px and 390 px):**
+  - Started blocked (open reviews). Tom submitted Orn and Ying, and HR removed Fah. Then: start, change Nida 5 → 4 with a reason, agree all 4 cases, lock.
+  - The Sales card showed 4.00 → 3.75.
+  - "Go to release" opened the Cycle overview with Release enabled.
+  - No sideways scroll, no console errors.
+- **Tests:** 106 passed.
+- **Who decided:** Developer, under the approved plan and UX rules.
+- **What went wrong:** On phones the team-card text wrapped into four lines. "Results suggest" was shortened to "Results".
+
+### C3 — Manager and employee views of calibration (branch `calibration`)
+
+- **Done:**
+  - **Manager "My team":** a banner while calibration is in progress or locked ("…any change to your team is shown below with the reason. Nothing to do here"). Changed rows show "Calibrated 5 → 4".
+  - **Manager review page:** a notice "Calibrated from 5 to 4" with the group's reason. The submitted notice now says managers calibrate before release.
+  - **Employee "My result":**
+    - While locked, it names calibration as a step ("Results open after every review is in, the managers have calibrated ratings across teams, and HR releases them") and shows its status (not started / in progress / done).
+    - After release, the overall tile shows the final rating with "Calibrated from 5 to 4 across teams", and the assessment lists the reason (PO assumption: employees see it).
+  - **Results map:** uses the final (calibrated) rating.
+  - **Build label:** a filled header tag "Requirement change from question 2" that links back to the main version, and a page title saying it is the calibration build. The About box says which build this is and links to the main version.
+- **Tests:** 106 passed. Checked the label and the locked result at 1366, 390 and 320 px; no sideways scroll.
+- **Who decided:** PO: the label wording. Developer: the placement. Assumption: employees see the calibration change.
+- **What went wrong:** Nothing.
+
+### C4 — Guide and browser test for calibration (branch `calibration`)
+
+- **Done:**
+  - Guide step 5 is now "Calibrate, then release" and opens the Calibration screen. The guide's heading says this is the requirement-change build.
+  - The e2e click-through has these additions:
+    1. It checks the build label.
+    2. After all reviews are in, HR starts calibration, changes Nida 5 → 4 with a reason, agrees every case, and locks.
+    3. HR releases.
+    4. Nida's result shows "Calibrated from 5 to 4".
+  - The old "mark every flag" step was dropped, because flags are now agreed in calibration.
+- **Result:**
+  ```
+  PASS desktop (1280px): guided path complete, 16 screens checked, no sideways scroll, no console errors
+  PASS phone (390px): guided path complete, 16 screens checked, no sideways scroll, no console errors
+  ```
+  Unit tests: 106 passed.
+- **Note:** The `docs/ANSWERS.md` update for Q2 is written on `main`, not on this branch, because that is the document that is submitted. See the next entry on `main`.
