@@ -87,7 +87,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
                     </td>
                     <td data-label="Deadline" className="num nowrap">{formatDate(c.deadline, true)}</td>
                     <td className="actions">
-                      <a className={`btn btn-sm${p.personId === nextId ? ' btn-primary' : ''}`} href={`#/manager/review/${p.personId}`}>
+                      <a data-tour={openReturn(r) ? 'answer-hr' : undefined} className={`btn btn-sm${p.personId === nextId ? ' btn-primary' : ''}`} href={`#/manager/review/${p.personId}`}>
                         {openReturn(r) ? 'Answer HR' : r.status === 'submitted' ? 'View' : r.status === 'draft' ? 'Continue review' : 'Start review'}
                       </a>
                     </td>

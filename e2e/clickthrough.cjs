@@ -71,7 +71,11 @@ async function run(vp) {
   };
 
   await page.goto(BASE);
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    localStorage.clear();
+    // Coachmark tips have their own test (e2e/coachmarks.cjs); this path runs with them off.
+    for (const key of ['pr-demo:tips', 'pr-cal:tips']) localStorage.setItem(key, JSON.stringify({ hr: true, manager: true, employee: true }));
+  });
   await page.reload();
   // Landing page: calm, no demo controls, one main action.
   assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), 'landing: Try as HR missing');

@@ -174,7 +174,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                       <div className="strong">{c.name}</div>
                       <div className="small muted">{c.description}</div>
                     </div>
-                    <RatingScale label={c.name} value={b.rating} disabled={locked} hints={c.anchors} onChange={(r) => setBehaviour(c.id, r)} />
+                    <RatingScale tour="review-behaviour" label={c.name} value={b.rating} disabled={locked} hints={c.anchors} onChange={(r) => setBehaviour(c.id, r)} />
                     <div className={`anchor${b.rating ? '' : ' empty'}`}>
                       {b.rating ? <><strong>{b.rating} ·</strong> {c.anchors[b.rating]}</> : 'Pick a level to see what it means.'}
                     </div>
@@ -187,7 +187,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
           <Panel title="Overall rating" actions={<span className="small muted">Underlined: nearest whole rating to {showSuggestion(suggested)}</span>}>
             <div className="stack">
               <div className="row" style={{ gap: 16 }}>
-                <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} hints={LEVEL_WORDS} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
+                <RatingScale tour="review-overall" size="lg" label="Overall rating" value={review.overall} disabled={locked} hints={LEVEL_WORDS} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
                 {review.overall !== undefined && (
                   <span className={`small ${far ? 'strong' : 'muted'} num`}>
                     {LEVEL_WORDS[review.overall]} · {far && evidence ? 'needs a reason and an example (below)' : far ? 'needs a reason (below)' : evidence ? 'needs an example (below)' : 'nothing else needed'}
@@ -263,7 +263,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
               <Panel title="Your answer to HR">
                 <div className="field">
                   <label htmlFor="answer">Answer to: “{pending.question}”</label>
-                  <textarea id="answer" className="textarea" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="For example: agreed, changed to 4; or: kept 5 because…" />
+                  <textarea id="answer" data-tour="review-answer" className="textarea" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="For example: agreed, changed to 4; or: kept 5 because…" />
                   <span className="hint">
                     {review.overall === pending.ratingBefore ? `Rating unchanged (${pending.ratingBefore}): this will confirm it.` : `Rating changed from ${pending.ratingBefore} to ${review.overall}.`}
                   </span>
@@ -281,7 +281,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                   <>{problems.length} thing{problems.length === 1 ? '' : 's'} left before you can submit (listed above).</>
                 ) : 'Ready to submit. Drafts save automatically.'}
               </span>
-              <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>{pending ? (review.overall === pending.ratingBefore ? 'Confirm and send answer' : 'Resubmit with answer') : 'Submit review'}</button>
+              <button type="button" data-tour="review-submit" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>{pending ? (review.overall === pending.ratingBefore ? 'Confirm and send answer' : 'Resubmit with answer') : 'Submit review'}</button>
             </div>
             </>
           )}

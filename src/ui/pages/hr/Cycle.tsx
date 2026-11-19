@@ -112,7 +112,7 @@ export function HrCycle() {
                     <div className="strong">Every manager review submitted</div>
                     {openReviews.length > 0 ? (
                       <ul className="blockers">
-                        {openReviews.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
+                        {openReviews.map((b) => <li key={b.key}>{b.text} · <a data-tour="blocker" href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">{submitted} of {active.length} submitted.</div>}
                   </div>
@@ -123,7 +123,7 @@ export function HrCycle() {
                     <div className="strong">Every flag reviewed by HR</div>
                     {openFlags.length > 0 ? (
                       <ul className="blockers">
-                        {openFlags.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
+                        {openFlags.map((b) => <li key={b.key}>{b.text} · <a data-tour="blocker" href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">{flags.length ? `${flags.length} of ${flags.length} reviewed.` : 'No flags.'}</div>}
                   </div>
@@ -133,7 +133,7 @@ export function HrCycle() {
                 <span className="small muted">
                   {ready ? 'Ready. Everyone in the cycle sees their result at the same time.' : `${blockers.length} item${blockers.length === 1 ? '' : 's'} left before release.`}
                 </span>
-                <button type="button" className="btn btn-primary" disabled={!ready} onClick={() => setConfirm(true)}>
+                <button type="button" data-tour="release" className="btn btn-primary" disabled={!ready} onClick={() => setConfirm(true)}>
                   {!ready && <IconLock size={15} />} Release results
                 </button>
               </div>
