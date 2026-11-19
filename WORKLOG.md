@@ -1000,3 +1000,39 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - The full click-through passed live at 1280 px and 390 px (main 16 screens, calibration 18).
   - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
   - Testing stopped.
+
+
+## Final answers (PO wording) and fact checks (on `main`)
+
+- **Done:** Replaced `docs/ANSWERS.md` with the PO's final wording for all three answers, exactly as written.
+- **Fact checks against git, before committing:**
+  - *"About an hour from written plan to working build."* **Correct.** The plan commit `e7f3098` ("Add plan for UX pass, calibration branch and blind test", `docs/PLAN-2.md`) is 15:36:12 UTC, which is 22:36 in UTC+7. The last calibration build commit `167d994` (C4, guide and browser test) is 16:43:43 UTC, 23:43 in UTC+7. The Q2 note on that branch, `4afcfc6`, is 16:44:33 UTC (23:44). That is 67–68 minutes.
+  - *"4 of 97 tests failed as expected."* **Correct**, and checked by running it. Before the change, `main` (`8f1a96f`) had 97 tests, and all passed. With the pre-change `release.test.ts` restored on top of the calibration rules commit `5cd35fa`, exactly 4 tests failed, all release-gate tests:
+    1. "is blocked at the start by open reviews and unreviewed flags";
+    2. "stays blocked while the new joiner is neither reviewed nor removed";
+    3. "releases once everything is resolved, and locks the cycle";
+    4. "a new flag raised by a late review blocks release again".
+    
+    The other 93 still passed. Those 4 were rewritten for the new rule in `5cd35fa`.
+- **Calibration build notes:** the Q2 answer points to this log. The detailed notes were written on the `calibration` branch, so until now they existed only in that branch's copy of this file. They are copied below unchanged, with the timing table from the earlier Q2 draft.
+
+### Timing (commit timestamps, 18 Nov 2026, UTC+7)
+
+| Step | Time |
+|---|---|
+| Plan written (`docs/PLAN-2.md`) | 22:36 |
+| Plan approved by the PO | in chat; the approval time is not in git |
+| Deploy setup for the second build (on `main`) | 23:36 |
+| Branch created from `main` | 23:36 |
+| Rules and tests (C1) | 23:39 |
+| HR calibration screen (C2) | 23:41 |
+| Manager and employee views, build label (C3) | 23:42 |
+| Guide and browser test (C4) | 23:43 |
+
+Build time from branch to last commit: about 8 minutes, for 4 commits. From written plan to working build: about an hour. The changes were 24 files, +726 / −80 lines in `src/`.
+
+The original entries C1–C4 are earlier in this branch's copy of the log ("## C1 — Calibration rules and tests" onwards), so they are not repeated here.
+
+## Merge of the final answers into `calibration`
+
+- Merged `main` (927baa6) with no conflicts. On this branch the copied C1–C4 block was replaced by a pointer, because the original entries are already in this log.
