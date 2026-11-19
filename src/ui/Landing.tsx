@@ -54,8 +54,8 @@ export function Landing() {
         </div>
         <p className="landing-note">Fictional company and people. Nothing is sent anywhere.</p>
         <nav className="landing-links" aria-label="More">
-          {IS_Q2_BUILD ? <a href="../">Main version</a> : <a href="./calibration/">Calibration version (question 2)</a>}
-          <span aria-hidden="true">·</span>
+          {IS_Q2_BUILD ? <a href="../">See the version without calibration</a> : <a href="./calibration/">See the requirement change: calibration before release</a>}
+          <span className="landing-sep" aria-hidden="true">·</span>
           <a href={`${REPO}#how-this-was-built`} target="_blank" rel="noreferrer">How this was built</a>
         </nav>
       </div>
