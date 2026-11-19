@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CONFIG } from '../../../domain/config';
 import { formatDate } from '../../../domain/dates';
-import { farFlags, managerConsistency, suggestedFor, type ManagerConsistency } from '../../../domain/flags';
+import { farFlags, managerConsistency, suggestedFor } from '../../../domain/flags';
 import { isFarFromSuggestion } from '../../../domain/rating';
 import { firstName, person, teamName } from '../../../domain/selectors';
 import type { DemoState, FlagReview } from '../../../domain/types';
@@ -9,20 +9,12 @@ import { useStore } from '../../../state/store';
 import { Badge, Disclosure, Empty, Notice, PageHead, Panel, PersonCell } from '../../components';
 import { IconCheck } from '../../icons';
 import { Dumbbell } from '../../shared/Dumbbell';
-import { TERMS } from '../../glossary';
 import { FlagReviewDialog } from '../../shared/FlagReviewDialog';
 import { ReturnDialog } from '../../shared/ReturnDialog';
 import { answerAwaitingHr, flagsAwaitingAnswerDecision, openReturn } from '../../../domain/deadlines';
 import { LEVEL_WORDS, showSuggestion } from '../../../domain/rating';
 
 const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
-
-function GapBadge({ m }: { m: ManagerConsistency }) {
-  if (m.status === 'insufficient') return <Badge>Not enough reviews yet</Badge>;
-  if (m.status === 'in_line') return <Badge tone="success">In line with results</Badge>;
-  if (m.review) return <Badge tone="neutral">Checked · {m.status} results</Badge>;
-  return <Badge tone="warning">{m.status === 'above' ? 'Above' : 'Below'} results</Badge>;
-}
 
 function Reviewed({ state, r }: { state: DemoState; r: FlagReview }) {
   return (
@@ -31,13 +23,6 @@ function Reviewed({ state, r }: { state: DemoState; r: FlagReview }) {
       <div>{r.note}</div>
     </div>
   );
-}
-
-function gapSentence(m: ManagerConsistency): string {
-  if (m.status === 'insufficient') return `${m.n} submitted review${m.n === 1 ? '' : 's'} so far; at least ${CONFIG.MIN_REVIEWS_FOR_GAP} are needed to compare.`;
-  const d = Math.abs(m.gap).toFixed(2);
-  if (m.status === 'in_line') return `Ratings are within ${d} of what the team's results suggest.`;
-  return `Ratings are on average ${d} ${m.status === 'above' ? 'higher' : 'lower'} than the team's results suggest.`;
 }
 
 export function HrConsistency() {
@@ -64,12 +49,12 @@ export function HrConsistency() {
     <>
       <PageHead
         title="Check fairness"
-        sub={todo.length ? `Before release: ${todo.join(', ')}. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every rating has been checked. Each manager is compared only with their own team\'s results.'}
+        sub={todo.length ? `Before release: ${todo.join(', ')}.` : 'Every rating has been checked.'}
       />
 
       {answers.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <Panel title="Answers from managers" actions={<span className="small muted">Release waits until you accept each answer. If it does not answer your question, ask again.</span>} bodyClass="">
+          <Panel title="Answers from managers" actions={<span className="small muted">Accept each answer, or ask again</span>} bodyClass="">
             {answers.map((r) => {
               const a = answerAwaitingHr(r)!;
               const who = person(state, r.personId);
@@ -117,7 +102,7 @@ export function HrConsistency() {
       )}
       {waiting.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <Panel title="Waiting for managers" actions={<span className="small muted">Release waits for their answers. While returned, a review is left out of its manager's gap.</span>} bodyClass="">
+          <Panel title="Waiting for managers" actions={<span className="small muted">Release waits for their answers</span>} bodyClass="">
             {waiting.map((r) => {
               const q = openReturn(r)!;
               return (
@@ -136,68 +121,65 @@ export function HrConsistency() {
         </div>
       )}
       <h2 className="section-label">Managers</h2>
-      <p className="explain-line" style={{ marginBottom: 12 }}>Difference from the team's results: {TERMS.gap}</p>
+      <p className="explain-line" style={{ marginBottom: 12 }}>Each manager is compared with their own team's goal results. Teams are not compared with each other.</p>
       <div className="grid-3">
-        {managers.map((m) => {
+        {managers.filter((m) => m.flagged).map((m) => {
           const mgr = person(state, m.reviewerId);
           const label = `${mgr.name} rates ${m.status} results`;
+          const openCase = !m.review && !isCovered(m.key);
           return (
-            <Panel
-              key={m.reviewerId}
-              title={<PersonCell name={mgr.name} sub={mgr.teamId ? teamName(state, mgr.teamId) : mgr.title} size="sm" />}
-              foot={
-                m.flagged ? (
-                  m.review ? <Reviewed state={state} r={m.review} /> : isCovered(m.key) ? answeredNote : (
-                    <div className="row">
-                      <button
-                        type="button"
-                        className="btn btn-sm"
-                        onClick={() => setDialog({ key: m.key, label, context: `${mgr.name}'s average rating is ${signed(m.gap)} from what the team's results suggest.` })}
-                      >
-                        Mark as checked
-                      </button>
-                      <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: m.key, personIds: m.reviews.map((r) => r.personId) })}>
-                        Send back with a question
-                      </button>
-                    </div>
-                  )
-                ) : (
-                  <span className="small muted">{m.status === 'insufficient' ? 'Nothing to check yet.' : 'No action needed.'}</span>
-                )
-              }
-            >
+            <Panel key={m.reviewerId} title={<PersonCell name={mgr.name} sub={mgr.teamId ? teamName(state, mgr.teamId) : mgr.title} size="sm" />}>
               <div className="stack-sm">
-                <div className="row-between">
-                  <GapBadge m={m} />
-                  {m.status !== 'insufficient' && <span className={`mgr-gap num${m.flagged && !m.review ? ' gap-pos' : ''}`}>{signed(m.gap)}</span>}
-                </div>
-                <p className="mgr-line">{gapSentence(m)}</p>
-                {m.n > 0 && (
-                  <Disclosure label={`Show the ${m.n} people`} openLabel="Hide people" defaultOpen={m.flagged && !m.review}>
-                    <div className="mgr-figures">
-                      <div><div className="v num">{m.meanRating.toFixed(2)}</div><div className="l">Avg rating</div></div>
-                      <div><div className="v num">{m.meanSuggested.toFixed(2)}</div><div className="l">Results suggest</div></div>
-                      <div><div className="v num">{m.n}</div><div className="l">Reviews</div></div>
-                    </div>
-                    <Dumbbell
-                      rows={m.reviews.map((r) => ({
-                        label: firstName(person(state, r.personId)),
-                        href: `#/hr/person/${r.personId}`,
-                        overall: r.overall,
-                        suggested: r.suggested,
-                        far: isFarFromSuggestion(r.overall, r.suggested),
-                      }))}
-                    />
-                  </Disclosure>
+                {/* The finding and the decision first; the detail is one tap away. */}
+                <p className={`mgr-finding${openCase ? '' : ' checked'}`}>
+                  {firstName(mgr)} rates <strong className="num">{Math.abs(m.gap).toFixed(2)}</strong> {m.status === 'above' ? 'above' : 'below'} the team's results.
+                </p>
+                {m.review ? <Reviewed state={state} r={m.review} /> : isCovered(m.key) ? answeredNote : (
+                  <div className="row">
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => setDialog({ key: m.key, label, context: `${mgr.name}'s average rating is ${signed(m.gap)} from what the team's results suggest.` })}
+                    >
+                      Mark as checked
+                    </button>
+                    <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: m.key, personIds: m.reviews.map((r) => r.personId) })}>
+                      Send back with a question
+                    </button>
+                  </div>
                 )}
+                <Disclosure label={`Show the ${m.n} people`} openLabel="Hide people">
+                  <div className="mgr-figures">
+                    <div><div className="v num">{m.meanRating.toFixed(2)}</div><div className="l">Avg rating</div></div>
+                    <div><div className="v num">{m.meanSuggested.toFixed(2)}</div><div className="l">Results suggest</div></div>
+                    <div><div className="v num">{m.n}</div><div className="l">Reviews</div></div>
+                  </div>
+                  <Dumbbell
+                    rows={m.reviews.map((r) => ({
+                      label: firstName(person(state, r.personId)),
+                      href: `#/hr/person/${r.personId}`,
+                      overall: r.overall,
+                      suggested: r.suggested,
+                      far: isFarFromSuggestion(r.overall, r.suggested),
+                    }))}
+                  />
+                </Disclosure>
               </div>
             </Panel>
           );
         })}
       </div>
+      {managers.filter((m) => !m.flagged).map((m) => {
+        const mgr = person(state, m.reviewerId);
+        return (
+          <p className="quiet-line small muted" key={m.reviewerId}>
+            <strong>{mgr.name}</strong>{mgr.teamId ? ` · ${teamName(state, mgr.teamId)}` : ''}: {m.status === 'insufficient' ? `nothing to check yet (${m.n} of ${CONFIG.MIN_REVIEWS_FOR_GAP} reviews needed to compare)` : `in line with the team's results (${signed(m.gap)})`}.
+          </p>
+        );
+      })}
 
       <h2 className="section-label" style={{ marginTop: 28 }}>Single ratings 1 or more away from results</h2>
-      <p className="explain-line" style={{ marginBottom: 12 }}>{TERMS.far}</p>
+      <p className="explain-line" style={{ marginBottom: 12 }}>Each of these needs a written reason from the manager.</p>
       <Panel bodyClass="">
         {far.length === 0 ? (
           <Empty title="No single rating is far from its results">Nothing to check here.</Empty>
@@ -243,10 +225,6 @@ export function HrConsistency() {
           })
         )}
       </Panel>
-      <div style={{ height: 16 }} />
-      <Notice tone="brand">
-        Ratings are not compared across teams and there is no forced distribution. Each team is compared only with its own measured results.
-      </Notice>
 
       {returning && <ReturnDialog flagKey={returning.key} personIds={returning.personIds} again={returning.again} onClose={() => setReturning(undefined)} />}
       {dialog && <FlagReviewDialog flagKey={dialog.key} label={dialog.label} context={dialog.context} onClose={() => setDialog(undefined)} />}

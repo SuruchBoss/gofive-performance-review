@@ -1296,3 +1296,8 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .scale.has-marker { overflow: visible; }
 .scale.has-marker button:first-child { border-radius: 5px 0 0 5px; }
 .scale.has-marker button:last-child { border-radius: 0 5px 5px 0; }
+/* Fairness: the finding is the headline of each card; managers with nothing to check are one quiet line. */
+.mgr-finding { margin: 0; font-size: var(--fs-md); }
+.mgr-finding strong { color: var(--amber); }
+.mgr-finding.checked strong { color: inherit; }
+.quiet-line { margin: var(--s3) 0 0; }

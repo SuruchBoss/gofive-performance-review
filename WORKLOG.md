@@ -1088,3 +1088,14 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
   - Q1, "Late, missing and ineligible cases are handled and logged": true; the product now says "should not be reviewed yet" and "leave out".
   - Q3, "In this exam, that is why the first screen guides a reviewer who knows nothing about the product": true of the start page ("Try as HR… Start here to see a full review cycle") and of each home. It is no longer a step-by-step guide, which a reader might picture.
   - Q2's facts (one gate in `releaseBlockers`, 4 of 97 tests, about an hour, the calibration link) describe what happened and still hold. Q2 says "the map, activity log and person pages worked unchanged", which was true when calibration was built.
+
+## PLAN-6 built: quieter screens (on `main`)
+
+- **PO request:** the homes work; what is left is noise. One main action per screen, buttons where the screen says something can be done, and no sentence that explains what the screen can show. Only remove and move; no new features, help or tips.
+- **Commit 1, top of the phone screen:** the demo bar is two rows (the person list shows names only, so none is cut; the tip moved into "More" below 1100 px). The product header is one smaller line on phones. Content now starts 215 px down on a 375 px phone; it was 279 px.
+- **Commit 2, review page:** removed the Behaviours paragraph, the rule paragraph, the "needs a reason (below)" status and "N things left (listed above)". The suggested rating carries a "Suggested" label on its own button. The reason and example boxes keep one short line each.
+- **Commit 3, HR home and words:** late reviews are grouped by manager with one button ("Remind Tom (2 reviews)"); one reminder covers both and is logged per review, as before. Group sentences cut or dropped. "Self-review received"; "go to Anong on 14 Dec".
+- **Commit 4, Fairness:** each manager card leads with the finding ("Daniel rates 0.90 above the team's results.") and the two buttons, with "Show the 4 people" folded. Managers with nothing to check are one quiet line. The long "Difference from the team's results…" paragraph, the long intro and the closing notice are replaced by one line under the heading.
+- **Full-page length at 375 px, before → after:** HR home 1,516 → 1,133 px; Fairness 2,726 → 1,619 px; review page 2,125 → 1,853 px. Words on the page: 203 → 118, 332 → 207, 246 → 179.
+- **Tests:** the click-through now also checks the single reminder button, the "Suggested" label, that the reason box is absent until needed, the finding line, the folded chart and the quiet line. 125 unit tests passed. e2e PASS at 1280 px and 390 px.
+- **What went wrong:** the "Suggested" label was first clipped by the rating scale's rounded frame; the frame no longer clips when a label is present.

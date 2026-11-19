@@ -90,6 +90,8 @@ async function run(vp) {
   assert((await page.locator('.intro, .intro-bar, .coach-card').count()) === 0, 'the guide and tips should be gone');
   await startsOnFirstScreen(page.getByRole('button', { name: 'Leave Fah out' }), 'HR home');
   assert(await page.getByRole('button', { name: /Release results/ }).isDisabled(), 'release should be locked at the start');
+  // Both late reviews are Tom's: one reminder button, not two.
+  assert((await page.getByRole('button', { name: /^Remind/ }).count()) === 1 && await page.getByRole('button', { name: 'Remind Tom (2 reviews)' }).isVisible(), 'late reviews should be one reminder per manager');
   await shot('01-hr-home');
 
   // Eligibility: HR confirms the system's suggestion to leave the new joiner out.
@@ -111,6 +113,10 @@ async function run(vp) {
   assert(await page.getByRole('heading', { name: 'Your rating' }).isVisible(), 'review: "Your rating" heading missing');
   assert(await page.getByRole('link', { name: '← Back to my team' }).isVisible(), 'review: back button missing');
   await startsOnFirstScreen(page.getByRole('heading', { name: 'Your rating' }), 'review page');
+  // Quiet form: the suggestion is a label on its button, and the reason and example appear only when needed.
+  assert(await page.getByRole('radio', { name: '3, suggested' }).isVisible(), 'the suggested rating should be labelled on its button');
+  assert((await page.getByLabel('Why does your rating differ from the goal results?').count()) === 0, 'the reason box should not show before it is needed');
+  assert((await page.getByText(/things? left before you can submit/).count()) === 0, 'the repeated "things left" line should be gone');
   await shot('04-manager-review');
   await rate(5);
   assert(await page.getByLabel('Why does your rating differ from the goal results?').isVisible(), 'reason field missing');
@@ -134,6 +140,10 @@ async function run(vp) {
   // HR checks fairness: one rating marked as checked, one sent back with a question.
   await become('Pim Chaiyaporn');
   await page.getByRole('link', { name: 'Check fairness' }).click();
+  // Fairness: the finding and the buttons come first; the chart is folded; nothing-to-check managers are one line.
+  await page.locator('.mgr-finding', { hasText: 'Daniel rates 0.90 above' }).waitFor();
+  assert((await page.locator('.dumbbell, .db-row').count()) === 0 || !(await page.locator('.db-row').first().isVisible()), 'the people chart should be folded by default');
+  assert(await page.locator('.quiet-line', { hasText: 'Tom Wattana' }).isVisible(), 'a manager with nothing to check should be one quiet line');
   await shot('07-hr-fairness');
   const sales = page.locator('.panel', { hasText: 'Daniel Reyes' }).first();
   await sales.getByRole('button', { name: 'Mark as checked' }).click();
