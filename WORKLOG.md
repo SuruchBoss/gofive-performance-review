@@ -978,3 +978,10 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
   - The deploy run succeeded. The `main` push run was cancelled when the calibration-triggered run replaced it, as before.
   - The README on GitHub shows the new text on both branches.
   - Both live builds and the "How this was built" anchor return 200.
+
+## PLAN-3: coachmarks (plan only, on `main`)
+
+- **Started:** 19 Nov 2026, 19:19 UTC+7 (12:19 UTC).
+- **Done:** wrote `docs/PLAN-3.md`, a short plan for on-screen coachmarks on top of the existing guide. It covers the marks for all 11 steps, the placement and keyboard rules, the fallback, storage, 5 commits, and 6 questions with recommendations.
+- **Who decided:** the PO set the goal, the decisions 1–5 and the scope. The developer proposed the mechanism, the targets per step and the questions.
+- **Stopped here:** waiting for PO approval of the plan, per working rule 4 (stop at the plan).
