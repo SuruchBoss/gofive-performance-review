@@ -8,5 +8,5 @@ export const TERMS = {
   escalated: `Moved to the reviewer's own manager, ${CONFIG.ESCALATION_DAYS} days after a missed deadline.`,
   behaviour: "The average of the manager's four behaviour ratings, each judged against written anchors.",
   results: 'Goal results as a 1–5 score: 100% of target is a 3.',
-  anchors: 'Each level 1–5 has a short written description (hover over a number, or pick it), so the same number means the same thing for every manager.',
+  anchors: 'Each level 1–5 has a short written description (shown when you pick it; on a computer, also on hover), so the same number means the same thing for every manager.',
 } as const;

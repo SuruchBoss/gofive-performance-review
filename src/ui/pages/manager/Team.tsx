@@ -103,7 +103,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
           <Panel title="Moved to your manager" actions={<span className="small muted">Nothing to do</span>} bodyClass="">
             {movedAway.map((p) => (
               <div className="flag-row" key={p.personId}>
-                <PersonCell name={person(state, p.personId).name} sub={`Moved to ${person(state, p.reviewerId).name} on ${formatDate(p.escalatedOn!)}: 3 days past the deadline.`} size="sm" />
+                <PersonCell name={person(state, p.personId).name} sub={`Moved to ${person(state, p.reviewerId).name} on ${formatDate(p.escalatedOn!)}, 3 days past the deadline. Any draft went with it.`} size="sm" />
               </div>
             ))}
           </Panel>

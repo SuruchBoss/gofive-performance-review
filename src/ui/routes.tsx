@@ -21,7 +21,7 @@ import { selfReviewWindow } from '../domain/selfReview';
 type StoreLike = { state: DemoState };
 
 export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] {
-  const flags = openFlagCount(store.state);
+  const flags = openFlagCount(store.state) + store.state.managerReviews.filter((r) => r.returns?.some((x) => !x.answeredOn)).length;
   if (role === 'hr') {
     return [
       { href: '#/hr', label: 'Cycle overview', short: 'Overview', icon: <IconCycle /> },

@@ -3,7 +3,7 @@ import { formatDate } from '../../domain/dates';
 import type { DemoState } from '../../domain/types';
 import { useStore, type Role, type ViewState } from '../../state/store';
 import { useAdvanceDay } from '../DemoStrip';
-import { go } from '../../state/router';
+import { go, useHashPath } from '../../state/router';
 import { IconCheck, IconClose } from '../icons';
 
 interface Link {
@@ -129,12 +129,37 @@ export function Intro() {
     (l.view.role !== 'employee' || l.view.employeeId === view.employeeId);
   const label = (l: Link) => (isCurrent(l) ? l.cta : `Switch to ${l.as.split(' · ')[0] === 'HR' ? 'HR' : l.as.replace(' · ', ' ')} and ${l.cta[0].toLowerCase()}${l.cta.slice(1)}`);
   const [expanded, setExpanded] = useState(false);
+  const path = useHashPath();
+  // Open the step's screen and scroll past the guide to it, so the result of the tap is visible.
+  const openStep = (l: Link) => {
+    setView(l.view);
+    go(l.path);
+    setTimeout(() => document.querySelector('.page-head')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+  };
   if (view.introHidden) return null;
   const track: Role = view.track ?? 'hr';
   const STEPS = STEPS_FOR[track];
   const doneCount = STEPS.filter((s) => s.done(state, view)).length;
   const next = STEPS.findIndex((s) => !s.done(state, view));
   const nextStep = next >= 0 ? STEPS[next] : undefined;
+
+  // On a phone, when you are already on the step's screen, the full card would hide that
+  // screen's form, so it shrinks to one line as well.
+  const onStepScreen =
+    !!nextStep && isCurrent(nextStep.links[0]) && path.split('?')[0] === nextStep.links[0].path.split('?')[0] &&
+    window.matchMedia('(max-width: 640px)').matches;
+  if (nextStep && onStepScreen && !expanded) {
+    return (
+      <section className="intro-bar" aria-label="Guide">
+        <span className="small">
+          <strong>Guide, step {next + 1} of {STEPS.length}:</strong> {nextStep.title}. You are on this screen: it starts below.
+        </span>
+        <span className="row" style={{ gap: 12 }}>
+          <button type="button" className="link-btn muted-link" onClick={() => setExpanded(true)}>Show the guide</button>
+        </span>
+      </section>
+    );
+  }
 
   // In another role's view the full guide would push that person's own screen down,
   // so it shrinks to one line that says whose step is next and switches for you.
@@ -143,10 +168,10 @@ export function Intro() {
     return (
       <section className="intro-bar" aria-label="Guide">
         <span className="small">
-          <strong>Guide, step {next + 1} of {STEPS.length}:</strong> {nextStep.title}. This step is for {roleName[l.view.role]}.
+          <strong>Guide, step {next + 1} of {STEPS.length}:</strong> {nextStep.title}. In this step you play {roleName[l.view.role]}.
         </span>
         <span className="row" style={{ gap: 12 }}>
-          <button type="button" className="link-btn" onClick={() => { setView(l.view); go(l.path); }}>{label(l)}{'\u00a0'}→</button>
+          <button type="button" className="link-btn" onClick={() => openStep(l)}>{label(l)}{'\u00a0'}→</button>
           <button type="button" className="link-btn muted-link" onClick={() => setExpanded(true)}>Show all steps</button>
         </span>
       </section>
@@ -157,7 +182,6 @@ export function Intro() {
     <section className="intro" aria-labelledby="intro-title">
       <div className="intro-head">
         <div>
-          <div className="intro-kicker">Prototype · a concept for empeo</div>
           <h2 id="intro-title">Annual performance review, one cycle end to end</h2>
           <p className="intro-problem">
             <strong>The problem:</strong> every manager rates on their own scale, so a 4 in one team is not a 4 in another. This shows
@@ -192,7 +216,7 @@ export function Intro() {
                   <button type="button" className="btn btn-sm intro-clock" onClick={advanceDay}>+1 day <span className="muted">(now {formatDate(state.today, true)})</span></button>
                 )}
                 {s.links.map((l) => (
-                  <button key={l.path} type="button" className="link-btn" onClick={() => { setView(l.view); go(l.path); }}>
+                  <button key={l.path} type="button" className="link-btn" onClick={() => openStep(l)}>
                     {label(l)}{'\u00a0'}→
                   </button>
                 ))}

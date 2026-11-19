@@ -1,7 +1,7 @@
 import { formatDate } from '../../../domain/dates';
 import { isReleased } from '../../../domain/release';
 import { selfReviewWindow } from '../../../domain/selfReview';
-import { managerReviewOf } from '../../../domain/selectors';
+import { managerReviewOf, selfReviewOf } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
 import { Notice, PageHead, Panel } from '../../components';
 import { IconLock } from '../../icons';
@@ -38,11 +38,11 @@ export function EmployeeResult({ userId }: { userId: string }) {
                 overall rating, the rating for each behaviour, and your manager's comments here.
               </p>
               <p className="small muted">
-                Your review: {review.status === 'submitted' ? 'completed by your manager' : 'not completed yet'}.{' '}
+                Your manager's review: {review.status === 'submitted' ? 'done' : 'not done yet'}. Your self-review: {selfReviewOf(state, userId).status === 'submitted' ? 'submitted' : 'not submitted'}.{' '}
                 {['open', 'open_late'].includes(selfReviewWindow(state, userId)) ? (
                   <a href="#/me/self-review">Submit your self-review while you still can →</a>
                 ) : (
-                  'Nothing to do now.'
+                  <>Nothing to do now. In this demo, the guide's last step lets you play HR and release results.</>
                 )}
               </p>
             </div>
@@ -57,7 +57,7 @@ export function EmployeeResult({ userId }: { userId: string }) {
       <PageHead title="My result" sub={`${state.cycle.name} · released ${formatDate(state.cycle.releasedOn!)}`} />
       <div className="banner">
         <Notice tone="brand" title="Checked for consistency before release">
-          Before results were released, HR compared every manager's ratings with their own team's goal results and followed up where they did not match.
+          Before release, HR compared each manager's ratings with their own team's goal results, and checked every rating 1.0 or more away from what goal results suggest.
         </Notice>
       </div>
       <ReviewSummary personId={userId} audience="employee" />

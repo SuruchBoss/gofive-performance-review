@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { suggestedFor } from '../../domain/flags';
-import { LEVEL_WORDS, showSuggestion } from '../../domain/rating';
+import { LEVEL_WORDS, showSuggestion, suggestionFor } from '../../domain/rating';
+import { pct } from '../pages/manager/Review';
 import { person } from '../../domain/selectors';
 import { useStore } from '../../state/store';
 import { Dialog } from '../components';
@@ -51,7 +52,7 @@ export function ReturnDialog({ flagKey, personIds, onClose }: { flagKey: string;
             <label key={r.personId} className="choice">
               <input type="radio" name="return-person" checked={personId === r.personId} onChange={() => setPersonId(r.personId)} />
               <span>
-                {person(state, r.personId).name}: rated {r.overall} ({LEVEL_WORDS[r.overall!]}), results suggest {showSuggestion(suggestedFor(state, r))}
+                {person(state, r.personId).name}: rated {r.overall} ({LEVEL_WORDS[r.overall!]}), {pct(suggestionFor(state, r.personId).results)} of goal targets, which suggests {showSuggestion(suggestedFor(state, r))}
               </span>
             </label>
           ))}
@@ -59,7 +60,7 @@ export function ReturnDialog({ flagKey, personIds, onClose }: { flagKey: string;
       )}
       {reviews.length === 1 && chosen && (
         <p className="small">
-          {person(state, chosen.personId).name}: rated {chosen.overall} ({LEVEL_WORDS[chosen.overall!]}), results suggest {showSuggestion(suggestedFor(state, chosen))}.
+          {person(state, chosen.personId).name}: rated {chosen.overall} ({LEVEL_WORDS[chosen.overall!]}), {pct(suggestionFor(state, chosen.personId).results)} of goal targets, which suggests {showSuggestion(suggestedFor(state, chosen))}.
         </p>
       )}
       <div className="field">

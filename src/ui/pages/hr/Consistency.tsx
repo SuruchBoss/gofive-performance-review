@@ -19,8 +19,8 @@ const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).
 function GapBadge({ m }: { m: ManagerConsistency }) {
   if (m.status === 'insufficient') return <Badge>Not enough reviews yet</Badge>;
   if (m.status === 'in_line') return <Badge tone="success">In line with results</Badge>;
-  if (m.review) return <Badge tone="neutral">Reviewed · rates {m.status} results</Badge>;
-  return <Badge tone="warning">Rates {m.status} results</Badge>;
+  if (m.review) return <Badge tone="neutral">Checked · {m.status} results</Badge>;
+  return <Badge tone="warning">{m.status === 'above' ? 'Above' : 'Below'} results</Badge>;
 }
 
 function Reviewed({ state, r }: { state: DemoState; r: FlagReview }) {
@@ -33,7 +33,7 @@ function Reviewed({ state, r }: { state: DemoState; r: FlagReview }) {
 }
 
 function gapSentence(m: ManagerConsistency): string {
-  if (m.status === 'insufficient') return `${m.n} of ${CONFIG.MIN_REVIEWS_FOR_GAP} reviews in. Too few to compare yet.`;
+  if (m.status === 'insufficient') return `${m.n} submitted review${m.n === 1 ? '' : 's'} so far; at least ${CONFIG.MIN_REVIEWS_FOR_GAP} are needed to compare.`;
   const d = Math.abs(m.gap).toFixed(2);
   if (m.status === 'in_line') return `Ratings are within ${d} of what the team's results suggest.`;
   return `Ratings are on average ${d} ${m.status === 'above' ? 'higher' : 'lower'} than the team's results suggest.`;
@@ -52,12 +52,12 @@ export function HrConsistency() {
     <>
       <PageHead
         title="Consistency check"
-        sub={open ? `${open} flag${open === 1 ? '' : 's'} to check before release. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every flag has been checked. Each manager is compared only with their own team\'s results.'}
+        sub={open || waiting.length ? `${open} flag${open === 1 ? '' : 's'} to check${waiting.length ? ` and ${waiting.length} review${waiting.length === 1 ? '' : 's'} waiting for a manager` : ''} before release. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every flag has been checked. Each manager is compared only with their own team\'s results.'}
       />
 
       {waiting.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <Panel title="Waiting for managers" actions={<span className="small muted">Returned with a question; release is blocked until they answer</span>} bodyClass="">
+          <Panel title="Waiting for managers" actions={<span className="small muted">Release waits for their answers. While returned, a review is left out of its manager's gap.</span>} bodyClass="">
             {waiting.map((r) => {
               const q = openReturn(r)!;
               return (
@@ -91,7 +91,7 @@ export function HrConsistency() {
                     <div className="row">
                       <button
                         type="button"
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-sm"
                         onClick={() => setDialog({ key: m.key, label, context: `${mgr.name}'s average rating is ${signed(m.gap)} from what the team's results suggest.` })}
                       >
                         Mark reviewed
@@ -109,11 +109,11 @@ export function HrConsistency() {
               <div className="stack-sm">
                 <div className="row-between">
                   <GapBadge m={m} />
-                  {m.status !== 'insufficient' && <span className={`mgr-gap num${m.flagged ? ' gap-pos' : ''}`}>{signed(m.gap)}</span>}
+                  {m.status !== 'insufficient' && <span className={`mgr-gap num${m.flagged && !m.review ? ' gap-pos' : ''}`}>{signed(m.gap)}</span>}
                 </div>
                 <p className="mgr-line">{gapSentence(m)}</p>
                 {m.n > 0 && (
-                  <Disclosure label={`Show the ${m.n} people`} openLabel="Hide people">
+                  <Disclosure label={`Show the ${m.n} people`} openLabel="Hide people" defaultOpen={m.flagged && !m.review}>
                     <div className="mgr-figures">
                       <div><div className="v num">{m.meanRating.toFixed(2)}</div><div className="l">Avg rating</div></div>
                       <div><div className="v num">{m.meanSuggested.toFixed(2)}</div><div className="l">Results suggest</div></div>
@@ -150,13 +150,13 @@ export function HrConsistency() {
                 <div className="stack-sm">
                   <div className="row">
                     <PersonCell name={who.name} sub={`Reviewed by ${mgr.name}`} size="sm" />
-                    {f.review ? <Badge>Checked</Badge> : <Badge tone="warning">Rated {f.direction} results</Badge>}
+                    {f.review ? <Badge>Checked · {f.direction} results</Badge> : <Badge tone="warning">{f.direction === 'above' ? 'Above' : 'Below'} results</Badge>}
                   </div>
                   <div className="small num">
                     Rated <strong>{f.overall}</strong> · results suggest <strong>{f.suggested.toFixed(1)}</strong>
                   </div>
                   {f.reason && (
-                    <Disclosure label="Manager's reason" openLabel="Hide reason">
+                    <Disclosure label="Manager's reason" openLabel="Hide reason" defaultOpen={!f.review}>
                       <p className="quote small">“{f.reason}”</p>
                     </Disclosure>
                   )}
@@ -166,7 +166,7 @@ export function HrConsistency() {
                   {!f.review && (
                     <button
                       type="button"
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-sm"
                       onClick={() => setDialog({ key: f.key, label: `${who.name}'s rating: ${f.direction} results`, context: `${who.name} was rated ${f.overall}; results suggest ${f.suggested.toFixed(1)}.` })}
                     >
                       Mark reviewed

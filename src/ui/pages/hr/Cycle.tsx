@@ -129,7 +129,7 @@ export function HrCycle() {
                   </div>
                 </li>
               </ul>
-              <div className="submit-bar action-bar">
+              <div className={`submit-bar${ready ? ' action-bar' : ''}`}>
                 <span className="small muted">
                   {ready ? 'Ready. Everyone in the cycle sees their result at the same time.' : `${blockers.length} item${blockers.length === 1 ? '' : 's'} left before release.`}
                 </span>

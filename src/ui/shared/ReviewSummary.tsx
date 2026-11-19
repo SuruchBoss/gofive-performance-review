@@ -122,11 +122,11 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
           })}
         </div>
       </Section>
-      {audience === 'hr' && (
+      {(audience === 'hr' || self.status === 'submitted') && (
         <Section
           id="self"
-          title="Self-review"
-          summary={self.status === 'submitted' ? `Own rating ${self.selfRating}${self.late ? ' · late' : ''}` : 'Not submitted'}
+          title={audience === 'hr' ? 'Self-review' : 'Your self-review'}
+          summary={self.status === 'submitted' ? `${audience === 'hr' ? 'Own' : 'Your own'} rating ${self.selfRating}${self.late ? ' · late' : ''}` : 'Not submitted'}
           open={open.self}
           onToggle={() => toggle('self')}
         >
