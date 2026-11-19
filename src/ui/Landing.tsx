@@ -1,9 +1,16 @@
 import { IS_Q2_BUILD } from '../build';
-import { useStore } from '../state/store';
+import { useStore, type Role, type ViewState } from '../state/store';
 import { go } from '../state/router';
 import { IconMark } from './icons';
 
 const REPO = 'https://github.com/SuruchBoss/gofive-performance-review';
+
+/** Each choice opens the demo in that role, with the guide written for it. */
+const TRY: { role: Role; label: string; sub: string; view: Partial<ViewState>; path: string }[] = [
+  { role: 'hr', label: 'HR', sub: 'Run the review cycle and catch ratings that do not match results', view: {}, path: '/hr' },
+  { role: 'manager', label: 'Manager', sub: 'Review your team as Tom Wattana, Operations Manager', view: { managerId: 'm-ops' }, path: '/manager' },
+  { role: 'employee', label: 'Employee', sub: 'Write your self-review and see your result as Ying Chen', view: { employeeId: 'e12' }, path: '/me' },
+];
 
 /** First screen: calm, no demo data, one main action. */
 export function Landing() {
@@ -29,16 +36,22 @@ export function Landing() {
             locked.
           </p>
         )}
-        <button
-          type="button"
-          className="btn btn-primary landing-cta"
-          onClick={() => {
-            setView({ role: 'hr', introHidden: false });
-            go('/hr');
-          }}
-        >
-          Open demo
-        </button>
+        <div className="landing-try" role="group" aria-label="Try the demo">
+          {TRY.map((t, i) => (
+            <button
+              key={t.role}
+              type="button"
+              className={`landing-option${i === 0 ? ' first' : ''}`}
+              onClick={() => {
+                setView({ ...t.view, role: t.role, track: t.role, introHidden: false });
+                go(t.path);
+              }}
+            >
+              <span className="landing-option-title">Try as {t.label}</span>
+              <span className="landing-option-sub">{t.sub}</span>
+            </button>
+          ))}
+        </div>
         <p className="landing-note">Fictional company and people. Nothing is sent anywhere.</p>
         <nav className="landing-links" aria-label="More">
           {IS_Q2_BUILD ? <a href="../">Main version</a> : <a href="./calibration/">Calibration version (question 2)</a>}

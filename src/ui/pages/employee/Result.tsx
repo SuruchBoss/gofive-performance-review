@@ -56,6 +56,11 @@ export function EmployeeResult({ userId }: { userId: string }) {
   return (
     <>
       <PageHead title="My result" sub={`${state.cycle.name} · released ${formatDate(state.cycle.releasedOn!)}`} />
+      <div className="banner">
+        <Notice tone="brand" title="Checked for consistency before release">
+          Before results were released, HR compared every manager's ratings with their own team's goal results, and managers calibrated ratings together across teams.
+        </Notice>
+      </div>
       <ReviewSummary personId={userId} audience="employee" />
     </>
   );

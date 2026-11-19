@@ -14,6 +14,8 @@ const META: Record<LogType, { label: string; icon: ReactNode; tone: string }> = 
   self_review_late: { label: 'Late self-review', icon: <IconPen size={15} />, tone: 'warning' },
   review_submitted: { label: 'Review submitted', icon: <IconCheck size={15} />, tone: 'success' },
   flag_reviewed: { label: 'Flag reviewed', icon: <IconFlag size={15} />, tone: 'neutral' },
+  returned_to_manager: { label: 'Returned to manager', icon: <IconFlag size={15} />, tone: 'warning' },
+  return_answered: { label: 'Manager answered HR', icon: <IconCheck size={15} />, tone: 'neutral' },
   deadline_change: { label: 'Deadline change', icon: <IconClock size={15} />, tone: 'neutral' },
   calibration_started: { label: 'Calibration started', icon: <IconScale size={15} />, tone: 'brand' },
   calibration_change: { label: 'Calibrated rating', icon: <IconScale size={15} />, tone: 'warning' },
@@ -28,7 +30,7 @@ const FILTERS: { key: string; label: string; types?: LogType[] }[] = [
   { key: 'escalation', label: 'Escalations', types: ['escalation'] },
   { key: 'removal', label: 'Removals', types: ['removal'] },
   { key: 'calibration', label: 'Calibration', types: ['calibration_started', 'calibration_change', 'calibration_item', 'calibration_locked'] },
-  { key: 'flags', label: 'Flags', types: ['flag_reviewed', 'release'] },
+  { key: 'flags', label: 'Flags', types: ['flag_reviewed', 'returned_to_manager', 'return_answered', 'release'] },
 ];
 
 export function HrActivity() {

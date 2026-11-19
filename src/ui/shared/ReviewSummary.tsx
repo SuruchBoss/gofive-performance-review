@@ -3,7 +3,7 @@ import { farFlags } from '../../domain/flags';
 import { behaviourScore, LEVEL_WORDS, showSuggestion, suggestionFor } from '../../domain/rating';
 import { goalsOf, managerReviewOf, person, selfReviewOf } from '../../domain/selectors';
 import { useStore } from '../../state/store';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { finalRating } from '../../domain/calibration';
 import { Badge, Notice, Panel, Section } from '../components';
 import { TERMS } from '../glossary';
@@ -78,6 +78,16 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             {review.comment && (<><dt>Comment</dt><dd>{review.comment}</dd></>)}
             {review.calibratedOverall && (<><dt>Calibration</dt><dd>Changed from {review.overall} to {review.calibratedOverall} when managers aligned ratings across teams. Reason: {review.calibrationReason}</dd></>)}
             {review.selfReviewMissing && (<><dt>Self-review</dt><dd><Badge tone="warning">Missing when reviewed</Badge></dd></>)}
+            {audience === 'hr' && review.returns?.map((x, i) => (
+              <Fragment key={i}>
+                <dt>Returned by HR</dt>
+                <dd>
+                  {formatDate(x.on)}: “{x.question}”
+                  <br />
+                  {x.answeredOn ? <>Answered {formatDate(x.answeredOn)}, {x.outcome === 'changed' ? `changed ${x.ratingBefore} → ${review.overall}` : 'rating confirmed'}: “{x.answer}”</> : <span className="muted">Waiting for the manager's answer</span>}
+                </dd>
+              </Fragment>
+            ))}
           </dl>
         </Panel>
       )}

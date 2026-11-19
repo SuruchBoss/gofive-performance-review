@@ -1,3 +1,4 @@
+import { openReturn } from '../../../domain/deadlines';
 import { formatDate } from '../../../domain/dates';
 import { managerReviewOf, person, selfReviewOf, teamName } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
@@ -10,6 +11,7 @@ import { Notice } from '../../components';
 export function ManagerTeam({ userId }: { userId: string }) {
   const { state } = useStore();
   const me = person(state, userId);
+  const returnedToMe = state.participants.filter((p) => p.reviewerId === userId && openReturn(managerReviewOf(state, p.personId)));
   const movedAway = state.participants.filter((p) => p.escalatedFrom === userId && !p.removed);
   const rank = (id: string) => ({ draft: 0, not_started: 1, submitted: 2 })[managerReviewOf(state, id).status];
   // Open reviews first (drafts before new ones), finished ones last.
@@ -42,6 +44,13 @@ export function ManagerTeam({ userId }: { userId: string }) {
             {state.calibration.status === 'locked'
               ? 'Managers have aligned ratings across teams. Any change to your team is shown below with the reason. Results open when HR releases them.'
               : 'Managers are aligning ratings across teams. Any change to your team is shown below with the reason. Nothing to do here.'}
+          </Notice>
+        </div>
+      )}
+      {returnedToMe.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Notice tone="warning" title={`HR returned ${returnedToMe.length} review${returnedToMe.length === 1 ? '' : 's'} with a question`}>
+            Open {returnedToMe.length === 1 ? 'it' : 'each one'}, change the rating or keep it, and answer HR. Results cannot be released until you do.
           </Notice>
         </div>
       )}
@@ -89,7 +98,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
                     <td data-label="Deadline" className="num nowrap">{formatDate(c.deadline, true)}</td>
                     <td className="actions">
                       <a className={`btn btn-sm${p.personId === nextId ? ' btn-primary' : ''}`} href={`#/manager/review/${p.personId}`}>
-                        {r.status === 'submitted' ? 'View' : r.status === 'draft' ? 'Continue review' : 'Start review'}
+                        {openReturn(r) ? 'Answer HR' : r.status === 'submitted' ? 'View' : r.status === 'draft' ? 'Continue review' : 'Start review'}
                       </a>
                     </td>
                   </tr>

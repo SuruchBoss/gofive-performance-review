@@ -31,7 +31,13 @@ Status: Q1 and Q2 are **drafts**, written by the developer from `docs/DESIGN.md`
 - **Cross-team calibration and forced distribution.** I wanted to see how far per-team checks against measured results go first, and calibration is the change in question 2.
 - **Real login and email.** Not needed to test the flow.
 
-**Is this the right slice for a real customer next week?** Mostly yes. It is the smallest set that lets a company run a cycle from start to release with an audit trail. Before shipping it would need four things: SSO and permissions; real notifications; importing goal results from their systems, which is the riskiest assumption; and a way to correct a submitted review, which v1 locks.
+**Next, from user testing (not in v1):**
+- **Employee response.** A "respond / request a conversation" button on the result. It is the most requested change from employees, but it needs a dispute process and owner, which is a policy decision before it is a feature.
+- **Evidence when rating someone down.** Requiring a specific example for a rating 1.0 or more below results, not only for an overall 1, 2 or 5. It protects underrated people, but it adds manager effort, so it needs testing with managers first.
+- **Behaviour vs overall mismatch.** A warning when the overall rating is far from the behaviour ratings. It makes sense, but a second "far from" rule on the same form risks reason fatigue. One rule should prove itself first.
+- **A live team gap for managers.** Showing managers their team's gap against the flag line before they submit. It could lead managers to rate towards the line instead of the person, so it needs a careful design.
+
+**Is this the right slice for a real customer next week?** Mostly yes. It is the smallest set that lets a company run a cycle from start to release with an audit trail. Before shipping it would need four things: SSO and permissions; real notifications; importing goal results from their systems, which is the riskiest assumption; and a fuller correction path than HR's "Return to manager" (for example, a manager asking to reopen their own review).
 
 ## 2. The requirement change: calibration before release
 

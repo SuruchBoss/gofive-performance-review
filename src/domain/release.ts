@@ -28,7 +28,9 @@ export function releaseBlockers(state: DemoState): Blocker[] {
       return {
       kind: 'open_review' as const,
       key: `open:${p.personId}`,
-      text: p.escalatedFrom
+      text: state.managerReviews.find((r) => r.personId === p.personId)?.returns?.some((x) => !x.answeredOn)
+        ? `${name(p.personId)}: returned to ${name(p.reviewerId)} with HR's question, waiting for an answer`
+        : p.escalatedFrom
         ? `${name(p.personId)}: escalated to ${nameWithRole(state, p.reviewerId)} on ${fmt(p.escalatedOn!)}, waiting for their review`
         : `${name(p.personId)}: waiting for ${name(p.reviewerId)}'s review`,
       href: `#/manager/review/${p.personId}?as=${p.reviewerId}`,

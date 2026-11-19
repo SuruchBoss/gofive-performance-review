@@ -31,6 +31,11 @@ function Frame() {
     if (!pathRole) go('/');
     else if (pathRole !== view.role) setView({ role: pathRole });
   }, [isLanding, pathRole, view.role, setView]);
+  // Remember visited screens for guide steps that are about seeing something.
+  useEffect(() => {
+    const base = path.split('?')[0];
+    if (!isLanding && !(view.seen ?? []).includes(base)) setView({ seen: [...(view.seen ?? []), base] });
+  }, [path, isLanding, view.seen, setView]);
   // Links such as "Open as Anong" carry ?as=<person> so the right manager is selected.
   useEffect(() => {
     if (pathRole === 'manager' && asId && asId !== view.managerId) setView({ managerId: asId });

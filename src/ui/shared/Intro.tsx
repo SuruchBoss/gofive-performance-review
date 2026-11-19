@@ -17,7 +17,7 @@ interface Link {
 interface Step {
   title: string;
   body: string;
-  done: (s: DemoState) => boolean;
+  done: (s: DemoState, v: ViewState) => boolean;
   links: Link[];
   /** Step 4 moves the demo clock; it gets its own +1 day button. */
   clock?: boolean;
@@ -25,7 +25,7 @@ interface Step {
 
 const HR = { as: 'HR · Pim Chaiyaporn', view: { role: 'hr' as const } };
 
-const STEPS: Step[] = [
+const HR_STEPS: Step[] = [
   {
     title: 'See who is late',
     body: 'HR → Progress. Three reviews are overdue. One is for Fah, who joined in October and should not be in this cycle: remove Fah with a reason.',
@@ -40,8 +40,8 @@ const STEPS: Step[] = [
   },
   {
     title: 'Check consistency',
-    body: 'HR → Consistency. Sales rates above its own results, Support below. Mark a flag reviewed.',
-    done: (s) => s.flagReviews.length > 0,
+    body: 'HR → Consistency. Sales rates above its own results, Support below. Mark a flag reviewed, or return it to the manager with a question.',
+    done: (s) => s.flagReviews.length > 0 || s.managerReviews.some((r) => r.returns?.length),
     links: [{ ...HR, path: '/hr/consistency', cta: 'Open Consistency' }],
   },
   {
@@ -62,6 +62,62 @@ const STEPS: Step[] = [
   },
 ];
 
+const TOM = { as: 'Manager · Tom Wattana', view: { role: 'manager' as const, managerId: 'm-ops' } };
+
+const MANAGER_STEPS: Step[] = [
+  {
+    title: "Finish Orn's review",
+    body: 'Goal results suggest about a 3. Rate the four behaviours, then pick an overall rating; try a 5 to see when a reason and an example are needed.',
+    done: (s) => s.managerReviews.find((r) => r.personId === 'e11')?.status === 'submitted',
+    links: [{ ...TOM, path: '/manager/review/e11', cta: "Open Orn's review" }],
+  },
+  {
+    title: 'Watch a deadline slip',
+    body: "Ying's review is overdue. Move the date on two days and it moves to your own manager, Anong Rattanakul.",
+    done: (s) => s.log.some((l) => l.type === 'escalation' && l.targetId === 'e12') || s.managerReviews.find((r) => r.personId === 'e12')?.status === 'submitted',
+    clock: true,
+    links: [{ ...TOM, path: '/manager', cta: 'Open My team' }],
+  },
+  {
+    title: 'Answer a question from HR',
+    body: "HR can send a review back with a question. As HR, use \u201cReturn to manager\u201d on Nida's flag, then answer it as her manager, Daniel Reyes.",
+    done: (s) => s.managerReviews.some((r) => r.returns?.some((x) => x.answeredOn)),
+    links: [
+      { as: 'HR · Pim Chaiyaporn', view: { role: 'hr' }, path: '/hr/consistency', cta: 'Open Consistency' },
+      { as: 'Manager · Daniel Reyes', view: { role: 'manager', managerId: 'm-sales' }, path: '/manager', cta: "Open Daniel's team" },
+    ],
+  },
+];
+
+const YING = { as: 'Employee · Ying Chen', view: { role: 'employee' as const, employeeId: 'e12' } };
+
+const EMPLOYEE_STEPS: Step[] = [
+  {
+    title: 'Write your self-review',
+    body: 'The deadline has passed, but you can still submit until your manager finishes your review. It will be marked late.',
+    done: (s) => s.selfReviews.find((r) => r.personId === 'e12')?.status === 'submitted',
+    links: [{ ...YING, path: '/me/self-review', cta: 'Open Self-review' }],
+  },
+  {
+    title: 'See why your result is locked',
+    body: 'Results open for everyone at once, after every review is in and HR has checked them for consistency.',
+    done: (_s, v) => !!v.seen?.includes('/me/result'),
+    links: [{ ...YING, path: '/me/result', cta: 'Open My result' }],
+  },
+  {
+    title: 'See a released result',
+    body: 'HR has to release results first. Follow the HR guide to the end, then open a result as an employee.',
+    done: (s) => s.cycle.status === 'released',
+    links: [
+      { as: 'HR · Pim Chaiyaporn', view: { role: 'hr', track: 'hr' }, path: '/hr', cta: 'Switch to the HR guide' },
+      { as: 'Employee · Nida Phrom', view: { role: 'employee', employeeId: 'e01' }, path: '/me/result', cta: "See Nida's result" },
+    ],
+  },
+];
+
+const STEPS_FOR: Record<Role, Step[]> = { hr: HR_STEPS, manager: MANAGER_STEPS, employee: EMPLOYEE_STEPS };
+
+
 export function Intro() {
   const { state, view, setView } = useStore();
   const advanceDay = useAdvanceDay();
@@ -74,8 +130,10 @@ export function Intro() {
   const label = (l: Link) => (isCurrent(l) ? l.cta : `Switch to ${l.as.split(' · ')[0] === 'HR' ? 'HR' : l.as.replace(' · ', ' ')} and ${l.cta[0].toLowerCase()}${l.cta.slice(1)}`);
   const [expanded, setExpanded] = useState(false);
   if (view.introHidden) return null;
-  const doneCount = STEPS.filter((s) => s.done(state)).length;
-  const next = STEPS.findIndex((s) => !s.done(state));
+  const track: Role = view.track ?? 'hr';
+  const STEPS = STEPS_FOR[track];
+  const doneCount = STEPS.filter((s) => s.done(state, view)).length;
+  const next = STEPS.findIndex((s) => !s.done(state, view));
   const nextStep = next >= 0 ? STEPS[next] : undefined;
 
   // In another role's view the full guide would push that person's own screen down,
@@ -117,7 +175,7 @@ export function Intro() {
       </div>
       <ol className={`intro-steps${allSteps ? ' show-all' : ''}`}>
         {STEPS.map((s, i) => {
-          const done = s.done(state);
+          const done = s.done(state, view);
           return (
             <li key={s.title} className={done ? 'done' : i === next ? 'next' : ''}>
               <span className="intro-num" aria-hidden="true">{done ? <IconCheck size={13} /> : i + 1}</span>
@@ -148,6 +206,14 @@ export function Intro() {
       </button>
       <div className="intro-foot small muted">
         {doneCount} of {STEPS.length} done. You are viewing as <strong>{roleName[view.role]}</strong>; each step's link switches role for you. <strong>Reset demo</strong> starts again.
+      </div>
+      <div className="intro-tracks small" role="group" aria-label="Choose a guide">
+        <span className="muted">Guide for:</span>
+        {(['hr', 'manager', 'employee'] as Role[]).map((t) => (
+          <button key={t} type="button" className="link-btn" aria-pressed={track === t} onClick={() => setView({ track: t })}>
+            {roleName[t]}
+          </button>
+        ))}
       </div>
     </section>
   );

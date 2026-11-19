@@ -90,3 +90,10 @@ describe('locking calibration', () => {
     expect(reduce(s, { type: 'calibrate_rating', personId: 'e01', to: 4, reason: 'late', actorId: 'hr' })).toBe(s);
   });
 });
+
+describe('return to manager during calibration', () => {
+  it('is not possible once calibration has started', () => {
+    const s = start(finishAllReviews(createSeed()));
+    expect(reduce(s, { type: 'return_to_manager', personId: 'e01', flagKey: 'k', question: 'Why 5?', actorId: 'hr' })).toBe(s);
+  });
+});

@@ -11,6 +11,8 @@ import { IconCheck } from '../../icons';
 import { Dumbbell } from '../../shared/Dumbbell';
 import { TERMS } from '../../glossary';
 import { FlagReviewDialog } from '../../shared/FlagReviewDialog';
+import { ReturnDialog } from '../../shared/ReturnDialog';
+import { openReturn } from '../../../domain/deadlines';
 
 const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
 
@@ -40,6 +42,8 @@ function gapSentence(m: ManagerConsistency): string {
 export function HrConsistency() {
   const { state } = useStore();
   const [dialog, setDialog] = useState<{ key: string; label: string; context: string }>();
+  const [returning, setReturning] = useState<{ key: string; personIds: string[] }>();
+  const waiting = state.managerReviews.filter((r) => openReturn(r));
   const managers = managerConsistency(state);
   const far = farFlags(state);
   const open = managers.filter((m) => m.flagged && !m.review).length + far.filter((f) => !f.review).length;
@@ -51,6 +55,26 @@ export function HrConsistency() {
         sub={open ? `${open} flag${open === 1 ? '' : 's'} to check before release. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every flag has been checked. Each manager is compared only with their own team\'s results.'}
       />
 
+      {waiting.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <Panel title="Waiting for managers" actions={<span className="small muted">Returned with a question; release is blocked until they answer</span>} bodyClass="">
+            {waiting.map((r) => {
+              const q = openReturn(r)!;
+              return (
+                <div className="flag-row" key={r.personId}>
+                  <div className="stack-sm">
+                    <PersonCell name={person(state, r.personId).name} sub={`Returned to ${person(state, r.reviewerId).name} on ${formatDate(q.on)}`} size="sm" />
+                    <p className="quote small">“{q.question}”</p>
+                  </div>
+                  <div className="row" style={{ alignItems: 'flex-start' }}>
+                    <a className="btn btn-sm" href={`#/manager/review/${r.personId}?as=${r.reviewerId}`}>Open as {person(state, r.reviewerId).name.split(' ')[0]}</a>
+                  </div>
+                </div>
+              );
+            })}
+          </Panel>
+        </div>
+      )}
       <h2 className="section-label">Managers</h2>
       <p className="explain-line" style={{ marginBottom: 12 }}>Manager gap: {TERMS.gap}</p>
       <div className="grid-3">
@@ -64,13 +88,18 @@ export function HrConsistency() {
               foot={
                 m.flagged ? (
                   m.review ? <Reviewed state={state} r={m.review} /> : (
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      onClick={() => setDialog({ key: m.key, label, context: `${mgr.name}'s average rating is ${signed(m.gap)} from what the team's results suggest.` })}
-                    >
-                      Mark reviewed
-                    </button>
+                    <div className="row">
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => setDialog({ key: m.key, label, context: `${mgr.name}'s average rating is ${signed(m.gap)} from what the team's results suggest.` })}
+                      >
+                        Mark reviewed
+                      </button>
+                      <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: m.key, personIds: m.reviews.map((r) => r.personId) })}>
+                        Return to manager
+                      </button>
+                    </div>
                   )
                 ) : (
                   <span className="small muted">{m.status === 'insufficient' ? 'Nothing to check yet.' : 'No action needed.'}</span>
@@ -143,6 +172,9 @@ export function HrConsistency() {
                       Mark reviewed
                     </button>
                   )}
+                  {!f.review && (
+                    <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: f.key, personIds: [f.personId] })}>Return to manager</button>
+                  )}
                   <a className="btn btn-sm" href={`#/hr/person/${f.personId}`}>Open review</a>
                 </div>
               </div>
@@ -155,6 +187,7 @@ export function HrConsistency() {
         Ratings are not compared across teams and there is no forced distribution. Each team is compared only with its own measured results.
       </Notice>
 
+      {returning && <ReturnDialog flagKey={returning.key} personIds={returning.personIds} onClose={() => setReturning(undefined)} />}
       {dialog && <FlagReviewDialog flagKey={dialog.key} label={dialog.label} context={dialog.context} onClose={() => setDialog(undefined)} />}
     </>
   );

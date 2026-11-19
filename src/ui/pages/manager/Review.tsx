@@ -10,7 +10,7 @@ import { go } from '../../../state/router';
 import { Dialog, Explain, Notice, PageHead, Panel, RatingScale } from '../../components';
 import { TERMS } from '../../glossary';
 import { ReviewBadge } from '../../status';
-import { caseInfo } from '../../../domain/deadlines';
+import { caseInfo, openReturn } from '../../../domain/deadlines';
 
 export const pct = (v: number) => `${Math.round(v * 100)}%`;
 
@@ -54,6 +54,7 @@ export function SuggestionExplainer() {
 export function ManagerReviewPage({ personId, userId }: { personId: string; userId: string }) {
   const { state, dispatch, notify } = useStore();
   const [confirm, setConfirm] = useState(false);
+  const [answer, setAnswer] = useState('');
   const participant = state.participants.find((p) => p.personId === personId);
   if (!participant || participant.reviewerId !== userId) {
     if (participant?.escalatedFrom === userId) {
@@ -80,7 +81,10 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
 
   const far = review.overall !== undefined && isFarFromSuggestion(review.overall, suggested);
   const evidence = needsEvidence(review.overall);
-  const problems = locked ? [] : reviewProblems(review, suggested);
+  const pending = openReturn(review);
+  const problems: { field: string; message: string }[] = locked ? [] : [...reviewProblems(review, suggested)];
+  if (pending && !answer.trim()) problems.push({ field: 'answer', message: "Answer HR's question." });
+  const lastAnswered = review.returns?.filter((x) => x.answeredOn).at(-1);
   const evidenceLen = review.overallEvidence?.trim().length ?? 0;
   const c = caseInfo(state, personId);
   const boss = person(state, userId).managerId;
@@ -92,6 +96,14 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
         title={<span className="row" style={{ gap: 12 }}>{who.name} <ReviewBadge r={review} /></span>}
         sub={`${who.title} · ${teamName(state, who.teamId)} · ${state.cycle.name}`}
       />
+      {pending && (
+        <div className="banner">
+          <Notice tone="warning" title={`HR returned this review on ${formatDate(pending.on)}`}>
+            <p className="quote small" style={{ margin: '4px 0' }}>“{pending.question}”</p>
+            Change the rating if you agree, or keep it and explain. Your answer goes to HR and is logged. Release waits for it.
+          </Notice>
+        </div>
+      )}
       {c.status === 'overdue' && (
         <div className="banner">
           <Notice tone="warning" title={`Due ${formatDate(c.deadline)} · ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} overdue`}>
@@ -234,18 +246,33 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
           </Panel>
 
           {locked ? (
+            <Notice tone="success" title={`Submitted ${review.submittedOn ? formatDate(review.submittedOn) : ''}`}>
+              The review is locked. Managers calibrate ratings across teams before results are released.
+            </Notice>
+          ) : null}
+          {locked && review.calibratedOverall && (
+            <Notice tone="brand" title={`Calibrated from ${review.overall} to ${review.calibratedOverall}`}>
+              Agreed when managers aligned ratings across teams. Reason: {review.calibrationReason}
+            </Notice>
+          )}
+          {locked && lastAnswered && (
+            <Notice tone="brand" title={`You answered HR on ${formatDate(lastAnswered.answeredOn!)} (${lastAnswered.outcome === 'changed' ? `changed ${lastAnswered.ratingBefore} → ${review.overall}` : 'rating confirmed'})`}>
+              “{lastAnswered.question}” · Your answer: {lastAnswered.answer}
+            </Notice>
+          )}
+          {locked ? null : (
             <>
-              <Notice tone="success" title={`Submitted ${review.submittedOn ? formatDate(review.submittedOn) : ''}`}>
-                The review is locked. Managers calibrate ratings across teams before results are released.
-              </Notice>
-              {review.calibratedOverall && (
-                <Notice tone="brand" title={`Calibrated from ${review.overall} to ${review.calibratedOverall}`}>
-                  Agreed when managers aligned ratings across teams. Reason: {review.calibrationReason}
-                </Notice>
-              )}
-            </>
-          ) : (
-            <>
+            {pending && (
+              <Panel title="Your answer to HR">
+                <div className="field">
+                  <label htmlFor="answer">Answer to: “{pending.question}”</label>
+                  <textarea id="answer" className="textarea" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="For example: agreed, changed to 4; or: kept 5 because…" />
+                  <span className="hint">
+                    {review.overall === pending.ratingBefore ? `Rating unchanged (${pending.ratingBefore}): this will confirm it.` : `Rating changed from ${pending.ratingBefore} to ${review.overall}.`}
+                  </span>
+                </div>
+              </Panel>
+            )}
             {problems.length > 0 && (
               <ul className="todo" aria-label="Before you can submit">
                 {problems.map((p) => <li key={p.field}>{p.message}</li>)}
@@ -255,7 +282,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
               <span className="small muted">
                 {problems.length > 0 ? `${problems[0].message}${problems.length > 1 ? ` (+${problems.length - 1} more)` : ''}` : 'Ready to submit. Drafts save automatically.'}
               </span>
-              <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>Submit review</button>
+              <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>{pending ? (review.overall === pending.ratingBefore ? 'Confirm and send answer' : 'Resubmit with answer') : 'Submit review'}</button>
             </div>
             </>
           )}
@@ -274,7 +301,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                 type="button"
                 className="btn btn-primary"
                 onClick={() => {
-                  dispatch({ type: 'submit_review', personId, actorId: userId });
+                  dispatch({ type: 'submit_review', personId, actorId: userId, answer: pending ? answer : undefined });
                   setConfirm(false);
                   notify(`Review for ${who.name} submitted`);
                   go('/manager');
