@@ -679,3 +679,17 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Tests:** 98 unit tests passed. e2e PASS at desktop and phone. The e2e now confirms the self-review dialog.
 - **Who decided:** PO asked for the five-persona test, for clear issues to be fixed and for scope or rule changes to be listed. The developer judged what is "clearly a bug or clearly confusing" against the rules in `docs/DESIGN.md`. Anything that would change what someone sees or can do was left for the PO.
 - **What went wrong:** A repository check asked for a push before this step was finished. The first fix commit was pushed to `prototype` only and moved to `main` together with this entry.
+
+## Live check after blind test 2 fixes
+
+- **Runs:**
+  - #17 (`main`, `f4d0979`): success.
+  - The calibration trigger (merge `ac22292`): success.
+  - #18 (rebuild of both builds): success.
+- **Live, both builds:**
+  - Text that exists only after the merge is served at /calibration/.
+  - On a Pixel 7, after "Open demo" → Employee: the one-line guide bar ("Guide, step 1 of 5: See who is late. This step is for HR. Switch to HR and open Progress →"), the "Viewing as Ying Chen…" line, and the reason rule on the manager form ("No reason needed for 2 or 3…").
+  - No console errors.
+  - No sideways scroll on any screen from 320 to 500 px (12 screens on main, 13 on calibration).
+  - No header overlap from 320 to 900 px.
+- **Stopped here:** 9 points in `docs/blind-test-2.md` ("For the PO to decide") change scope or rules and are waiting for the PO.
