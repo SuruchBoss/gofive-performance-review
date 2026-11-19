@@ -38,9 +38,18 @@ async function run(vp) {
     await page.evaluate((h) => { window.location.hash = h; }, hash);
     await page.waitForTimeout(150);
   };
+  // Every prototype control sits behind one "Demo" menu.
+  const demo = async () => {
+    if (!(await page.locator('#demo-menu').count())) await page.getByRole('button', { name: 'Demo', exact: true }).click();
+  };
+  const closeDemo = async () => {
+    if (await page.locator('#demo-menu').count()) await page.keyboard.press('Escape');
+  };
   const viewAs = async (role, who) => {
+    await demo();
     await page.getByRole('group', { name: 'View as role' }).getByRole('button', { name: role }).click();
-    if (who) await page.getByLabel(role).selectOption({ label: who });
+    if (who) await page.getByLabel(role, { exact: true }).selectOption({ label: who });
+    await closeDemo();
   };
   const rate = async (overall) => {
     for (const name of ['Quality of work', 'Ownership', 'Collaboration', 'Customer focus']) {
@@ -117,10 +126,18 @@ async function run(vp) {
   await viewAs('HR');
   await open('/hr/activity');
   assert((await page.locator('.log-item').allInnerTexts()).some((t) => t.includes('Manager answered HR')), 'answer not logged');
+  // HR accepts the answer; until then release stays blocked.
+  await open('/hr/consistency');
+  assert(await page.getByText('Answers from managers', { exact: true }).isVisible(), 'answer not listed for HR');
+  await page.locator('.flag-row', { hasText: 'Kept 5' }).getByRole('button', { name: 'Accept answer' }).click();
+  await open('/hr/activity');
+  assert((await page.locator('.log-item').allInnerTexts()).some((t) => t.includes('HR accepted the answer')), 'acceptance not logged');
 
   // Step 4: two days pass; Ying's review escalates.
+  await demo();
   await page.getByRole('region', { name: 'Prototype controls' }).getByRole('button', { name: '+1 day' }).click();
   await page.getByRole('region', { name: 'Prototype controls' }).getByRole('button', { name: '+1 day' }).click();
+  await closeDemo();
   await open('/hr/activity');
   await page.getByRole('tab', { name: 'Escalations' }).click();
   const esc = await page.locator('.log-item').allInnerTexts();
@@ -170,15 +187,29 @@ async function run(vp) {
   assert(await page.getByText('You are not part of this review cycle').isVisible(), 'removed employee message missing');
 
   // Exit goes back to the landing page.
+  await demo();
   await page.getByRole('button', { name: 'Exit demo' }).click();
   await page.getByRole('button', { name: /Try as HR/ }).waitFor({ timeout: 3000 }).catch(() => {});
   assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), `exit did not return to the landing page (at ${page.url()})`);
   await page.getByRole('button', { name: /Try as HR/ }).click();
 
   // Reset restores the start.
+  await demo();
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Reset demo' }).click();
   assert((await page.locator('.demo-date').innerText()).includes('12 Dec 2026'), 'reset failed');
+
+  // Employee path: the labelled demo shortcut reaches a released result under the normal rules.
+  await viewAs('Employee', 'Ying Chen');
+  await open('/me/result');
+  assert(await page.getByText('Demo only, not part of the product').isVisible(), 'demo shortcut not labelled');
+  await page.getByRole('button', { name: 'Demo shortcut: skip to released results' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Skip to released results' }).click();
+  assert(await page.getByText("Manager's assessment").isVisible(), 'shortcut did not release a result');
+  await shot('15-employee-shortcut-result');
+  await viewAs('HR');
+  await open('/hr/activity');
+  assert((await page.locator('.log-item').allInnerTexts()).some((t) => t.includes('Demo shortcut used')), 'shortcut not logged');
 
   await browser.close();
   assert(errors.length === 0, `console errors: ${errors.join(' | ')}`);

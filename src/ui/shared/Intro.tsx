@@ -40,7 +40,7 @@ const HR_STEPS: Step[] = [
   },
   {
     title: 'Check consistency',
-    body: 'HR → Consistency. Sales rates above its own results, Support below. Mark a flag reviewed, or return it to the manager with a question.',
+    body: 'HR → Consistency. Sales rates above its own results, Support below. Mark a flag reviewed, or return it to the manager with a question. When the manager answers, accept the answer or ask again.',
     done: (s) => s.flagReviews.length > 0 || s.managerReviews.some((r) => r.returns?.length),
     links: [{ ...HR, path: '/hr/consistency', cta: 'Open Consistency' }],
   },
@@ -49,14 +49,14 @@ const HR_STEPS: Step[] = [
     body: "Move the demo date on by two days. Ying's open review moves to Anong Rattanakul, the Managing Director, and the log records it.",
     done: (s) => s.log.some((l) => l.type === 'escalation'),
     clock: true,
-    links: [{ ...HR, path: '/hr/activity', cta: 'Open Activity log' }],
+    links: [{ ...HR, path: '/hr/activity', cta: 'Open Activity' }],
   },
   {
     title: 'Release results',
-    body: "Clear what the Cycle overview lists and release. Then see a result the way an employee does.",
+    body: "Clear what the Overview lists and release. Then see a result the way an employee does.",
     done: (s) => s.cycle.status === 'released',
     links: [
-      { ...HR, path: '/hr', cta: 'Open Cycle overview' },
+      { ...HR, path: '/hr', cta: 'Open Overview' },
       { as: 'Employee · Nida Phrom', view: { role: 'employee', employeeId: 'e01' }, path: '/me/result', cta: "See Nida's result" },
     ],
   },
@@ -80,7 +80,7 @@ const MANAGER_STEPS: Step[] = [
   },
   {
     title: 'Answer a question from HR',
-    body: "HR can send a review back with a question. As HR, use \u201cReturn to manager\u201d on Nida's flag, then answer it as her manager, Daniel Reyes.",
+    body: "HR can send a review back with a question. As HR, use \u201cReturn to manager\u201d on Nida's flag, then answer it as her manager, Daniel Reyes. HR then accepts the answer or asks again.",
     done: (s) => s.managerReviews.some((r) => r.returns?.some((x) => x.answeredOn)),
     links: [
       { as: 'HR · Pim Chaiyaporn', view: { role: 'hr' }, path: '/hr/consistency', cta: 'Open Consistency' },
@@ -106,11 +106,11 @@ const EMPLOYEE_STEPS: Step[] = [
   },
   {
     title: 'See a released result',
-    body: 'HR has to release results first. Follow the HR guide to the end, then open a result as an employee.',
+    body: 'HR releases results only when every review is in and checked. To skip that, use "Demo shortcut: skip to released results" on My result. Or play HR yourself with the HR guide.',
     done: (s) => s.cycle.status === 'released',
     links: [
+      { ...YING, path: '/me/result', cta: 'Open My result' },
       { as: 'HR · Pim Chaiyaporn', view: { role: 'hr', track: 'hr' }, path: '/hr', cta: 'Switch to the HR guide' },
-      { as: 'Employee · Nida Phrom', view: { role: 'employee', employeeId: 'e01' }, path: '/me/result', cta: "See Nida's result" },
     ],
   },
 ];
@@ -229,7 +229,7 @@ export function Intro() {
         {allSteps ? 'Show only the next step' : `Show all ${STEPS.length} steps`}
       </button>
       <div className="intro-foot small muted">
-        {doneCount} of {STEPS.length} done. You are viewing as <strong>{roleName[view.role]}</strong>; each step's link switches role for you. <strong>Reset demo</strong> starts again.
+        {doneCount} of {STEPS.length} done. You are viewing as <strong>{roleName[view.role]}</strong>; each step's link switches role for you. <strong>Demo ▾ → Reset demo</strong> starts again.
       </div>
       <div className="intro-tracks small" role="group" aria-label="Choose a guide">
         <span className="muted">Guide for:</span>

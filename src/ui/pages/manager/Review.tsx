@@ -253,6 +253,8 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
           {locked && lastAnswered && (
             <Notice tone="brand" title={`You answered HR on ${formatDate(lastAnswered.answeredOn!)} (${lastAnswered.outcome === 'changed' ? `changed ${lastAnswered.ratingBefore} → ${review.overall}` : 'rating confirmed'})`}>
               “{lastAnswered.question}” · Your answer: {lastAnswered.answer}
+              <br />
+              {lastAnswered.hrDecision === 'accepted' ? `HR accepted your answer on ${formatDate(lastAnswered.decidedOn!)}.` : lastAnswered.hrDecision === 'asked_again' ? 'HR asked again.' : 'HR will accept your answer or ask again.'}
             </Notice>
           )}
           {locked ? null : (

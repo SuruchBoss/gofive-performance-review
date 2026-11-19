@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CONFIG } from '../../../domain/config';
 import { formatDate } from '../../../domain/dates';
-import { farFlags, managerConsistency, type ManagerConsistency } from '../../../domain/flags';
+import { farFlags, managerConsistency, suggestedFor, type ManagerConsistency } from '../../../domain/flags';
 import { isFarFromSuggestion } from '../../../domain/rating';
 import { firstName, person, teamName } from '../../../domain/selectors';
 import type { DemoState, FlagReview } from '../../../domain/types';
@@ -12,7 +12,8 @@ import { Dumbbell } from '../../shared/Dumbbell';
 import { TERMS } from '../../glossary';
 import { FlagReviewDialog } from '../../shared/FlagReviewDialog';
 import { ReturnDialog } from '../../shared/ReturnDialog';
-import { openReturn } from '../../../domain/deadlines';
+import { answerAwaitingHr, flagsAwaitingAnswerDecision, openReturn } from '../../../domain/deadlines';
+import { LEVEL_WORDS, showSuggestion } from '../../../domain/rating';
 
 const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
 
@@ -40,20 +41,72 @@ function gapSentence(m: ManagerConsistency): string {
 }
 
 export function HrConsistency() {
-  const { state } = useStore();
+  const { state, dispatch, notify } = useStore();
   const [dialog, setDialog] = useState<{ key: string; label: string; context: string }>();
-  const [returning, setReturning] = useState<{ key: string; personIds: string[] }>();
+  const [returning, setReturning] = useState<{ key: string; personIds: string[]; again?: boolean }>();
   const waiting = state.managerReviews.filter((r) => openReturn(r));
+  const answers = state.managerReviews.filter((r) => r.status === 'submitted' && answerAwaitingHr(r));
+  const covered = flagsAwaitingAnswerDecision(state);
   const managers = managerConsistency(state);
   const far = farFlags(state);
-  const open = managers.filter((m) => m.flagged && !m.review).length + far.filter((f) => !f.review).length;
+  const isCovered = (key: string, personId?: string) => covered.keys.has(key) || (!!personId && covered.personIds.has(personId));
+  const open =
+    managers.filter((m) => m.flagged && !m.review && !isCovered(m.key)).length +
+    far.filter((f) => !f.review && !isCovered(f.key, f.personId)).length;
+  const todo = [
+    open ? `${open} flag${open === 1 ? '' : 's'} to check` : '',
+    answers.length ? `${answers.length} answer${answers.length === 1 ? '' : 's'} to accept or question` : '',
+    waiting.length ? `${waiting.length} review${waiting.length === 1 ? '' : 's'} waiting for a manager` : '',
+  ].filter(Boolean);
+  const answeredNote = <span className="small muted">The manager answered HR: accept or ask again under “Answers from managers” above.</span>;
 
   return (
     <>
       <PageHead
         title="Consistency check"
-        sub={open || waiting.length ? `${open} flag${open === 1 ? '' : 's'} to check${waiting.length ? ` and ${waiting.length} review${waiting.length === 1 ? '' : 's'} waiting for a manager` : ''} before release. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every flag has been checked. Each manager is compared only with their own team\'s results.'}
+        sub={todo.length ? `Before release: ${todo.join(', ')}. Each manager is compared only with their own team's results. Nothing changes automatically.` : 'Every flag has been checked. Each manager is compared only with their own team\'s results.'}
       />
+
+      {answers.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <Panel title="Answers from managers" actions={<span className="small muted">Release waits until you accept each answer. If it does not answer your question, ask again.</span>} bodyClass="">
+            {answers.map((r) => {
+              const a = answerAwaitingHr(r)!;
+              const who = person(state, r.personId);
+              const mgr = person(state, r.reviewerId);
+              return (
+                <div className="flag-row" key={r.personId}>
+                  <div className="stack-sm">
+                    <div className="row">
+                      <PersonCell name={who.name} sub={`Answered by ${mgr.name}, ${formatDate(a.answeredOn!)}`} size="sm" />
+                      <Badge tone="brand">{a.outcome === 'changed' ? `Changed ${a.ratingBefore} → ${r.overall}` : `Kept ${r.overall}`}</Badge>
+                    </div>
+                    <div className="small num">
+                      Rated <strong>{r.overall}</strong> ({LEVEL_WORDS[r.overall!]}) · results suggest <strong>{showSuggestion(suggestedFor(state, r))}</strong>
+                    </div>
+                    <dl className="kv small">
+                      <dt>Your question</dt><dd>“{a.question}”</dd>
+                      <dt>{mgr.name.split(' ')[0]}'s answer</dt><dd>“{a.answer}”</dd>
+                    </dl>
+                  </div>
+                  <div className="row" style={{ alignItems: 'flex-start' }}>
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => { dispatch({ type: 'accept_answer', personId: r.personId, actorId: 'hr' }); notify(`Accepted ${mgr.name}'s answer on ${who.name}`); }}
+                    >
+                      Accept answer
+                    </button>
+                    <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: far.find((f) => f.personId === r.personId)?.key ?? a.flagKey, personIds: [r.personId], again: true })}>
+                      Ask again
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </Panel>
+        </div>
+      )}
 
       {waiting.length > 0 && (
         <div style={{ marginBottom: 20 }}>
@@ -87,7 +140,7 @@ export function HrConsistency() {
               title={<PersonCell name={mgr.name} sub={mgr.teamId ? teamName(state, mgr.teamId) : mgr.title} size="sm" />}
               foot={
                 m.flagged ? (
-                  m.review ? <Reviewed state={state} r={m.review} /> : (
+                  m.review ? <Reviewed state={state} r={m.review} /> : isCovered(m.key) ? answeredNote : (
                     <div className="row">
                       <button
                         type="button"
@@ -161,9 +214,10 @@ export function HrConsistency() {
                     </Disclosure>
                   )}
                   {f.review && <Reviewed state={state} r={f.review} />}
+                  {!f.review && isCovered(f.key, f.personId) && answeredNote}
                 </div>
                 <div className="row" style={{ alignItems: 'flex-start' }}>
-                  {!f.review && (
+                  {!f.review && !isCovered(f.key, f.personId) && (
                     <button
                       type="button"
                       className="btn btn-sm"
@@ -172,7 +226,7 @@ export function HrConsistency() {
                       Mark reviewed
                     </button>
                   )}
-                  {!f.review && (
+                  {!f.review && !isCovered(f.key, f.personId) && (
                     <button type="button" className="btn btn-sm" onClick={() => setReturning({ key: f.key, personIds: [f.personId] })}>Return to manager</button>
                   )}
                   <a className="btn btn-sm" href={`#/hr/person/${f.personId}`}>Open review</a>
@@ -187,7 +241,7 @@ export function HrConsistency() {
         Ratings are not compared across teams and there is no forced distribution. Each team is compared only with its own measured results.
       </Notice>
 
-      {returning && <ReturnDialog flagKey={returning.key} personIds={returning.personIds} onClose={() => setReturning(undefined)} />}
+      {returning && <ReturnDialog flagKey={returning.key} personIds={returning.personIds} again={returning.again} onClose={() => setReturning(undefined)} />}
       {dialog && <FlagReviewDialog flagKey={dialog.key} label={dialog.label} context={dialog.context} onClose={() => setDialog(undefined)} />}
     </>
   );

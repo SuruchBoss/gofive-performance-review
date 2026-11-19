@@ -749,3 +749,30 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Checks:** 107 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
 - **What went wrong:** the container restarted during a build and e2e run (exit 137) and one persona agent stopped mid-test. Uncommitted work survived. The agent was resumed and re-ran its steps, and the build and e2e were rerun.
 - **Live check (both builds, after deploy runs 22 and the calibration rebuild):** the scripted click-through passed on the live main build (15 screens) and the live calibration build (17 screens) at 1280 px and 390 px, with no console errors. No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build. The calibration merge (4feeca2) is logged on that branch.
+
+## PO decisions on round 2, built (on `main`)
+
+- **PO decisions:** 1 HR accepts or asks again; 7 one "Demo ▾" menu and the same nav labels at every width; 9 a labelled demo shortcut to released results; 10 rounding confirmed; 4, 6, 8 kept (6 gets a line in Q1); 2, 3, 5 go to the Q1 "next" list. Then a final round with personas 4, 5 and the designer.
+- **1. Accept or ask again:**
+  - A manager's answer no longer closes the flag. A new action, `accept_answer`, records HR's decision on the answer and closes the flag that started the return, plus the person's far-from-results flag if the new rating is still far. It is logged as "HR accepted the answer".
+  - Asking again is `return_to_manager` on an answered review. It marks the previous answer "asked again" and reopens the review with the new question. The log says "Asked again about…".
+  - Release blocker: "Daniel Reyes answered HR on Nida Phrom's review: accept the answer or ask again". The flags it covers are not listed a second time.
+  - Screens:
+    - Consistency has an "Answers from managers" panel showing HR's question, the answer, "Kept 5" or "Changed 5 → 4", the rating against the suggestion, and "Accept answer" / "Ask again" (both equal weight). The covered flag cards point to it.
+    - The manager sees "HR will accept your answer or ask again", then "HR accepted your answer on …".
+    - The HR person page shows the decision.
+    - The nav count now uses the release blockers, so it matches the checklist.
+  - Tests: 5 new or changed rule tests. The e2e accepts Daniel's answer and checks the log.
+- **9. Demo shortcut** (`src/domain/demoShortcut.ts`):
+  - It replays only normal actions, as the people who would do them: remove late joiners with a reason; finish open reviews (chosen ratings kept, a missing overall takes the rounded suggestion, reason and example filled with "Demo shortcut…" text only when a rule needs them); answer returned reviews; accept answers; mark the remaining flags reviewed with "Demo shortcut: marked reviewed without a real check."; then release through the normal gate.
+  - It is logged first as "Demo shortcut used…" by "Demo, not a product action".
+  - On screen it sits on the locked My result inside a dashed box headed "Demo only, not part of the product", with a confirmation dialog. The Employee guide's step 3 points to it.
+  - Tests: 6 rule tests (every submitted review passes the review rules, every flag is reviewed, ratings already chosen are kept, a returned review is handled). The e2e runs it from Ying's My result.
+- **7. Demo ▾ menu:**
+  - The dark bar is now one line: role · name, the demo date, and a "Demo ▾" button. The menu holds View as, the person picker, the date with "+1 day", Show the guide, Reset demo and Exit demo. It closes on Escape or a tap outside.
+  - One label per nav item at every width: Overview, Progress, Consistency, Map, Activity. Page titles match ("Map", "Activity"). "About" everywhere.
+  - The guide and messages were updated to match ("Open Overview", "Open Activity", "Demo ▾ → Reset demo", "To be someone else, open Demo ▾ at the top").
+  - The five HR tabs fit from 360 px; below that they scroll with the existing edge fade.
+  - *Why:* the designer found the old bar took about a third of a phone screen and labels changed with width.
+- **6.** Q1 now says the suggestion uses measured goal results only, on purpose, so it stays independent of the manager's own ratings. **2, 3, 5** were added to Q1 "Next, from user testing", one line each with the reason.
+- **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px (16 screens). No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.

@@ -19,7 +19,7 @@ export function MapPage({ reviewerId }: { reviewerId?: string }) {
   return (
     <>
       <PageHead
-        title={reviewerId ? 'Team map' : 'Results map'}
+        title={reviewerId ? 'Team map' : 'Map'}
         sub="Each dot is one person: goal results across, the manager's behaviour rating up. Strong and weak performers stand out in the shaded corners. Click a dot to see where the scores came from."
       />
       {!reviewerId && (

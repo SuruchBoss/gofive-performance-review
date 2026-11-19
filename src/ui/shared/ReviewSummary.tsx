@@ -81,7 +81,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
                 <dd>
                   {formatDate(x.on)}: “{x.question}”
                   <br />
-                  {x.answeredOn ? <>Answered {formatDate(x.answeredOn)}, {x.outcome === 'changed' ? `changed ${x.ratingBefore} → ${review.overall}` : 'rating confirmed'}: “{x.answer}”</> : <span className="muted">Waiting for the manager's answer</span>}
+                  {x.answeredOn ? <>Answered {formatDate(x.answeredOn)}, {x.outcome === 'changed' ? `changed ${x.ratingBefore} → ${review.overall}` : 'rating confirmed'}: “{x.answer}”{x.hrDecision === 'accepted' ? ` HR accepted the answer ${formatDate(x.decidedOn!)}.` : x.hrDecision === 'asked_again' ? ' HR asked again.' : ' Waiting for HR to accept or ask again.'}</> : <span className="muted">Waiting for the manager's answer</span>}
                 </dd>
               </Fragment>
             ))}

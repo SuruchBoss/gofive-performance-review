@@ -1,5 +1,5 @@
 import { reduce } from '../domain/actions';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { addDays, formatDate, weekday } from '../domain/dates';
 import { employeesForPicker, reviewersForPicker, teamName } from '../domain/selectors';
 import { useStore, type Role } from '../state/store';
@@ -18,16 +18,34 @@ export function useAdvanceDay() {
     dispatch({ type: 'advance_day' });
     notify(
       moved > 0
-        ? `${formatDate(addDays(state.today, 1))}: ${moved} overdue review${moved === 1 ? '' : 's'} moved to the next manager up. See Progress or the Activity log.`
+        ? `${formatDate(addDays(state.today, 1))}: ${moved} overdue review${moved === 1 ? '' : 's'} moved to the next manager up. See Progress or Activity.`
         : `Demo date moved to ${formatDate(addDays(state.today, 1))}`,
     );
   };
 }
 
-export function DemoStrip() {
+export function DemoStrip({ who }: { who: string }) {
   const { state, dispatch, view, setView, notify } = useStore();
   const advanceDay = useAdvanceDay();
   const [confirmReset, setConfirmReset] = useState(false);
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+  const roleName = { hr: 'HR', manager: 'Manager', employee: 'Employee' } as const;
+
+  // The menu closes on Escape or a tap outside it.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    const onDown = (e: MouseEvent | TouchEvent) => { if (wrap.current && !wrap.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown, { passive: true });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown);
+    };
+  }, [open]);
 
   const switchRole = (role: Role) => {
     setView({ role });
@@ -36,53 +54,57 @@ export function DemoStrip() {
   };
 
   return (
-    <>
+    <div className="demo-bar" ref={wrap}>
       <span className="demo-label">Prototype</span>
-      <div className="demo-group">
-        <span>View as</span>
-        <div className="seg" role="group" aria-label="View as role">
-          {(['hr', 'manager', 'employee'] as Role[]).map((r) => (
-            <button key={r} type="button" aria-pressed={view.role === r} onClick={() => switchRole(r)}>
-              {r === 'hr' ? 'HR' : r === 'manager' ? 'Manager' : 'Employee'}
-            </button>
-          ))}
-        </div>
-        {view.role === 'manager' && (
-          <select aria-label="Manager" value={view.managerId} onChange={(e) => { setView({ managerId: e.target.value }); go(HOME.manager); }}>
-            {reviewersForPicker(state).map((p) => (
-              <option key={p.id} value={p.id}>{p.name}{p.teamId ? ` · ${teamName(state, p.teamId)}` : ` · ${p.title}`}</option>
-            ))}
-          </select>
-        )}
-        {view.role === 'employee' && (
-          <select aria-label="Employee" value={view.employeeId} onChange={(e) => { setView({ employeeId: e.target.value }); go(HOME.employee); }}>
-            {employeesForPicker(state).map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        )}
-      </div>
-      <div className="spacer" />
-      <div className="demo-group">
-        <span>Demo date</span>
+      <span className="demo-summary">
+        <span className="demo-who">{roleName[view.role]} · {who}</span>
         <span className="demo-date num">{weekday(state.today)} {formatDate(state.today)}</span>
-        <button
-          type="button"
-          className="demo-btn"
-          onClick={advanceDay}
-        >
-          +1 day
-        </button>
-        {view.introHidden && (
-          <button type="button" className="demo-btn" onClick={() => { setView({ introHidden: false }); window.scrollTo(0, 0); }}>Guide</button>
-        )}
-        <button type="button" className="demo-btn" aria-label="Reset demo" onClick={() => setConfirmReset(true)}>
-          <span className="lbl-long">Reset demo</span><span className="lbl-short" aria-hidden="true">Reset</span>
-        </button>
-        <button type="button" className="demo-btn" aria-label="Exit demo" onClick={() => go('/')} title="Back to the start page">
-          <span className="lbl-long">Exit demo</span><span className="lbl-short" aria-hidden="true">Exit</span>
-        </button>
-      </div>
+      </span>
+      <button type="button" className="demo-btn demo-menu-btn" aria-expanded={open} aria-controls="demo-menu" onClick={() => setOpen((o) => !o)}>
+        Demo <span aria-hidden="true">{open ? '▴' : '▾'}</span>
+      </button>
+      {open && (
+        <div className="demo-menu" id="demo-menu" role="group" aria-label="Demo controls">
+          <div className="demo-menu-sec">
+            <div className="demo-menu-label">View as</div>
+            <div className="seg" role="group" aria-label="View as role">
+              {(['hr', 'manager', 'employee'] as Role[]).map((r) => (
+                <button key={r} type="button" aria-pressed={view.role === r} onClick={() => switchRole(r)}>
+                  {roleName[r]}
+                </button>
+              ))}
+            </div>
+            {view.role === 'manager' && (
+              <select className="select" aria-label="Manager" value={view.managerId} onChange={(e) => { setView({ managerId: e.target.value }); go(HOME.manager); setOpen(false); }}>
+                {reviewersForPicker(state).map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}{p.teamId ? ` · ${teamName(state, p.teamId)}` : ` · ${p.title}`}</option>
+                ))}
+              </select>
+            )}
+            {view.role === 'employee' && (
+              <select className="select" aria-label="Employee" value={view.employeeId} onChange={(e) => { setView({ employeeId: e.target.value }); go(HOME.employee); setOpen(false); }}>
+                {employeesForPicker(state).map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            )}
+          </div>
+          <div className="demo-menu-sec">
+            <div className="demo-menu-label">Demo date</div>
+            <div className="row">
+              <span className="strong num">{weekday(state.today)} {formatDate(state.today)}</span>
+              <button type="button" className="btn btn-sm" onClick={advanceDay}>+1 day</button>
+            </div>
+          </div>
+          <div className="demo-menu-sec demo-menu-actions">
+            {view.introHidden && (
+              <button type="button" className="btn btn-sm" onClick={() => { setView({ introHidden: false }); setOpen(false); window.scrollTo(0, 0); }}>Show the guide</button>
+            )}
+            <button type="button" className="btn btn-sm" onClick={() => { setConfirmReset(true); setOpen(false); }}>Reset demo</button>
+            <button type="button" className="btn btn-sm" onClick={() => go('/')} title="Back to the start page">Exit demo</button>
+          </div>
+        </div>
+      )}
       {confirmReset && (
         <Dialog
           title="Reset the demo?"
@@ -110,7 +132,6 @@ export function DemoStrip() {
           <p className="small muted">Use this to start the guided path again.</p>
         </Dialog>
       )}
-    </>
+    </div>
   );
 }
-
