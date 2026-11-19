@@ -1026,3 +1026,12 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Tests:** rule tests for "aa", 17 characters padded with spaces, and exactly 20; a demo-shortcut test with a draft reason of "aa"; the e2e types "aa" and checks the counter, the list line and the blocked submit. One existing test reason ("Covered two roles", 17 characters) was lengthened. The demo data's two reasons are both well over 20.
 - **Checks:** 136 unit tests passed. e2e PASS at 1280 px and 390 px. `e2e:tips` PASS at all four widths.
 - **Not changed:** anything else, as asked.
+
+## PLAN-4: plain and clear (plan only, on `main`)
+
+- **Started:** 19 Nov 2026, about 22:30 UTC+7.
+- **PO request:** a usability round before submitting. Six findings from the PO's own test and six decisions; the plan must also say what to cut, hide or merge.
+- **Decision 6** (reason needs 20 characters) was already built and deployed on both builds in the entry above. Its `calibration` merge was interrupted by this ticket and finished afterwards.
+- **Audit:** done with the `web-uxui-design` skill in audit mode, on the live main build at 375 px and 1366 px. Findings, scores and measurements (words per screen, page height, position of the first rating control) are in `docs/PLAN-4.md`.
+- **Plan:** `docs/PLAN-4.md` holds the audit next to the PO's findings, five proposed cuts, the word list (old → new), the rewritten guide steps, 8 commits and 5 questions.
+- **Stopped here:** waiting for PO approval, per working rule 4.
