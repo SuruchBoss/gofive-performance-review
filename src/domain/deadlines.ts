@@ -1,6 +1,12 @@
 import { CONFIG } from './config';
 import { addDays, daysBetween } from './dates';
-import type { DemoState, IsoDate, Participant } from './types';
+import type { DemoState, IsoDate, ManagerReview, Participant } from './types';
+
+/** The question HR sent back that the manager has not answered yet, if any. */
+export function openReturn(review: Pick<ManagerReview, 'returns'>) {
+  const last = review.returns?.at(-1);
+  return last && !last.answeredOn ? last : undefined;
+}
 
 export function effectiveDeadline(state: DemoState, p: Participant): IsoDate {
   return p.extension?.until ?? state.cycle.managerDeadline;
@@ -11,7 +17,7 @@ export function escalationDate(state: DemoState, p: Participant): IsoDate {
   return p.escalatedOn ?? addDays(effectiveDeadline(state, p), CONFIG.ESCALATION_DAYS);
 }
 
-export type CaseStatus = 'removed' | 'submitted' | 'due' | 'overdue' | 'escalated';
+export type CaseStatus = 'removed' | 'submitted' | 'returned' | 'due' | 'overdue' | 'escalated';
 
 export interface CaseInfo {
   status: CaseStatus;
@@ -27,6 +33,8 @@ export function caseInfo(state: DemoState, personId: string): CaseInfo {
   const daysOverdue = Math.max(0, daysBetween(deadline, state.today));
   if (p.removed) return { status: 'removed', deadline, daysOverdue: 0 };
   if (review.status === 'submitted') return { status: 'submitted', deadline, daysOverdue: 0 };
+  // A review HR sent back is waiting for the manager's answer; the original deadline no longer applies.
+  if (openReturn(review)) return { status: 'returned', deadline, daysOverdue: 0 };
   if (p.escalatedOn) return { status: 'escalated', deadline, daysOverdue };
   if (state.today > deadline) return { status: 'overdue', deadline, daysOverdue, escalatesOn: escalationDate(state, p) };
   return { status: 'due', deadline, daysOverdue: 0, escalatesOn: escalationDate(state, p) };
@@ -42,7 +50,7 @@ export function applyEscalations(state: DemoState): DemoState {
   for (const p of state.participants) {
     if (p.removed || p.escalatedOn) continue;
     const review = state.managerReviews.find((r) => r.personId === p.personId);
-    if (!review || review.status === 'submitted') continue;
+    if (!review || review.status === 'submitted' || openReturn(review)) continue;
     const due = escalationDate(state, p);
     if (state.today < due) continue;
     const from = state.people.find((x) => x.id === p.reviewerId);

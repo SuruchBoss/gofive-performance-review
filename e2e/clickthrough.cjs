@@ -65,10 +65,10 @@ async function run(vp) {
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   // Landing page: calm, no demo controls, one main action.
-  assert(await page.getByRole('button', { name: 'Open demo' }).isVisible(), 'landing: Open demo missing');
+  assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), 'landing: Try as HR missing');
   assert((await page.locator('.demo-strip').count()) === 0, 'landing: demo controls should not show');
   await shot('00-landing');
-  await page.getByRole('button', { name: 'Open demo' }).click();
+  await page.getByRole('button', { name: /Try as HR/ }).click();
   await page.getByText('Annual performance review, one cycle end to end').waitFor();
   await shot('01-hr-cycle-start');
 
@@ -103,6 +103,20 @@ async function run(vp) {
   await sales.getByRole('button', { name: 'Mark reviewed' }).click();
   await page.getByLabel('What did you check').fill('Talked to Daniel; Q1 renewals explain part of the gap.');
   await page.getByRole('dialog').getByRole('button', { name: 'Mark reviewed' }).click();
+
+  // Return Nida's rating to her manager with a question; Daniel answers and confirms.
+  const nida = page.locator('.flag-row', { hasText: 'Nida Phrom' });
+  await nida.getByRole('button', { name: 'Return to manager' }).click();
+  await page.getByLabel(/Your question for/).fill('Is 5 right when results suggest 3.9?');
+  await page.getByRole('dialog').getByRole('button', { name: 'Send back with question' }).click();
+  assert(await page.getByText('Waiting for managers').isVisible(), 'returned review not listed');
+  await page.getByRole('link', { name: 'Open as Daniel' }).click();
+  await page.getByLabel(/Answer to:/).fill('Kept 5: the August contract was the largest of the year.');
+  await page.getByRole('button', { name: 'Confirm and send answer' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Submit review' }).click();
+  await viewAs('HR');
+  await open('/hr/activity');
+  assert((await page.locator('.log-item').allInnerTexts()).some((t) => t.includes('Manager answered HR')), 'answer not logged');
 
   // Step 4: two days pass; Ying's review escalates.
   await page.getByRole('region', { name: 'Prototype controls' }).getByRole('button', { name: '+1 day' }).click();
@@ -157,9 +171,9 @@ async function run(vp) {
 
   // Exit goes back to the landing page.
   await page.getByRole('button', { name: 'Exit demo' }).click();
-  await page.getByRole('button', { name: 'Open demo' }).waitFor({ timeout: 3000 }).catch(() => {});
-  assert(await page.getByRole('button', { name: 'Open demo' }).isVisible(), `exit did not return to the landing page (at ${page.url()})`);
-  await page.getByRole('button', { name: 'Open demo' }).click();
+  await page.getByRole('button', { name: /Try as HR/ }).waitFor({ timeout: 3000 }).catch(() => {});
+  assert(await page.getByRole('button', { name: /Try as HR/ }).isVisible(), `exit did not return to the landing page (at ${page.url()})`);
+  await page.getByRole('button', { name: /Try as HR/ }).click();
 
   // Reset restores the start.
   await page.getByRole('button', { name: 'Reset demo' }).click();

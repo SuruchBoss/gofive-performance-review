@@ -12,7 +12,7 @@ export function selfReviewWindow(state: DemoState, personId: string): SelfReview
   const mgr = state.managerReviews.find((r) => r.personId === personId);
   const participant = state.participants.find((p) => p.personId === personId);
   if (self?.status === 'submitted') return 'submitted';
-  if (!participant || participant.removed || mgr?.status === 'submitted' || state.cycle.status === 'released') return 'closed';
+  if (!participant || participant.removed || mgr?.status === 'submitted' || !!mgr?.returns?.length || state.cycle.status === 'released') return 'closed';
   return state.today > state.cycle.selfReviewDeadline ? 'open_late' : 'open';
 }
 

@@ -21,6 +21,8 @@ export function CaseBadge({ c }: { c: CaseInfo }) {
       return <Badge tone="success">Review submitted</Badge>;
     case 'removed':
       return <Badge>Removed</Badge>;
+    case 'returned':
+      return <Badge tone="warning">Returned by HR</Badge>;
     case 'escalated':
       return <Badge tone="danger">Review escalated</Badge>;
     case 'overdue':

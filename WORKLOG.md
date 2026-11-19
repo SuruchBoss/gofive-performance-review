@@ -693,3 +693,38 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - No sideways scroll on any screen from 320 to 500 px (12 screens on main, 13 on calibration).
   - No header overlap from 320 to 900 px.
 - **Stopped here:** 9 points in `docs/blind-test-2.md` ("For the PO to decide") change scope or rules and are waiting for the PO.
+
+## PO decisions on blind test 2, built (on `main`)
+
+- **PO decisions:**
+  1. Build "Return to manager" on flags.
+  3. Light version: employees are told that HR checked consistency.
+  4. Keep: employees see the manager's reason.
+  8. The landing page lets the visitor pick HR, Manager or Employee, with the guide adjusted.
+  9. Reword Nida's reason.
+  - 2, 5, 6 and 7 are not in v1; they go into Q1 as "next".
+  - A re-test follows: the same five personas plus an ease-of-use score, and a sixth agent who is a senior product designer.
+- **1. Return to manager:**
+  - **Rules** (`return_to_manager` and `submit_review` with an answer):
+    - HR writes a question, the submitted review reopens for its manager, and every step is logged ("Returned to manager", "Manager answered HR").
+    - Release stays blocked until the manager answers. Either they change the rating and resubmit, or they confirm it with an answer; the outcome is recorded as changed or confirmed.
+    - The answer closes the flag that started the return.
+    - A returned review never escalates (its original deadline no longer applies), and it does not reopen the self-review window.
+  - **Screens:**
+    - Consistency: a "Return to manager" button on every flag. For a team flag, HR picks whose review; the one furthest from results is preselected. A "Waiting for managers" list shows each open question with "Open as Daniel".
+    - Manager review: a banner with HR's question, a "Your answer to HR" field, and a button that says "Confirm and send answer" or "Resubmit with answer".
+    - My team: an "HR returned 1 review" notice and an "Answer HR" button.
+    - Progress badge: "Returned by HR".
+    - HR person page: the return history.
+  - **Tests:** 8 new rule tests. The e2e does the full round trip: HR returns Nida, Daniel confirms, and the answer is logged.
+- **3.** After release, the employee result says "Checked for consistency before release: HR compared every manager's ratings with their own team's goal results and followed up where they did not match." No gap numbers.
+- **8. Landing page:** "Try as HR" (filled), "Try as Manager" and "Try as Employee", each with one line and opening that role.
+  - The guide has a track per role. HR: the existing 5 steps; step 3 now mentions "Return to manager". Manager (Tom): finish Orn's review, watch a deadline slip, answer a question from HR. Employee (Ying): write the self-review, see why the result is locked, see a released result.
+  - "Guide for: HR · Manager · Employee" switches the track. Visited screens are remembered, so the "see why it is locked" step can tick itself off.
+- **9.** Nida's reason now stays inside the period: "from June Nida also trained our two new account executives… both reached target by November".
+- **2, 5, 6, 7:** added to Q1 in `docs/ANSWERS.md` as "Next, from user testing", one line each with the reason. Q1's "right slice" paragraph now refers to Return to manager.
+- **Checks:**
+  - 106 unit tests passed. e2e PASS at desktop and phone.
+  - No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+  - Landing button sub-text contrast 4.99:1.
+- **What went wrong:** Another multi-line Python edit failed on its quoting before it ran, so nothing changed. It was rerun from a file.

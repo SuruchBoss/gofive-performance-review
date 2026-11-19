@@ -212,7 +212,7 @@ const managerReviews: ManagerReview[] = [
   // Sales: rates above results.
   submitted('e01', 'm-sales', B(5, 5, 4, 5), 5, 3.91, '2026-12-03', {
     overallEvidence: 'Closed the Chiang Mai distributor contract in August (THB 4.2m), which no one else on the team had been able to open in two years.',
-    deviationReason: 'The revenue figure understates Nida’s year: the distributor contract will renew at a larger size in Q1.',
+    deviationReason: 'Revenue understates Nida’s year: from June Nida also trained our two new account executives, about a month of selling time, and both reached target by November.',
     comment: 'Outstanding year. Next step is mentoring the newer account executives.',
   }),
   submitted('e02', 'm-sales', B(4, 4, 4, 3), 4, 3.2, '2026-12-04', {

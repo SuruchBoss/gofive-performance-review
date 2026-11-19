@@ -90,6 +90,20 @@ export interface ManagerReview {
   suggestedAtSubmit?: number;
   selfReviewMissing: boolean;
   submittedOn?: IsoDate;
+  /** HR sent the review back with a question (from a flag). The last one may still be open. */
+  returns?: ReturnRequest[];
+}
+
+export interface ReturnRequest {
+  question: string;
+  flagKey: string;
+  on: IsoDate;
+  by: string;
+  /** Overall rating when HR sent it back, to tell "changed" from "confirmed". */
+  ratingBefore: Rating;
+  answer?: string;
+  answeredOn?: IsoDate;
+  outcome?: 'changed' | 'confirmed';
 }
 
 /** HR's review of a derived flag. Flags themselves are never stored. */
@@ -109,6 +123,8 @@ export type LogType =
   | 'self_review_late'
   | 'review_submitted'
   | 'flag_reviewed'
+  | 'returned_to_manager'
+  | 'return_answered'
   | 'deadline_change'
   | 'release';
 

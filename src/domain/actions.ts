@@ -5,7 +5,7 @@ import { person } from './selectors';
 import { reviewProblems, suggestionFor } from './rating';
 import { daysLate, selfReviewWindow } from './selfReview';
 import type { IsoDate, Rating } from './types';
-import { applyEscalations, effectiveDeadline } from './deadlines';
+import { applyEscalations, effectiveDeadline, openReturn } from './deadlines';
 import { formatDate } from './dates';
 import { canRelease } from './release';
 
@@ -20,7 +20,8 @@ export type Action =
   | { type: 'reset' }
   | { type: 'advance_day' }
   | { type: 'save_review'; personId: string; patch: ReviewPatch }
-  | { type: 'submit_review'; personId: string; actorId: string }
+  | { type: 'submit_review'; personId: string; actorId: string; answer?: string }
+  | { type: 'return_to_manager'; personId: string; flagKey: string; question: string; actorId: string }
   | { type: 'save_self_review'; personId: string; text?: string; selfRating?: Rating }
   | { type: 'submit_self_review'; personId: string }
   | { type: 'remind'; personId: string; actorId: string }
@@ -140,6 +141,22 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
       const label = action.field === 'managerDeadline' ? 'Manager review deadline' : 'Self-review deadline';
       return withLog(next, { actorId: action.actorId, type: 'deadline_change', detail: `${label} changed from ${formatDate(old)} to ${formatDate(action.date)}.` });
     }
+    case 'return_to_manager': {
+      const review = state.managerReviews.find((r) => r.personId === action.personId);
+      const question = action.question.trim();
+      if (state.cycle.status !== 'open' || !review || review.status !== 'submitted' || review.overall === undefined || !question) return state;
+      const next = updateReview(state, action.personId, (r) => ({
+        ...r,
+        status: 'draft',
+        returns: [...(r.returns ?? []), { question, flagKey: action.flagKey, on: state.today, by: action.actorId, ratingBefore: r.overall! }],
+      }));
+      return withLog(next, {
+        actorId: action.actorId,
+        type: 'returned_to_manager',
+        targetId: action.personId,
+        detail: `Returned ${person(state, action.personId).name}'s review to ${person(state, review.reviewerId).name}. Question: ${question}`,
+      });
+    }
     case 'review_flag': {
       const note = action.note.trim();
       if (!note || state.flagReviews.some((f) => f.flagKey === action.flagKey)) return state;
@@ -159,14 +176,35 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
       if (!review || review.status === 'submitted') return state;
       const suggested = suggestionFor(state, action.personId).value;
       if (reviewProblems(review, suggested).length > 0) return state;
+      const pending = openReturn(review);
+      const answer = action.answer?.trim();
+      // A review HR sent back needs an answer to HR's question before it goes back.
+      if (pending && !answer) return state;
       const self = state.selfReviews.find((r) => r.personId === action.personId);
-      const next = updateReview(state, action.personId, (r) => ({
+      let next = updateReview(state, action.personId, (r) => ({
         ...r,
         status: 'submitted',
         submittedOn: state.today,
         suggestedAtSubmit: Math.round(suggested * 100) / 100,
-        selfReviewMissing: self?.status !== 'submitted',
+        selfReviewMissing: r.returns?.length ? r.selfReviewMissing : self?.status !== 'submitted',
+        returns: pending
+          ? r.returns!.map((x) => (x === pending ? { ...x, answer, answeredOn: state.today, outcome: r.overall === x.ratingBefore ? ('confirmed' as const) : ('changed' as const) } : x))
+          : r.returns,
       }));
+      if (pending) {
+        const outcome = review.overall === pending.ratingBefore ? `confirmed ${review.overall}` : `changed ${pending.ratingBefore} → ${review.overall}`;
+        next = withLog(next, {
+          actorId: action.actorId,
+          type: 'return_answered',
+          targetId: action.personId,
+          detail: `${person(state, action.actorId).name} answered HR on ${person(state, action.personId).name}'s review and ${outcome}. Answer: ${answer}`,
+        });
+        // The manager's answer closes the flag that started the return.
+        if (!next.flagReviews.some((f) => f.flagKey === pending.flagKey)) {
+          next = { ...next, flagReviews: [...next.flagReviews, { flagKey: pending.flagKey, note: `Returned to manager. Answer: ${answer}`, by: action.actorId, on: state.today }] };
+        }
+        return next;
+      }
       return withLog(next, {
         actorId: action.actorId,
         type: 'review_submitted',

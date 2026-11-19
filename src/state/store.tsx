@@ -13,6 +13,10 @@ export interface ViewState {
   managerId: string;
   employeeId: string;
   introHidden: boolean;
+  /** Which guide is shown (chosen on the landing page). */
+  track?: Role;
+  /** Screens visited, so guide steps such as "see why your result is locked" can tick themselves off. */
+  seen?: string[];
 }
 
 const DEFAULT_VIEW: ViewState = { role: 'hr', managerId: 'm-ops', employeeId: 'e12', introHidden: false };
