@@ -129,7 +129,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                 <div className="suggestion">
                   <div className="suggestion-num num">{showSuggestion(suggested)}</div>
                   <div>
-                    <div className="strong">Suggested overall rating</div>
+                    <div className="strong">Results suggest</div>
                     <Explain>{TERMS.suggested}</Explain>
                     <div className="xs muted num">
                       Based on {pct(sug.results)} of goal targets, weighted.

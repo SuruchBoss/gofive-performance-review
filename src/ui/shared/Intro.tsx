@@ -143,35 +143,34 @@ export function Intro() {
   const next = STEPS.findIndex((s) => !s.done(state, view));
   const nextStep = next >= 0 ? STEPS[next] : undefined;
 
-  // On a phone, when you are already on the step's screen, the full card would hide that
-  // screen's form, so it shrinks to one line as well.
-  const onStepScreen =
-    !!nextStep && isCurrent(nextStep.links[0]) && path.split('?')[0] === nextStep.links[0].path.split('?')[0] &&
-    window.matchMedia('(max-width: 640px)').matches;
-  if (nextStep && onStepScreen && !expanded) {
-    return (
-      <section className="intro-bar" aria-label="Guide">
-        <span className="small">
-          <strong>Guide, step {next + 1} of {STEPS.length}:</strong> {nextStep.title}. You are on this screen: it starts below.
-        </span>
-        <span className="row" style={{ gap: 12 }}>
-          <button type="button" className="link-btn muted-link" onClick={() => setExpanded(true)}>Show the guide</button>
-        </span>
-      </section>
-    );
-  }
-
-  // In another role's view the full guide would push that person's own screen down,
-  // so it shrinks to one line that says whose step is next and switches for you.
-  if (nextStep && nextStep.links[0].view.role !== view.role && !expanded) {
+  // The full guide shows once, on the first screen. After that it is a slim bar with the
+  // next step, so it never pushes the screen it is about below the fold.
+  // On a phone the full card would also hide the form of the step's own screen.
+  const onStepScreen = !!nextStep && isCurrent(nextStep.links[0]) && path.split('?')[0] === nextStep.links[0].path.split('?')[0];
+  const firstScreen = (view.seen ?? []).length <= 1 && !(onStepScreen && window.matchMedia('(max-width: 640px)').matches);
+  if (!expanded && !firstScreen) {
+    if (!nextStep) {
+      return (
+        <section className="intro-bar" aria-label="Guide">
+          <span className="small"><strong>Guide complete:</strong> all {STEPS.length} steps done. Demo ▾ → Reset demo starts again.</span>
+          <span className="row" style={{ gap: 12 }}>
+            <button type="button" className="link-btn muted-link" onClick={() => setExpanded(true)}>Show all steps</button>
+            <button type="button" className="link-btn muted-link" onClick={() => setView({ introHidden: true })}>Hide guide</button>
+          </span>
+        </section>
+      );
+    }
     const l = nextStep.links[0];
+    const here = onStepScreen;
     return (
       <section className="intro-bar" aria-label="Guide">
         <span className="small">
-          <strong>Guide, step {next + 1} of {STEPS.length}:</strong> {nextStep.title}. In this step you play {roleName[l.view.role]}.
+          <strong>Guide, step {next + 1} of {STEPS.length}:</strong> {nextStep.title}.{' '}
+          {here ? <>You are on this screen. {nextStep.body}</> : l.view.role !== view.role ? <>In this step you play {roleName[l.view.role]}.</> : nextStep.body}
         </span>
         <span className="row" style={{ gap: 12 }}>
-          <button type="button" className="link-btn" onClick={() => openStep(l)}>{label(l)}{'\u00a0'}→</button>
+          {nextStep.clock && <button type="button" className="btn btn-sm" onClick={advanceDay}>+1 day <span className="muted">(now {formatDate(state.today, true)})</span></button>}
+          {!here && <button type="button" className="link-btn" onClick={() => openStep(l)}>{label(l)}{'\u00a0'}→</button>}
           <button type="button" className="link-btn muted-link" onClick={() => setExpanded(true)}>Show all steps</button>
         </span>
       </section>
@@ -194,9 +193,12 @@ export function Intro() {
             reviews were due, so there is work waiting.
           </p>
         </div>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView({ introHidden: true })}>
-          <IconClose size={14} /> Hide guide
-        </button>
+        <span className="row" style={{ gap: 4, alignSelf: 'flex-start' }}>
+          {expanded && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setExpanded(false)}>Show less</button>}
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView({ introHidden: true })}>
+            <IconClose size={14} /> Hide guide
+          </button>
+        </span>
       </div>
       <ol className={`intro-steps${allSteps ? ' show-all' : ''}`}>
         {STEPS.map((s, i) => {

@@ -19,6 +19,8 @@ describe('demo shortcut: skip to released results', () => {
     // Calibration build: the agenda is agreed and calibration locked, with no rating changed.
     expect(s.calibration.status).toBe('locked');
     expect(s.calibration.changes).toEqual([]);
+    // A review the demo finished says so, rather than showing an empty assessment.
+    expect(s.managerReviews.find((r) => r.personId === 'e12')!.comment).toMatch(/^Demo shortcut/);
   });
 
   it('removes the new joiner with a reason instead of reviewing her', () => {

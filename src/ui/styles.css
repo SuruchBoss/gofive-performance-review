@@ -1072,7 +1072,7 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .intro-as { font-size: var(--fs-xs); font-weight: 600; color: var(--mint-900); background: var(--mint-100); border-radius: var(--r-sm); padding: 1px 6px; align-self: flex-start; }
 .intro-clock { align-self: flex-start; }
 @media (max-width: 1080px) { .map-layout { grid-template-columns: minmax(0, 1fr); } }
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   table.data.compact th, table.data.compact td { padding: 8px 6px; }
   table.data.compact th { font-size: 10px; letter-spacing: 0.02em; }
   table.data.compact .person-sub,
@@ -1185,4 +1185,13 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 /* Narrow phones: tighter tabs so the five HR tabs fit from about 350 px; below that they scroll with an edge fade. */
 @media (max-width: 389px) {
   .nav a { padding: 12px 5px; }
+}
+/* Amber is for problems only: counts of things to do use the brand tint. */
+.nav-count.alert { background: var(--mint-100); color: var(--mint-900); }
+.db-key-dot.far { background: var(--amber); }
+/* Phone: checklist links and the logo are full-size touch targets. */
+@media (max-width: 860px) {
+  .blockers a, .crumbs a { display: inline-flex; align-items: center; min-height: 44px; }
+  .brand-mark { position: relative; }
+  .brand-mark::after { content: ''; position: absolute; inset: -8px; }
 }

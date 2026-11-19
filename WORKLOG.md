@@ -924,3 +924,32 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - The guide keeps "Calibrate, then release".
 - **Demo shortcut on this build:** instead of marking flags, it starts calibration with every manager, agrees each agenda item with a "Demo shortcut: agreed without a real discussion." note and no rating change, then locks and releases. Tests check that calibration is locked with no changes.
 - **Checks:** 127 unit tests passed. e2e PASS at 1280 px and 390 px (18 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+## Final round (personas 4, 5 and the designer) and fixes (on `main`)
+
+- **Scores** (recorded in `docs/blind-test-2.md`, "Final round"):
+  - Persona 4: 7/10 (round 2: 6.5), ease of use 7 (was 6).
+  - Persona 5: 5/10 (was 6), ease of use 7 (was 6).
+  - Designer: UX 7.5 (was 7).
+  - Persona 5's drop came mainly from one bug: the "Manager's assessment" card was empty after the demo shortcut.
+- **Fixed** (design latitude; each with its reason in the doc):
+  - The empty assessment now says why there are no comments, and the shortcut writes a placeholder comment.
+  - The guide shows in full only on the first screen, then as a slim bar with the step's instruction.
+  - "Remove from cycle" is the visible button for late joiners.
+  - Nav counts use the brand tint, and the Consistency legend explains the amber dot.
+  - Labels unified ("Results suggest", "Behaviour", "1.0+ from results").
+  - Tap wording on the Map; 44 px checklist and breadcrumb links and a larger logo tap area on phones.
+  - The compact table layout now applies up to 480 px, so the Map list fits.
+- **Not changed, listed for the PO:**
+  - employee reply (already on the Q1 next list);
+  - the late start (kept by the PO);
+  - the formula (agreed rule);
+  - a manager note on the self-review (new rule);
+  - the three numbers on My result (a reshaping of the main employee screen);
+  - a phone-specific Map.
+- **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+
+## Merge of the final-round fixes into `calibration`
+
+- Merged `main` (123dafd). The one test conflict kept both checks: calibration locked with no rating change, and the placeholder comment.
+- Checks: 127 unit tests passed. e2e PASS at 1280 px and 390 px (18 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+- On this build the full guide likewise shows only on the first screen, and "Calibrate, then release" stays the last HR step.
