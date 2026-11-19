@@ -859,3 +859,30 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **Checked:**
   - 116 unit tests passed. e2e PASS at desktop and phone (17 screens).
   - No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+## Re-test round 2 and UX fixes (on `main`)
+
+- **What:** the same five personas re-tested the live build with the PO's decisions (2d02854), each also giving an ease-of-use score and the hardest screen. A sixth agent, a senior product designer, reviewed UX/UI only at 1366 px and 412 px. Everything is recorded in `docs/blind-test-2.md` ("Re-test (round 2)").
+- **Scores:** 7.5 / 7 / 7 / 6.5 / 6 (round 1: 7 / 7 / 6 / 6 / 6). Ease of use 8 / 7 / 6 / 6 / 6. Designer UX 7. Hardest screens: Consistency check (HR, and on a phone), the manager review form, and the employee screens on a phone under the guide card.
+- **Fixed (clear UX issues; decided by me under the PO's design latitude, each with its reason):**
+  - Manager form: one rule line before choosing, then what the chosen rating needs. *Why:* the old line read as contradictory to 3 testers.
+  - Submit blockers shown once (count on desktop, first item on phone). *Why:* they appeared twice, far from the fields.
+  - Sticky submit/release bars only when the action is usable. *Why:* on a phone the disabled bar was the strongest element on screen.
+  - Consistency: equal-weight decision buttons; evidence open for unchecked flags; one label pair "Above / Below results"; checked gaps in neutral; waiting reviews counted in the header and nav badge; notes on what a return does to the gap and on the 3-review minimum. *Why:* the easy option looked like the main one, and counts changed without explanation.
+  - Return dialog shows goal % next to the suggestion. *Why:* HR could not judge without it.
+  - Phone touch targets at least 44 px; glossary no longer says "hover" for phones. *Why:* many targets were 15–30 px.
+  - Employee: "Try as Employee" opens Self-review; overdue notice on My goals; guide links scroll to their screen; on a phone the guide shrinks to one line on the step's own screen; "In this step you play HR"; the locked result names both reviews and points to the guide; the released result shows the employee's own self-review; goal figures labelled "Target 95 %" and "97% of target"; a scale label for the self-rating. *Why:* the guide card hid the form on phones, and employees hit dead ends.
+  - Employee result text now says exactly what HR checked, instead of "followed up where they did not match". *Why:* two testers read it as a promise that did not hold for under-rated people.
+  - Remove dialog says the person is told; moved-away reviews say a draft moves with them.
+- **Developer decision, for the PO to confirm:** the suggested rating is rounded to one decimal where it is calculated, so the far rule and the screen use the same number (Orn showed 3.0 while the rule used 3.049). Thresholds unchanged. A unit test covers it.
+- **For the PO:** 10 items in `docs/blind-test-2.md` ("Re-test … For the PO to decide"). The main ones: HR accepts or rejects a manager's answer; flag under-rating when the self-rating is higher; show employees their suggestion before the review; one "Demo ▾" menu with the same nav labels at every width.
+- **Not re-scored:** the round-2 fixes were checked by tests and scans, not by a third persona round.
+- **Checks:** 107 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+- **What went wrong:** the container restarted during a build and e2e run (exit 137) and one persona agent stopped mid-test. Uncommitted work survived. The agent was resumed and re-ran its steps, and the build and e2e were rerun.
+
+## Merge of re-test round 2 into `calibration`
+
+- **Merged** `main` (028487e) into `calibration`. Conflicts kept both sides:
+  - Employee result: the exact text of what HR checked, plus "Managers then calibrated ratings together across teams". The locked text names the manager's review, the self-review and calibration.
+  - The guide keeps its "requirement change from question 2" line on this build.
+- **New issue found by the header scan:** the 44 px "About" touch target overlapped the "Requirement change from question 2" tag from 320 to 340 px. Below 420 px the tag now wraps inside the brand column. *Why:* the tag is the label the PO asked for, so it is kept whole, not shortened.
+- **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px (17 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.

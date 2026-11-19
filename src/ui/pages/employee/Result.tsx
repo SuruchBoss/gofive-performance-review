@@ -1,7 +1,7 @@
 import { formatDate } from '../../../domain/dates';
 import { isReleased } from '../../../domain/release';
 import { selfReviewWindow } from '../../../domain/selfReview';
-import { managerReviewOf } from '../../../domain/selectors';
+import { managerReviewOf, selfReviewOf } from '../../../domain/selectors';
 import { useStore } from '../../../state/store';
 import { Notice, PageHead, Panel } from '../../components';
 import { IconLock } from '../../icons';
@@ -38,12 +38,12 @@ export function EmployeeResult({ userId }: { userId: string }) {
                 together. You will then see your overall rating, the rating for each behaviour, and your manager's comments here.
               </p>
               <p className="small muted">
-                Your review: {review.status === 'submitted' ? 'completed by your manager' : 'not completed yet'}. Calibration:{' '}
+                Your manager's review: {review.status === 'submitted' ? 'done' : 'not done yet'}. Your self-review: {selfReviewOf(state, userId).status === 'submitted' ? 'submitted' : 'not submitted'}. Calibration:{' '}
                 {state.calibration.status === 'locked' ? 'done' : state.calibration.status === 'in_session' ? 'in progress' : 'not started yet'}.{' '}
                 {['open', 'open_late'].includes(selfReviewWindow(state, userId)) ? (
                   <a href="#/me/self-review">Submit your self-review while you still can →</a>
                 ) : (
-                  'Nothing to do now.'
+                  <>Nothing to do now. In this demo, the guide's last step lets you play HR and release results.</>
                 )}
               </p>
             </div>
@@ -58,7 +58,7 @@ export function EmployeeResult({ userId }: { userId: string }) {
       <PageHead title="My result" sub={`${state.cycle.name} · released ${formatDate(state.cycle.releasedOn!)}`} />
       <div className="banner">
         <Notice tone="brand" title="Checked for consistency before release">
-          Before results were released, HR compared every manager's ratings with their own team's goal results, and managers calibrated ratings together across teams.
+          Before release, HR compared each manager's ratings with their own team's goal results and checked every rating 1.0 or more away from what goal results suggest. Managers then calibrated ratings together across teams.
         </Notice>
       </div>
       <ReviewSummary personId={userId} audience="employee" />

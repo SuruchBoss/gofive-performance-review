@@ -122,7 +122,7 @@ export function RemoveDialog({ personId, onClose }: { personId: string; onClose:
       <div className="field">
         <label htmlFor="remove-detail">{preset === 'other' ? 'Describe the reason' : 'Details (optional)'}</label>
         <textarea id="remove-detail" className="textarea" value={detail} onChange={(e) => setDetail(e.target.value)} />
-        <span className="hint">Recorded in the activity log.</span>
+        <span className="hint">Recorded in the activity log. {who.name.split(' ')[0]} sees the reason and details on their result page.</span>
       </div>
     </Dialog>
   );

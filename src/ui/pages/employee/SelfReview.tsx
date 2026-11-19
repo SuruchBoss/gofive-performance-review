@@ -69,8 +69,8 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
                 <span className="label" id="own-label">Your own rating</span>
                 <span className="hint">Your manager sees it next to your goal results. It does not change the suggested rating, which comes from goal results only.</span>
                 <div className="row" style={{ gap: 12 }}>
-                  <RatingScale label="Your own rating" value={self.selfRating} disabled={!editable} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
-                  {self.selfRating && <span className="small muted">{LEVEL_WORDS[self.selfRating]}</span>}
+                  <RatingScale label="Your own rating" value={self.selfRating} disabled={!editable} hints={LEVEL_WORDS} onChange={(r) => dispatch({ type: 'save_self_review', personId: userId, selfRating: r })} />
+                  <span className="small muted">{self.selfRating ? LEVEL_WORDS[self.selfRating] : '1 = well below expectations, 3 = met, 5 = well above'}</span>
                 </div>
               </div>
             </div>
@@ -78,7 +78,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
         )}
 
         {editable && (
-          <div className="submit-bar action-bar">
+          <div className={`submit-bar${ready ? ' action-bar' : ''}`}>
             <span className="small muted">{ready ? 'Drafts are saved automatically.' : 'Write a few lines and choose a rating to submit.'}</span>
             <button
               type="button"

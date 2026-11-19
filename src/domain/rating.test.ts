@@ -46,6 +46,14 @@ describe('suggested rating', () => {
   it('is continuous between levels', () => {
     expect(suggestedFromResults(1.07)).toBeCloseTo(3.35);
   });
+  it('is rounded to one decimal where it is used, so the screen and the rules see the same number', () => {
+    const s = createSeed();
+    for (const p of s.participants) {
+      const { value } = suggestionFor(s, p.personId);
+      expect(Math.round(value * 10) / 10).toBe(value);
+    }
+    expect(suggestionFor(s, 'e11').value).toBe(3);
+  });
 });
 
 describe('far-from-suggestion rule (≥ 1.0)', () => {

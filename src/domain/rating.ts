@@ -29,7 +29,9 @@ export interface Suggestion {
 
 export function suggestionFor(state: DemoState, personId: string): Suggestion {
   const results = resultsScore(state.goals.filter((g) => g.personId === personId));
-  const value = suggestedFromResults(results);
+  // Rounded to one decimal, the way every screen shows it, so the reason rule and the
+  // flags use exactly the number people see (3.05 is shown and checked as 3.1).
+  const value = Math.round((suggestedFromResults(results) + 1e-9) * 10) / 10;
   return { results, value, rounded: Math.round(value) as Rating };
 }
 

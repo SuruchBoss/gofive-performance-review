@@ -25,14 +25,14 @@ export function GoalRow({ g }: { g: Goal }) {
       </div>
       <div className="goal-figures num">
         <div className="big">{g.actual} {g.unit}</div>
-        <div className="muted">Target {g.direction === 'lower' ? '≤ ' : ''}{g.target}</div>
+        <div className="muted">Target {g.direction === 'lower' ? '≤ ' : ''}{g.target} {g.unit}</div>
       </div>
       <div className="goal-bar" aria-label={`${pct(a)} of target`}>
         <div className="goal-track">
           <span className={`goal-fill ${tone}`} style={{ width: `${(Math.min(a, 1.5) / 1.5) * 100}%` }} />
           <span className="goal-target" style={{ left: `${(1 / 1.5) * 100}%` }} />
         </div>
-        <span className="goal-pct num">{pct(a)}</span>
+        <span className="goal-pct num">{pct(a)}<span className="goal-pct-of"> of target</span></span>
       </div>
     </div>
   );
@@ -190,15 +190,15 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                 <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} hints={LEVEL_WORDS} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
                 {review.overall !== undefined && (
                   <span className={`small ${far ? 'strong' : 'muted'} num`}>
-                    {LEVEL_WORDS[review.overall]} · {far ? 'needs a reason (see below)' : 'no reason needed'}
+                    {LEVEL_WORDS[review.overall]} · {far && evidence ? 'needs a reason and an example (below)' : far ? 'needs a reason (below)' : evidence ? 'needs an example (below)' : 'nothing else needed'}
                   </span>
                 )}
               </div>
 
-              {!locked && (
+              {!locked && review.overall === undefined && (
                 <p className="rule-line">
-                  No reason needed for {ratingsWithoutReason(suggested).join(' or ')}. Any other rating needs a written reason, and a 1, 2 or 5
-                  also needs a specific example.
+                  Within 1 of the suggestion ({ratingsWithoutReason(suggested).join(' or ')}): no reason needed. Further away: a written reason.
+                  Any 1, 2 or 5: also a specific example.
                 </p>
               )}
               {far && (
@@ -278,9 +278,14 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                 {problems.map((p) => <li key={p.field}>{p.message}</li>)}
               </ul>
             )}
-            <div className="submit-bar action-bar">
+            <div className={`submit-bar${problems.length === 0 ? ' action-bar' : ''}`}>
               <span className="small muted">
-                {problems.length > 0 ? `${problems[0].message}${problems.length > 1 ? ` (+${problems.length - 1} more)` : ''}` : 'Ready to submit. Drafts save automatically.'}
+                {problems.length > 0 ? (
+                  <>
+                    <span className="only-desktop">{problems.length} thing{problems.length === 1 ? '' : 's'} left before you can submit.</span>
+                    <span className="only-phone">{problems[0].message}{problems.length > 1 ? ` (+${problems.length - 1} more)` : ''}</span>
+                  </>
+                ) : 'Ready to submit. Drafts save automatically.'}
               </span>
               <button type="button" className="btn btn-primary" disabled={problems.length > 0} onClick={() => setConfirm(true)}>{pending ? (review.overall === pending.ratingBefore ? 'Confirm and send answer' : 'Resubmit with answer') : 'Submit review'}</button>
             </div>
