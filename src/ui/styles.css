@@ -1110,3 +1110,8 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .demo-strip .demo-btn { padding: 4px 7px; }
 }
 .intro-elsewhere { font-size: var(--fs-xs); color: var(--amber); font-weight: 600; }
+.intro-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2) var(--s4); padding: var(--s3) var(--s4); margin-bottom: var(--s4); background: var(--surface); border: 1px solid #cfe5dc; border-left: 3px solid var(--mint-700); border-radius: var(--r-md); }
+.muted-link { color: var(--muted); font-weight: 500; }
+.viewing-as { font-size: var(--fs-sm); color: var(--muted); margin-bottom: var(--s3); }
+.rule-line { font-size: var(--fs-sm); color: var(--ink-2); }
+.level-word { font-size: var(--fs-sm); font-weight: 600; color: var(--mint-900); }

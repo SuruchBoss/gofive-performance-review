@@ -72,9 +72,28 @@ export function Intro() {
     (l.view.role !== 'manager' || l.view.managerId === view.managerId) &&
     (l.view.role !== 'employee' || l.view.employeeId === view.employeeId);
   const label = (l: Link) => (isCurrent(l) ? l.cta : `Switch to ${l.as.split(' · ')[0] === 'HR' ? 'HR' : l.as.replace(' · ', ' ')} and ${l.cta[0].toLowerCase()}${l.cta.slice(1)}`);
+  const [expanded, setExpanded] = useState(false);
   if (view.introHidden) return null;
   const doneCount = STEPS.filter((s) => s.done(state)).length;
   const next = STEPS.findIndex((s) => !s.done(state));
+  const nextStep = next >= 0 ? STEPS[next] : undefined;
+
+  // In another role's view the full guide would push that person's own screen down,
+  // so it shrinks to one line that says whose step is next and switches for you.
+  if (nextStep && nextStep.links[0].view.role !== view.role && !expanded) {
+    const l = nextStep.links[0];
+    return (
+      <section className="intro-bar" aria-label="Guide">
+        <span className="small">
+          <strong>Guide, step {next + 1} of {STEPS.length}:</strong> {nextStep.title}. This step is for {roleName[l.view.role]}.
+        </span>
+        <span className="row" style={{ gap: 12 }}>
+          <button type="button" className="link-btn" onClick={() => { setView(l.view); go(l.path); }}>{label(l)}{'\u00a0'}→</button>
+          <button type="button" className="link-btn muted-link" onClick={() => setExpanded(true)}>Show all steps</button>
+        </span>
+      </section>
+    );
+  }
 
   return (
     <section className="intro" aria-labelledby="intro-title">

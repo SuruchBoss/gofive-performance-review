@@ -1,6 +1,6 @@
 import { formatDate } from '../../domain/dates';
 import { farFlags } from '../../domain/flags';
-import { behaviourScore, suggestionFor } from '../../domain/rating';
+import { behaviourScore, LEVEL_WORDS, showSuggestion, suggestionFor } from '../../domain/rating';
 import { goalsOf, managerReviewOf, person, selfReviewOf } from '../../domain/selectors';
 import { useStore } from '../../state/store';
 import { useState } from 'react';
@@ -24,6 +24,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
   const b = behaviourScore(review);
   const flag = farFlags(state).find((f) => f.personId === personId);
   const submitted = review.status === 'submitted';
+  const participant = state.participants.find((p) => p.personId === personId);
   const goals = goalsOf(state, personId);
   const [open, setOpen] = useState({ goals: false, behaviours: false, self: false });
   const toggle = (k: keyof typeof open) => setOpen((o) => ({ ...o, [k]: !o[k] }));
@@ -40,8 +41,9 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
           <div className="score-tile">
             <span className="l">Overall rating</span>
             <span className="v num">{submitted ? finalRating(review) : '–'}</span>
+            {submitted && finalRating(review) && <span className="level-word">{LEVEL_WORDS[finalRating(review)!]}</span>}
             <span className="s">
-              {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}</> : 'Not submitted yet'}
+              {submitted ? <>By {person(state, review.reviewerId).name}, {formatDate(review.submittedOn!)}{participant?.escalatedFrom && <> (moved from {person(state, participant.escalatedFrom).name} after a missed deadline)</>}</> : 'Not submitted yet'}
               {review.calibratedOverall && <><br /><strong className="cal-new">Calibrated from {review.overall} to {review.calibratedOverall}</strong> across teams</>}
             </span>
           </div>
@@ -50,7 +52,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
           <button type="button" className="score-tile link" onClick={() => jump('goals')}>
             <span className="l">Goal results</span>
             <span className="v num">{pct(sug.results)}</span>
-            <span className="s">of goal targets, weighted. That suggests an overall {Math.round(suggested)} (100% of target is a 3).</span>
+            <span className="s">of goal targets, weighted. That suggests {showSuggestion(suggested)} on the 1–5 scale (100% of target is a 3).</span>
           </button>
         </Panel>
         <Panel>
@@ -69,7 +71,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
       )}
 
       {submitted && (
-        <Panel title="Manager's assessment">
+        <Panel title="Manager's assessment" actions={<span className="small muted">The overall rating is the manager's call, informed by both scores above</span>}>
           <dl className="kv">
             {review.deviationReason && (<><dt>Why it differs from results</dt><dd>{review.deviationReason}</dd></>)}
             {review.overallEvidence && (<><dt>Example</dt><dd>{review.overallEvidence}</dd></>)}

@@ -90,7 +90,7 @@ export function HrCycle() {
       <div style={{ height: 16 }} />
       <div className="grid-3 stats-row">
         <Stat label="Manager reviews submitted" value={`${submitted} / ${active.length}`} meter={active.length ? submitted / active.length : 0} />
-        <Stat label="Late or escalated" value={late} sub={<a href="#/hr/progress">See progress</a>} />
+        <Stat label="Late or escalated, still open" value={late} sub={<a href="#/hr/progress">See progress</a>} />
         <Stat label="Calibration" value={cal.status === 'locked' ? 'Locked' : cal.status === 'in_session' ? 'In session' : 'Not started'} sub={<a href="#/hr/calibration">Open calibration</a>} />
       </div>
       <div style={{ height: 16 }} />

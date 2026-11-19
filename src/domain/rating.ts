@@ -44,6 +44,23 @@ export function isFarFromSuggestion(overall: number, suggested: number): boolean
   return distanceFromSuggestion(overall, suggested) >= CONFIG.FAR_FROM_SUGGESTION - EPS;
 }
 
+/** Whole ratings that are close enough to the suggestion to need no reason. */
+export function ratingsWithoutReason(suggested: number): Rating[] {
+  return ([1, 2, 3, 4, 5] as Rating[]).filter((r) => !isFarFromSuggestion(r, suggested));
+}
+
+/** Plain words for each level, used next to every overall rating. */
+export const LEVEL_WORDS: Record<Rating, string> = {
+  1: 'Well below expectations',
+  2: 'Below expectations',
+  3: 'Met expectations',
+  4: 'Above expectations',
+  5: 'Well above expectations',
+};
+
+/** The suggestion is always shown with one decimal, so the reason rule can be checked by eye. */
+export const showSuggestion = (s: number) => s.toFixed(1);
+
 export function needsEvidence(overall: number | undefined): boolean {
   return overall !== undefined && (CONFIG.EVIDENCE_RATINGS as readonly number[]).includes(overall);
 }

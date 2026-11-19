@@ -54,6 +54,11 @@ function Frame() {
         current={`#${route.navKey}`}
       >
         <Intro />
+        {role !== 'hr' && (
+          <p className="viewing-as">
+            Viewing as <strong>{user.name}</strong>, {user.title}. To be someone else, pick a name in the list at the top.
+          </p>
+        )}
         {route.element}
       </Shell>
       {toast && (

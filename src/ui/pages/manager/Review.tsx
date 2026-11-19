@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ReviewPatch } from '../../../domain/actions';
 import { CONFIG } from '../../../domain/config';
 import { formatDate } from '../../../domain/dates';
-import { achievement, isFarFromSuggestion, needsEvidence, reviewProblems, suggestionFor } from '../../../domain/rating';
+import { achievement, isFarFromSuggestion, LEVEL_WORDS, ratingsWithoutReason, showSuggestion, needsEvidence, reviewProblems, suggestionFor } from '../../../domain/rating';
 import { firstName, goalsOf, managerReviewOf, person, selfReviewOf, teamName } from '../../../domain/selectors';
 import type { Goal, Rating } from '../../../domain/types';
 import { useStore } from '../../../state/store';
@@ -115,7 +115,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             foot={
               <div className="stack-sm">
                 <div className="suggestion">
-                  <div className="suggestion-num num">{Math.round(suggested)}</div>
+                  <div className="suggestion-num num">{showSuggestion(suggested)}</div>
                   <div>
                     <div className="strong">Suggested overall rating</div>
                     <Explain>{TERMS.suggested}</Explain>
@@ -162,7 +162,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
                       <div className="strong">{c.name}</div>
                       <div className="small muted">{c.description}</div>
                     </div>
-                    <RatingScale label={c.name} value={b.rating} disabled={locked} onChange={(r) => setBehaviour(c.id, r)} />
+                    <RatingScale label={c.name} value={b.rating} disabled={locked} hints={c.anchors} onChange={(r) => setBehaviour(c.id, r)} />
                     <div className={`anchor${b.rating ? '' : ' empty'}`}>
                       {b.rating ? <><strong>{b.rating} ·</strong> {c.anchors[b.rating]}</> : 'Pick a level to see what it means.'}
                     </div>
@@ -172,22 +172,28 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             </div>
           </Panel>
 
-          <Panel title="Overall rating" actions={<span className="small muted">The underlined number is the suggestion</span>}>
+          <Panel title="Overall rating" actions={<span className="small muted">Underlined: nearest whole rating to {showSuggestion(suggested)}</span>}>
             <div className="stack">
               <div className="row" style={{ gap: 16 }}>
-                <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
+                <RatingScale size="lg" label="Overall rating" value={review.overall} disabled={locked} hints={LEVEL_WORDS} marker={Math.round(suggested)} onChange={(r) => save({ overall: r })} />
                 {review.overall !== undefined && (
                   <span className={`small ${far ? 'strong' : 'muted'} num`}>
-                    {far ? 'Far from the suggestion: add a reason below' : review.overall === Math.round(suggested) ? 'Same as the suggestion' : 'Close to the suggestion'}
+                    {LEVEL_WORDS[review.overall]} · {far ? 'needs a reason (see below)' : 'no reason needed'}
                   </span>
                 )}
               </div>
 
+              {!locked && (
+                <p className="rule-line">
+                  No reason needed for {ratingsWithoutReason(suggested).join(' or ')}. Any other rating needs a written reason, and a 1, 2 or 5
+                  also needs a specific example.
+                </p>
+              )}
               {far && (
                 <div className="field">
                   <label htmlFor="reason">Why does your rating differ from the goal results?</label>
                   <span className="hint" id="reason-hint">
-                    Required when the rating is {CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more from the suggestion. HR sees this when checking consistency.
+                    Required when the rating is {CONFIG.FAR_FROM_SUGGESTION.toFixed(1)} or more from the suggestion. HR sees it when checking consistency, and the employee sees it with their result.
                   </span>
                   <textarea
                     id="reason"
@@ -283,7 +289,7 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
             <dt>Overall rating</dt>
             <dd className="strong">{review.overall}</dd>
             <dt>Suggested</dt>
-            <dd className="num">{Math.round(suggested)}</dd>
+            <dd className="num">{showSuggestion(suggested)}</dd>
             {self.status !== 'submitted' && (<><dt>Self-review</dt><dd>Missing; this will be recorded</dd></>)}
             {far && (<><dt>Flag</dt><dd>HR will check this rating against the results</dd></>)}
           </dl>
