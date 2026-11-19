@@ -17,6 +17,8 @@ describe('demo shortcut: skip to released results', () => {
       expect(reviewProblems(r, r.suggestedAtSubmit!)).toEqual([]);
     }
     expect(allFlags(s).every((f) => f.reviewed)).toBe(true);
+    // A review the demo finished says so, rather than showing an empty assessment.
+    expect(s.managerReviews.find((r) => r.personId === 'e12')!.comment).toMatch(/^Demo shortcut/);
   });
 
   it('removes the new joiner with a reason instead of reviewing her', () => {

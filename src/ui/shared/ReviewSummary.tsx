@@ -75,6 +75,7 @@ export function ReviewSummary({ personId, audience }: { personId: string; audien
             {review.overallEvidence && (<><dt>Example</dt><dd>{review.overallEvidence}</dd></>)}
             {review.comment && (<><dt>Comment</dt><dd>{review.comment}</dd></>)}
             {review.selfReviewMissing && (<><dt>Self-review</dt><dd><Badge tone="warning">Missing when reviewed</Badge></dd></>)}
+            {!review.deviationReason && !review.overallEvidence && !review.comment && (<><dt>Comments</dt><dd className="muted">The manager wrote no comments. None were required, because the rating is within 1 of what goal results suggest and is not a 1, 2 or 5.</dd></>)}
             {audience === 'hr' && review.returns?.map((x, i) => (
               <Fragment key={i}>
                 <dt>Returned by HR</dt>

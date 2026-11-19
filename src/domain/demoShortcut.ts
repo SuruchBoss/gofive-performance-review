@@ -46,6 +46,7 @@ export function skipToRelease(start: DemoState): DemoState {
       patch: {
         behaviour: r.behaviour.map((b) => ({ ...b, rating: b.rating ?? (3 as Rating) })),
         overall: r.overall ?? suggested.rounded,
+        comment: r.comment?.trim() ? r.comment : 'Demo shortcut: the demo finished this review, so no real comment was written.',
       },
     });
     const draft = s.managerReviews.find((x) => x.personId === p.personId)!;
