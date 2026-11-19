@@ -532,3 +532,30 @@ Also: the guide says "Move the date on two days" next to a "+1 day" button.
 - The "Reset the demo?" dialog had a pale title, because it took the demo bar's light text colour. Dialogs opened from the bar now use normal text.
 - A left-out employee's card was labelled "To do". It is labelled "Status".
 - Calibration build: "Results can now be released from the Overview" now says "Home". The list of cases says it shows them as they were when the meeting started.
+
+---
+
+# Scan pass after PLAN-6 (quieter screens), 19 Nov 2026
+
+**Build:** live main (f74244b). **Who:** one new agent with no context, on a 375 px phone, told to scan like a person and write down each piece of text its eye passed before it reached the main action.
+
+| Screen | Read before the main action | Main action | What still competed or repeated |
+|---|---|---|---|
+| Start | product name; the one-paragraph problem | "Try as HR" | "Start here…" repeats what the filled card signals |
+| HR home | demo bar; header; tabs; title and status line; "Needs your attention"; first group's title and one line; "Fah Inthira" | "Leave Fah out" | two filled buttons ("Leave Fah out", "Check fairness"); "7 things left" beside three groups |
+| Fairness | demo bar; tabs; title; "Before release: 4 ratings to check."; "Managers" and its line; "Daniel Reyes / Sales"; the finding | "Mark as checked" | "Send back with a question" has equal weight (by the PO's earlier decision); "0.90" had no unit |
+| Manager home | demo bar; tabs; "2 reviews to write"; the due line; "To do"; "Tap a name to open the review" | tap "Orn Lertsak" | "Tap a name…" explains what the chevrons show |
+| Review page | demo bar; tabs; back button; name and badge; job line; the yellow overdue box; "1 What the data says" and its two lines; "2 Your rating"; "Behaviours" | rate the behaviours | the overdue box repeats the previous screen |
+| Employee home | demo bar; tabs; "Hello Ying"; cycle and job; "To do now"; "Write your self-review"; one line | "Write my self-review" | nothing |
+
+**Noisiest screen:** Fairness (many equal-weight buttons), then the review page. **Cut off:** nothing. **Bugs:** a hover tint that stayed after a tap; the "7 things left" count.
+
+**Removed after this pass:**
+- "7 things left in the list above" → "Finish the list above first."
+- Only the first group on HR home has a filled button.
+- "Tap a name to open the review" is gone.
+- The overdue box on the review page became part of the line under the name ("… · due 11 Dec, 1 day late · goes to Anong on 14 Dec").
+- Hover tints no longer stick on touch screens.
+- "0.90 points above the team's results".
+
+**Left as is:** the "You are" list shows names only (the phone's own picker shows the HR / Managers / Employees headings); "Start here to see a full review cycle" (the PO's line); two equal buttons per case on Fairness (PO decision).

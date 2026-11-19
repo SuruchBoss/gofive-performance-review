@@ -62,7 +62,7 @@ export function ManagerTeam({ userId }: { userId: string }) {
         </div>
       )}
       {open.length > 0 && (
-        <Panel title="To do" actions={<span className="small muted">Tap a name to open the review</span>} bodyClass="">
+        <Panel title="To do" bodyClass="">
           {returned.map((p) => row(p.personId, <Badge tone="warning">HR asked a question</Badge>, 'answer HR to send it back'))}
           {toWrite.map((p) => row(
             p.personId,

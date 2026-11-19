@@ -4,7 +4,7 @@ import { hrAttention } from '../../../domain/home';
 import { person, teamName } from '../../../domain/selectors';
 import { RemindDialog, RemoveDialog } from '../../shared/CaseDialogs';
 import { formatDate, weekday } from '../../../domain/dates';
-import { canRelease, releaseBlockers, unreviewedFlags } from '../../../domain/release';
+import { canRelease, unreviewedFlags } from '../../../domain/release';
 import { useStore } from '../../../state/store';
 import { Badge, DateField, Dialog, Notice, PageHead, Panel, PersonCell } from '../../components';
 import { IconCheck, IconLock } from '../../icons';
@@ -79,7 +79,6 @@ export function HrCycle() {
   const name = (id: string) => person(state, id).name;
   const first = (id: string) => name(id).split(' ')[0];
   const submitted = active.filter((p) => review(p.personId).status === 'submitted').length;
-  const blockers = releaseBlockers(state);
   const ready = canRelease(state);
 
   // What needs HR now, in the order HR would handle it.
@@ -146,7 +145,7 @@ export function HrCycle() {
                 {answers.map((p) => (
                   <div className="attention-row" key={p.personId}>
                     <PersonCell name={name(p.personId)} sub={`${name(p.reviewerId)} answered your question`} size="sm" />
-                    <a className="btn btn-sm btn-primary" href="#/hr/consistency">Read the answer</a>
+                    <a className={`btn btn-sm${tooNew.length ? '' : ' btn-primary'}`} href="#/hr/consistency">Read the answer</a>
                   </div>
                 ))}
               </section>
@@ -158,7 +157,7 @@ export function HrCycle() {
                 <ul className="attention-list">
                   {toCheck.map((b) => <li key={b.key}>{b.text}</li>)}
                 </ul>
-                <a className="btn btn-sm btn-primary" href="#/hr/consistency">Check fairness</a>
+                <a className={`btn btn-sm${tooNew.length || answers.length ? '' : ' btn-primary'}`} href="#/hr/consistency">Check fairness</a>
               </section>
             )}
 
@@ -191,7 +190,7 @@ export function HrCycle() {
           <Panel title="Release results">
             <div className="submit-bar">
               <span className="small muted">
-                {ready ? 'Ready. Everyone sees their result at the same time.' : `${blockers.length} thing${blockers.length === 1 ? '' : 's'} left in the list above.`}
+                {ready ? 'Ready. Everyone sees their result at the same time.' : 'Finish the list above first.'}
               </span>
               <button type="button" className="btn btn-primary" disabled={!ready} onClick={() => setConfirm(true)}>
                 {!ready && <IconLock size={15} />} Release results

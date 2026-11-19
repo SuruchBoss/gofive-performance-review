@@ -144,7 +144,7 @@ async function run(vp) {
   await open('/hr/consistency');
   await page.getByRole('heading', { name: 'Check fairness' }).waitFor();
   // Fairness: the finding and the buttons come first; the chart is folded; nothing-to-check managers are one line.
-  await page.locator('.mgr-finding', { hasText: 'Daniel rates 0.90 above' }).waitFor();
+  await page.locator('.mgr-finding', { hasText: 'Daniel rates 0.90 points above' }).waitFor();
   assert((await page.locator('.dumbbell, .db-row').count()) === 0 || !(await page.locator('.db-row').first().isVisible()), 'the people chart should be folded by default');
   assert(await page.locator('.quiet-line', { hasText: 'Tom Wattana' }).isVisible(), 'a manager with nothing to check should be one quiet line');
   await shot('07-hr-fairness');

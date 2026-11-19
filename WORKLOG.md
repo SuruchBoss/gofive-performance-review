@@ -1283,3 +1283,14 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
 - This build's "Final ratings are not agreed yet" group on HR home is cut to one line: "Calibration: managers meet and agree final ratings across teams.", plus the count of ratings to discuss.
 - Checks: 135 unit tests passed. e2e PASS at 1280 px and 390 px (19 screens). No sideways scroll on 13 screens from 320 to 500 px. No header or demo-bar overlap from 320 to 900 px.
 - **What went wrong on this build:** the one-line phone header put the "Requirement change from question 2" tag next to the product name, where it ran into the avatar up to 436 px. The header scan caught it after the merge was already pushed (that command did not stop on the failed scan). On this build the tag now sits under the name on phones. Rescanned: no overlap from 320 to 900 px.
+## PLAN-6: scan pass and what it removed (on `main`)
+
+- **Scan pass:** one new agent on a 375 px phone listed, per screen, what it read before the main action. Table in `docs/blind-test-2.md`. Nothing was cut off. Fairness was still the noisiest screen.
+- **Removed after it:** the "7 things left" count (it counted items, not the three groups shown); the second filled button on HR home; "Tap a name to open the review"; the overdue box on the review page (now part of the line under the name); hover tints that stuck after a tap. The finding now reads "0.90 points above".
+- **What went wrong:** one edit left an unused variable, so the type check failed and the build was skipped; the click-through then ran against the old build and timed out. Fixed and rerun.
+- **Checks:** 125 unit tests passed. e2e PASS at 1280 px and 390 px.
+
+## PLAN-6 scan-pass fixes on the `calibration` build
+
+- Merged `main` with the scan-pass removals. Conflicts in one import line, the stylesheet and this log; both sides kept.
+- Checks: 135 unit tests passed. e2e PASS at 1280 px and 390 px (19 screens). No sideways scroll on 13 screens from 320 to 500 px. No header or demo-bar overlap from 320 to 900 px.
