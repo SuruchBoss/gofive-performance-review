@@ -78,7 +78,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
           <div className="nav-section">{navTitle}</div>
           <div className="nav" ref={navRef}>
             {nav.map((n) => (
-              <a key={n.href} href={n.href} aria-current={current === n.href ? 'page' : undefined}>
+              <a key={n.href} href={n.href} data-tour={`nav:${n.href}`} aria-current={current === n.href ? 'page' : undefined}>
                 {n.icon}
                 <span className={n.short ? 'nav-long' : undefined}>{n.label}</span>
                 {n.short && <span className="nav-short">{n.short}</span>}
@@ -88,7 +88,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
           </div>
           {aside}
         </nav>
-        <main className="main" id="main">
+        <main className="main" id="main" tabIndex={-1}>
           <div className="main-inner">{children}</div>
         </main>
       </div>

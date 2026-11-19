@@ -1224,3 +1224,26 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 }
 /* "Show all steps" is a real link, not a disabled-looking grey one. */
 .intro-bar .muted-link { color: var(--mint-700); }
+/* ---------- Coachmarks: a light dim, a cut-out around the control to use next, and a short note ---------- */
+.coach-dim { position: fixed; left: 0; right: 0; bottom: 0; overflow: hidden; pointer-events: none; z-index: 40; }
+.coach-hole { position: absolute; border-radius: var(--r-md); box-shadow: 0 0 0 200vmax rgba(16, 32, 28, 0.3), 0 0 0 2px var(--mint-700) inset; }
+.coach-shade { position: absolute; inset: 0; background: rgba(16, 32, 28, 0.3); }
+.coach-card {
+  position: fixed; z-index: 41;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-top: 3px solid var(--mint-700); border-radius: var(--r-lg);
+  box-shadow: 0 10px 28px rgba(16, 32, 28, 0.22);
+  padding: var(--s3) var(--s4); display: flex; flex-direction: column; gap: var(--s2);
+}
+.coach-card:focus { outline: none; }
+.coach-card:focus-visible { outline: 2px solid var(--mint-700); outline-offset: 2px; }
+.coach-step { font-size: var(--fs-xs); font-weight: 600; color: var(--muted); letter-spacing: 0.02em; }
+.coach-card p { margin: 0; font-size: var(--fs-sm); line-height: 1.45; }
+.coach-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
+.coach-actions .link-btn { color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .coach-card { animation: coach-in 160ms ease-out; }
+  .coach-hole { transition: top 160ms ease-out, left 160ms ease-out, width 160ms ease-out, height 160ms ease-out; }
+}
+@keyframes coach-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.main:focus { outline: none; }

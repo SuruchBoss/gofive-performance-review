@@ -9,6 +9,7 @@ import { IconCheck } from './ui/icons';
 import { navFor, routeFor } from './ui/routes';
 import { Intro } from './ui/shared/Intro';
 import { Landing } from './ui/Landing';
+import { Coachmarks } from './ui/coach/Coachmarks';
 
 function roleOfPath(path: string): Role | undefined {
   if (path.startsWith('/hr')) return 'hr';
@@ -66,6 +67,7 @@ function Frame() {
         )}
         {route.element}
       </Shell>
+      <Coachmarks role={role} userId={userId} path={path} />
       {toast && (
         <div className="toast" role="status">
           <IconCheck size={16} /> {toast}

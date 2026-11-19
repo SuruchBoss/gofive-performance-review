@@ -111,7 +111,7 @@ function AgendaCard({ item, open, onOpen, onDone }: { item: AgendaItem; open: bo
             <div className="field">
               <label htmlFor={`note-${item.key}`}>What did the group agree?</label>
               <span className="hint">Keep the rating or change it above, then write the outcome. It goes into the activity log.</span>
-              <textarea id={`note-${item.key}`} className="textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: kept at 5; the Q1 renewal is already signed." />
+              <textarea id={`note-${item.key}`} data-tour="cal-note" className="textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: kept at 5; the Q1 renewal is already signed." />
               <div className="row">
                 <button
                   type="button"
@@ -170,6 +170,7 @@ function NotStarted() {
         </span>
         <button
           type="button"
+          data-tour="cal-start"
           className="btn btn-primary"
           disabled={!ready}
           onClick={() => { dispatch({ type: 'start_calibration', attendees, actorId: 'hr' }); notify('Calibration session started'); }}
@@ -264,7 +265,7 @@ export function HrCalibration() {
               )}
               <div className="submit-bar action-bar">
                 <span className="small muted">Next: release results.</span>
-                <button type="button" className="btn btn-primary" onClick={() => go('/hr')}>Go to release</button>
+                <button type="button" data-tour="cal-release" className="btn btn-primary" onClick={() => go('/hr')}>Go to release</button>
               </div>
             </>
           ) : (
@@ -272,7 +273,7 @@ export function HrCalibration() {
               <span className="small muted">
                 {unresolved.length ? `${unresolved.length} case${unresolved.length === 1 ? '' : 's'} left to agree before you can lock.` : 'Every case is agreed. Lock to allow release.'}
               </span>
-              <button type="button" className="btn btn-primary" disabled={unresolved.length > 0} onClick={() => setConfirm(true)}>
+              <button type="button" data-tour="cal-lock" className="btn btn-primary" disabled={unresolved.length > 0} onClick={() => setConfirm(true)}>
                 {unresolved.length > 0 && <IconLock size={15} />} Lock calibration
               </button>
             </div>

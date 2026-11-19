@@ -30,7 +30,7 @@ export function EmployeeResult({ userId }: { userId: string }) {
       <>
         <PageHead title="My result" sub={state.cycle.name} />
         <Panel>
-          <div className="locked">
+          <div className="locked" data-tour="result-locked">
             <span className="locked-icon"><IconLock size={22} /></span>
             <div className="stack-sm">
               <h3>Your result is not released yet</h3>

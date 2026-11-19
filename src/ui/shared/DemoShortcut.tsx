@@ -18,7 +18,7 @@ export function DemoShortcut({ compact }: { compact?: boolean }) {
           To see a released result without playing HR and every manager, let the demo do the remaining steps. The normal rules still apply, and each step is logged.
         </p>
       )}
-      <button type="button" className="btn btn-sm" onClick={() => setConfirm(true)}>Demo shortcut: skip to released results</button>
+      <button type="button" data-tour="demo-shortcut" className="btn btn-sm" onClick={() => setConfirm(true)}>Demo shortcut: skip to released results</button>
       {confirm && (
         <Dialog
           title="Skip to released results?"

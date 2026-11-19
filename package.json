@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "e2e": "node e2e/clickthrough.cjs"
+    "e2e": "node e2e/clickthrough.cjs",
+    "e2e:tips": "node e2e/coachmarks.cjs"
   },
   "dependencies": {
     "react": "^18.3.1",

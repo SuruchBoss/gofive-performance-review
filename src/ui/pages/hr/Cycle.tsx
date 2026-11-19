@@ -75,7 +75,8 @@ export function HrCycle() {
   const submitted = cases.filter((c) => c.status === 'submitted').length;
   const late = cases.filter((c) => c.status === 'overdue' || c.status === 'escalated').length;
   const blockers = releaseBlockers(state);
-  const openReviews = blockers.filter((b) => b.kind === 'open_review');
+  // Open reviews, plus managers' answers that HR has not accepted yet (they also block release).
+  const openReviews = blockers.filter((b) => b.kind === 'open_review' || b.key.startsWith('answer:'));
   const calBlock = blockers.filter((b) => b.kind === 'calibration');
   const cal = state.calibration;
   const ready = canRelease(state);
@@ -110,7 +111,7 @@ export function HrCycle() {
                     <div className="strong">Every manager review submitted</div>
                     {openReviews.length > 0 ? (
                       <ul className="blockers">
-                        {openReviews.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
+                        {openReviews.map((b) => <li key={b.key}>{b.text} · <a data-tour="blocker" href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">{submitted} of {active.length} submitted.</div>}
                   </div>
@@ -121,7 +122,7 @@ export function HrCycle() {
                     <div className="strong">Calibration across teams locked</div>
                     {calBlock.length > 0 ? (
                       <ul className="blockers">
-                        {calBlock.map((b) => <li key={b.key}>{b.text} · <a href={b.href}>{b.action} →</a></li>)}
+                        {calBlock.map((b) => <li key={b.key}>{b.text} · <a data-tour="blocker" href={b.href}>{b.action} →</a></li>)}
                       </ul>
                     ) : <div className="small muted">Locked {formatDate(cal.lockedOn!)} with {cal.changes.length} change{cal.changes.length === 1 ? '' : 's'}.</div>}
                   </div>
@@ -131,7 +132,7 @@ export function HrCycle() {
                 <span className="small muted">
                   {ready ? 'Ready. Everyone in the cycle sees their result at the same time.' : `${blockers.length} item${blockers.length === 1 ? '' : 's'} left before release.`}
                 </span>
-                <button type="button" className="btn btn-primary" disabled={!ready} onClick={() => setConfirm(true)}>
+                <button type="button" data-tour="release" className="btn btn-primary" disabled={!ready} onClick={() => setConfirm(true)}>
                   {!ready && <IconLock size={15} />} Release results
                 </button>
               </div>

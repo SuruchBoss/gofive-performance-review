@@ -117,7 +117,7 @@ const EMPLOYEE_STEPS: Step[] = [
   },
 ];
 
-const STEPS_FOR: Record<Role, Step[]> = { hr: HR_STEPS, manager: MANAGER_STEPS, employee: EMPLOYEE_STEPS };
+export const STEPS_FOR: Record<Role, Step[]> = { hr: HR_STEPS, manager: MANAGER_STEPS, employee: EMPLOYEE_STEPS };
 
 
 export function Intro() {
@@ -171,8 +171,8 @@ export function Intro() {
           {here ? <>You are on this screen. {nextStep.body}</> : l.view.role !== view.role ? <>In this step you play {roleName[l.view.role]}.</> : nextStep.body}
         </span>
         <span className="row" style={{ gap: 12 }}>
-          {nextStep.clock && <button type="button" className="btn btn-sm" onClick={advanceDay}>+1 day <span className="muted">(now {formatDate(state.today, true)})</span></button>}
-          {!here && <button type="button" className="link-btn" onClick={() => openStep(l)}>{label(l)}{'\u00a0'}→</button>}
+          {nextStep.clock && <button type="button" data-tour="guide-clock" className="btn btn-sm" onClick={advanceDay}>+1 day <span className="muted">(now {formatDate(state.today, true)})</span></button>}
+          {!here && <button type="button" data-tour="guide-link" className="link-btn" onClick={() => openStep(l)}>{label(l)}{'\u00a0'}→</button>}
           <button type="button" className="link-btn muted-link" onClick={() => setExpanded(true)}>Show all steps</button>
         </span>
       </section>
@@ -213,10 +213,10 @@ export function Intro() {
                 )}
                 <span className="small">{s.body}</span>
                 {s.clock && (
-                  <button type="button" className="btn btn-sm intro-clock" onClick={advanceDay}>+1 day <span className="muted">(now {formatDate(state.today, true)})</span></button>
+                  <button type="button" data-tour={i === next ? 'guide-clock' : undefined} className="btn btn-sm intro-clock" onClick={advanceDay}>+1 day <span className="muted">(now {formatDate(state.today, true)})</span></button>
                 )}
-                {s.links.map((l) => (
-                  <button key={l.path} type="button" className="link-btn" onClick={() => openStep(l)}>
+                {s.links.map((l, li) => (
+                  <button key={l.path + li} type="button" data-tour={i === next && li === 0 ? 'guide-link' : undefined} className="link-btn" onClick={() => openStep(l)}>
                     {label(l)}{'\u00a0'}→
                   </button>
                 ))}

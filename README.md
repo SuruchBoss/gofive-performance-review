@@ -12,6 +12,8 @@ Demo data only. The company, people and numbers are fictional. There is no backe
 
 The link opens a short start page with three choices: **Try as HR**, **Try as Manager** (Tom Wattana) and **Try as Employee** (Ying Chen). Each opens the demo in that role, with a guide for it: five steps for HR, three for the manager and three for the employee. Each step names the role it uses, switches to it for you, and ticks itself off when done. After the first screen the guide shrinks to one line with the next step. All prototype controls (switch role or person, **+1 day**, **Reset demo**, **Exit demo** back to the start page) sit in the **Demo ▾** menu at the top.
 
+The first time you open a guide, on-screen tips highlight the exact control to use next, with a short note. **Skip** turns them off for that guide; **Demo ▾ → Show tips again** turns them back on.
+
 The HR guide:
 
 1. **HR → Progress:** three reviews are overdue. One is for Fah, a new joiner who should not be in this cycle: remove Fah with a reason.
@@ -83,6 +85,7 @@ npm run dev        # http://localhost:5173
 npm test           # unit tests for the rating, flag, deadline, return and release rules
 npm run build
 npm run e2e        # browser click-through at 1280px and 390px (needs Playwright + Chromium)
+npm run e2e:tips   # the three guides with on-screen tips at 320, 375, 412 and 1366px
 ```
 
 Stack: React 18, TypeScript, Vite and Vitest, with plain CSS. Each push to `main` runs the tests and deploys to GitHub Pages ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).
