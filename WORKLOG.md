@@ -1117,3 +1117,7 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
   - Thresholds and formula match `src/domain/config.ts` and `rating.ts`. The calibration gate matches `release.ts` on that branch. 117 unit tests.
   - The live e2e PASSES at 1280 px and 390 px.
 - **Not changed:** the historical "How this was built" timeline and the decision lists, which describe what happened at the time.
+- **Deployed (main 5182ee8, calibration 47ea61d):**
+  - The deploy run succeeded. The `main` push run was cancelled when the calibration-triggered run replaced it, as before.
+  - The README on GitHub shows the new text on both branches.
+  - Both live builds and the "How this was built" anchor return 200.
