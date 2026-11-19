@@ -1094,3 +1094,26 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
   - The About dialog's links, opened in the live app on each build, all return 200: "Open the calibration build" / "Open the main version", "How this was built" (the README anchor exists), "Full work log" and "Design".
   - The README's links (BRIEF, DESIGN, PLAN, WORKLOG, ANSWERS, config) return 200.
   - The live `docs/ANSWERS.md` starts "# Part 2 — Answers", and the live `WORKLOG.md` on `main` holds the C1–C4 calibration notes.
+
+## README brought in line with the live app (on `main`)
+
+- **PO request:** update README to match the live build exactly, and check every claim.
+- **Changed:**
+  - The start page offers "Try as HR / Manager / Employee", each opening that role's guide (5 / 3 / 3 steps). It no longer says "Open demo".
+  - Prototype controls live in "Demo ▾" (Reset demo, Exit demo, +1 day).
+  - Step 1: three reviews are overdue, one for Fah.
+  - Step 3: Return to manager, then accept the answer or ask again.
+  - Step 4: the escalation rule, and that only Ying's review moves if steps 1 and 2 were done first.
+  - Step 5: "Overview" and "Activity" use the current labels.
+  - The employee demo shortcut is described.
+  - The fairness section adds Return to manager, single-rating flags, the 40-character evidence minimum, the one-decimal suggestion from goal results only, and the eligibility rule. Its release rule now matches the gate: every review submitted (ineligible people removed), every flag reviewed, every returned review answered, and every answer accepted by HR.
+  - One line notes that the calibration build replaces HR flag notes with a locked calibration.
+- **Checked against the live build** (script `readme-facts.cjs` and the live e2e):
+  - The start page buttons and links, and the guide texts for all three roles.
+  - Progress: 3 overdue, Fah under 3 months.
+  - Consistency: Sales +0.90 above, Support −0.89 below, 4 flags.
+  - The Overview checklist, and the Demo menu contents.
+  - From a fresh start, +1 day twice escalates three reviews (Ying, Orn, Fah). After steps 1 and 2, only Ying's. The live e2e asserts exactly that.
+  - Thresholds and formula match `src/domain/config.ts` and `rating.ts`. The calibration gate matches `release.ts` on that branch. 117 unit tests.
+  - The live e2e PASSES at 1280 px and 390 px.
+- **Not changed:** the historical "How this was built" timeline and the decision lists, which describe what happened at the time.
