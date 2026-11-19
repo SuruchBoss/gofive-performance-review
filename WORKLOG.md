@@ -967,3 +967,7 @@ Working notes for the Product Owner. Newest entry at the bottom.
 
 - Merged `main` (467ae2d). The My result conflict kept the new layout, with this build's calibrated rating as the large number. "Calibrated from X to Y across teams" sits under it. When a rating was calibrated, the inputs line adds "and managers then aligned it across teams in calibration". The HR person page keeps the calibrated rating in its tile.
 - Checks: 127 unit tests passed. e2e PASS at 1280 px and 390 px (18 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+- **Live check (main 467ae2d, calibration 5204ff8):**
+  - At 412 px (Pixel 7) and 1366 px on both builds: the landing link shows the new wording; the demo shortcut releases results; My result leads with the overall rating (3, "Met expectations") above its two inputs; no sideways scroll; no page errors.
+  - The full click-through passed live at 1280 px and 390 px (main 16 screens, calibration 18).
+  - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
