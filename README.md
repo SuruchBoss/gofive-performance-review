@@ -10,7 +10,7 @@ Demo data only. The company, people and numbers are fictional. There is no backe
 
 ## What to try first
 
-The guide at the top of the page walks through five steps. Each step ticks itself off as you complete it:
+The link opens a short start page. **Open demo** loads the demo data and a guide with five steps. Each step names the role it uses, switches to it for you, and ticks itself off when done. **Exit demo** returns to the start page.
 
 1. **HR → Progress:** two reviews are overdue, and a new joiner is still in the cycle. Remove the new joiner with a reason.
 2. **Manager (Tom Wattana) → Orn's review:** goal results suggest a 3. Try a 5 to see the reason and evidence rules.

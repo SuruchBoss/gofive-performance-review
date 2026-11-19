@@ -629,3 +629,24 @@ Working notes for the Product Owner. Newest entry at the bottom.
   - The footer says which role is active.
 - **Tests:** 97 passed. e2e PASS at desktop and phone. The e2e "+1 day" clicks now target the demo strip, because the guide has a second button with that name.
 - **What went wrong:** One check script ran from the repository folder and saved 3 screenshots there. They were moved out before the commit.
+
+## Landing page and guide fit (on `main`)
+
+- **PO decision (replaces the previous message):** a calm landing page at the root URL with no demo data. "Open demo" opens the app with the guide. The guide must fit that moment, and there must be a way back. Header widths from 320 to 500 px must be checked. The calibration build gets the same page, labelled as the question 2 version. Five persona agents replace the single blind test. The single phone blind test already running was stopped, because this message replaces it.
+- **Done:**
+  - **`src/ui/Landing.tsx` at `#/`** (the root). It shows:
+    - the product name and "Concept for empeo";
+    - one sentence on the problem;
+    - one large "Open demo" button, full width on phones;
+    - "Fictional company and people. Nothing is sent anywhere.";
+    - small links to the calibration version (question 2) and "How this was built" (README).
+    - No top bar, role switcher, dates or numbers. The only digit is the "2" in the link text the PO asked for.
+  - **`src/build.ts` (`IS_Q2_BUILD`):** a one-line flag, so the calibration branch can label its landing page without duplicating it.
+  - **Open demo:** selects HR, shows the guide and opens the Cycle overview.
+  - **Way back:** "Exit demo" in the demo strip, and the logo in the header links to the start page.
+  - **Guide:** if the next step is for another role, it says so in its own line, for example "This step is for HR. You are viewing as Employee: the link below switches for you". This is on top of the role tag and the switching link.
+  - **Demo strip on narrow phones:** "Reset" / "Exit" short labels (full names kept for screen readers). No wrapped buttons from 320 to 500 px.
+  - **e2e:** starts on the landing page (checks "Open demo" and that no demo controls show), and tests "Exit demo".
+- **Header (point 3):** already fixed in the previous step. Re-scanned after these changes: no overlap at any width from 320 to 900 px, and no sideways scroll on 12 screens (including the landing page) from 320 to 500 px.
+- **Tests:** 97 passed. e2e PASS at desktop and phone (15 screens).
+- **What went wrong:** On the first e2e run, "Exit demo" appeared not to work, because the test checked before the page had redrawn. The test now waits for the start page.

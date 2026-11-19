@@ -4,10 +4,11 @@ import { person } from './domain/selectors';
 import { StoreProvider, useStore, type Role } from './state/store';
 import { go, useHashPath } from './state/router';
 import { Shell, type NavItem } from './ui/Shell';
-import { DemoStrip, HOME } from './ui/DemoStrip';
+import { DemoStrip } from './ui/DemoStrip';
 import { IconCheck } from './ui/icons';
 import { navFor, routeFor } from './ui/routes';
 import { Intro } from './ui/shared/Intro';
+import { Landing } from './ui/Landing';
 
 function roleOfPath(path: string): Role | undefined {
   if (path.startsWith('/hr')) return 'hr';
@@ -24,14 +25,18 @@ function Frame() {
   // Keep the role switcher and the URL in step (for example after a shared link).
   const pathRole = roleOfPath(path);
   const asId = path.match(/[?&]as=(\w[\w-]*)/)?.[1];
+  const isLanding = path === '/' || path === '';
   useEffect(() => {
-    if (!pathRole) go(HOME[view.role]);
+    if (isLanding) return;
+    if (!pathRole) go('/');
     else if (pathRole !== view.role) setView({ role: pathRole });
-  }, [pathRole, view.role, setView]);
+  }, [isLanding, pathRole, view.role, setView]);
   // Links such as "Open as Anong" carry ?as=<person> so the right manager is selected.
   useEffect(() => {
     if (pathRole === 'manager' && asId && asId !== view.managerId) setView({ managerId: asId });
   }, [pathRole, asId, view.managerId, setView]);
+
+  if (isLanding) return <Landing />;
 
   const role = pathRole ?? view.role;
   const userId = role === 'hr' ? 'hr' : role === 'manager' ? view.managerId : view.employeeId;
