@@ -989,7 +989,7 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 ## PLAN-3 built: coachmarks (on `main`)
 
 - **PO decision:** plan approved, with the developer's recommendation on all six questions (Next walks 1–3 marks; off the step's screen the mark points at the guide link; tips per guide; the dim is visual only; the existing e2e runs with tips off; the README line goes under "What to try first").
-- **Time (commit timestamps, 19 Nov 2026, UTC+7):** plan 19:22; approval in chat (not in git); build started about 21:30; engine 21:4x; targets and marks, then "Show tips again" and README, then the e2e, by about 22:3x. Exact times are in `git log`.
+- **Time (commit timestamps, 19 Nov 2026, UTC+7):** plan 19:19; approval in chat (not in git); build started 21:30; engine 21:33; targets and marks 21:36; "Show tips again" and README 21:36; e2e and fixes 21:46. About 16 minutes of build time on `main`, not counting the plan and its approval.
 - **Commit 1, engine** (`src/ui/coach/`):
   - `placement.ts` (pure): the card goes below the target, or above if there is no room or the mark prefers it; clamped to a 16 px side gutter and below the prototype top bar; centred when there is no target.
   - `tips.ts`: tips on or off per guide in `localStorage` (`pr-demo:tips`, `pr-cal:tips` on the calibration build), wrapped in try/catch, with an in-memory copy so it works without storage.
