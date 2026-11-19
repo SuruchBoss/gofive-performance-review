@@ -1294,3 +1294,9 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
 
 - Merged `main` with the scan-pass removals. Conflicts in one import line, the stylesheet and this log; both sides kept.
 - Checks: 135 unit tests passed. e2e PASS at 1280 px and 390 px (19 screens). No sideways scroll on 13 screens from 320 to 500 px. No header or demo-bar overlap from 320 to 900 px.
+## PLAN-6: live check (main 3f19061, calibration 6b3362b)
+
+- The deploy runs succeeded. Against the live sites: the click-through PASSES at 1280 px and 390 px on both builds (17 and 19 screens); no sideways scroll from 320 to 500 px; no header overlap from 320 to 900 px.
+- **Full-page length on the live main build at 375 px, before → after:** HR home 1,516 → 1,133 px; Fairness 2,726 → 1,661 px; review page 2,125 → 1,771 px. Content starts 215 px down; it was 279 px. Words on the page: 203 → 116, 332 → 209, 246 → 169.
+- The calibration build measures within 45 px of these (its header keeps the build tag on a second line).
+- Full-page screenshots of the three screens were sent to the PO.
