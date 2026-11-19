@@ -47,7 +47,7 @@ export function EmployeeGoals({ userId }: { userId: string }) {
       <PageHead title={`Hello ${first}`} sub={`${state.cycle.name} · ${me.title}`} />
       <div className="stack">
         <section className={`todo-card${card.action && !card.title.startsWith('Nothing') ? ' has-task' : ''}`} aria-label="To do">
-          <div className="todo-card-label">{card.title.startsWith('Nothing') || removed ? 'To do' : 'To do now'}</div>
+          <div className="todo-card-label">{card.title.startsWith('Nothing') || removed ? 'Status' : 'To do now'}</div>
           <h2>{card.title}</h2>
           <p>{card.text}</p>
           {card.action && (

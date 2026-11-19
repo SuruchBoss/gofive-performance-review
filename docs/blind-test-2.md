@@ -494,3 +494,41 @@ Also: the guide says "Move the date on two days" next to a "+1 day" button.
 
 **Bugs:** none functional. On-screen faults: the duplicated "(+1 more)" message on the phone; the "Demo shortcut used: results released…" toast covers the header and tabs for a few seconds on the phone.
 **Stuck screens:** one minor dead end. After release, Employee Self-review says "The self-review is closed. Tom Wattana completed your review on 12 Dec 2026 without a self-review." with no link to My result.
+
+---
+
+# Fresh-reviewer pass after PLAN-5 (task-first homes, no guide), 19 Nov 2026
+
+**Builds tested:** live main (bb7eb65) and live calibration (c8535f4), each by a new agent with no context.
+**Brief:** "It's an HR tool. Start as HR and take one yearly review all the way to the point where employees can see their results. Then look at it as a manager and as an employee." A 375 px phone, the app only.
+**The PO's test:** on every home and on the review page, a first-time visitor knows within three seconds where to start. Each agent wrote down "I would start with…" from the first screenshot of each screen, before doing anything, and then checked it.
+
+| | Main build | Calibration build |
+|---|---|---|
+| Start page | "Try as HR". Right | "Try as HR". Right |
+| HR home | "Leave Fah out". Right | "Leave Fah out". Right |
+| Manager home | "Orn Lertsak", first row. Right | "Orn Lertsak", first row. Right |
+| Review page | "1 What the data says", then "2 Your rating". Right | Same. Right, "but no rating control is on the first screen" |
+| Employee home | "Write my self-review". Right | "Write my self-review". Right |
+| HR home → results released | Not stuck. 19 taps, 4 typed fields | Not stuck. 20 taps, 5 typed fields |
+| Time for a person (agent's estimate) | 3–5 minutes | 3–4 minutes |
+| One sentence | "It runs a yearly performance review in which HR compares each manager's ratings with their own team's goal results and resolves mismatches, late reviews and too-new joiners before releasing everyone's results at once." | "It runs a company's yearly performance review: managers rate people against goal results, HR spots ratings that don't match results, managers agree final ratings in a calibration meeting, and results are then released to everyone at once." |
+
+**Where they hesitated**
+
+| Hesitation | Build | What was done |
+|---|---|---|
+| After "Send reminder" the row looked the same and the count did not change | both | The row now says "reminded 12 Dec" and the button "Remind Tom again"; the group says it clears when the reviews are in |
+| The only way past the late reviews was a small grey demo tip | both | The tip is brighter. It stays in the demo bar, by the PO's rule that demo help never mixes with the product |
+| Paused between the two shortcuts in "More" | main | Left as is |
+| Fairness: the buttons are below the chart on the first view | main | Left as is |
+| Fairness: "Every rating has been checked." with no way on | main | A notice links to Home to release |
+| Final ratings: the square beside a case looks like a checkbox; the team cards mean little before any change | calibration | Left as is; noted for the PO |
+| Final ratings: Nida is in her team's case and in her own case | calibration | By design (two different checks); noted for the PO |
+
+**Bugs found and fixed**
+
+- After release, the manager home and a locked review still said "HR checks them, then everyone sees their result". They now say when results were released.
+- The "Reset the demo?" dialog had a pale title, because it took the demo bar's light text colour. Dialogs opened from the bar now use normal text.
+- A left-out employee's card was labelled "To do". It is labelled "Status".
+- Calibration build: "Results can now be released from the Overview" now says "Home". The list of cases says it shows them as they were when the meeting started.

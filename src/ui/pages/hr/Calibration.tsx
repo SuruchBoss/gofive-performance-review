@@ -220,7 +220,7 @@ export function HrCalibration() {
           <Explain>Each card shows the team's average rating before → after the meeting, and what the team's goal results suggest.</Explain>
 
           <Panel
-            title="To discuss"
+            title="To discuss (as it was when the meeting started)"
             actions={<span className="small muted">{cal.agenda.length - unresolved.length} of {cal.agenda.length} agreed</span>}
             bodyClass=""
           >
@@ -249,7 +249,7 @@ export function HrCalibration() {
           {cal.status === 'locked' ? (
             <>
               <Notice tone="success" title={`Locked ${formatDate(cal.lockedOn!)} · ${cal.changes.length} rating change${cal.changes.length === 1 ? '' : 's'}`}>
-                Ratings can no longer change. Results can now be released from the Overview.
+                Ratings can no longer change. Results can now be released from Home.
               </Notice>
               {cal.changes.length > 0 && (
                 <Panel title="Changes agreed" bodyClass="">

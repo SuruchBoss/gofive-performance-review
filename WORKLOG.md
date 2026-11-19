@@ -1242,3 +1242,18 @@ The original entries C1–C4 are earlier in this branch's copy of the log ("## C
   - The new e2e first skipped HR's last checks: it counted buttons before the Fairness page had rendered. A wait on the page heading fixed it. Two result-page checks needed a wait for the same reason.
   - The longer "1 or more away from results" badge made the Map list scroll sideways from 481 to 494 px; the compact table layout now applies up to 520 px.
 - **Checks:** 125 unit tests passed. e2e PASS at 1280 px and 390 px (17 screens). No sideways scroll on 12 screens from 320 to 500 px. No header or demo-bar overlap from 320 to 900 px.
+
+## Fresh-reviewer pass on both live builds, and fixes (on `main`)
+
+- **How:** two new agents with no context, one per live build, on a 375 px phone. For each screen they wrote down where they would start before doing anything (the PO's three-second test), then took a review from HR home to released results. Full table in `docs/blind-test-2.md`.
+- **Result:** all ten three-second answers were right (five screens on each build). Neither got stuck. Main: 19 taps and 4 typed fields; calibration: 20 taps and 5 typed fields; both judged it at 3–5 minutes for a person. Each could say in one sentence what the product does.
+- **Fixed:** a reminder now shows on the row; Fairness links back to Home when everything is checked; the manager screens say when results were released; dialogs opened from the demo bar use normal text; a left-out employee's card is labelled "Status"; the demo tip is brighter.
+- **Left, for the PO:** on a 740 px tall phone the review page shows the headings on the first screen but the first rating control is one scroll down; the two demo shortcuts sit next to each other in "More"; on Fairness the buttons come after the chart.
+- **What went wrong:** my live test runs left a test server running in the scratch folder, on the port the local click-through uses. The next local run then loaded an empty page and failed at its first step, twice. Stopping that server fixed it; the app was fine.
+- **Checks:** 125 unit tests passed. e2e PASS at 1280 px and 390 px.
+
+## Fresh-reviewer fixes on the `calibration` build
+
+- Merged `main` with the fixes from the fresh-reviewer pass. One conflict in the locked-review notice; it keeps this build's "Managers agree final ratings…" wording before release and the release date after.
+- This build's own fixes: "released from Home" (it said "Overview"), and the list of cases is headed "To discuss (as it was when the meeting started)", because a case title keeps the figures from the start of the meeting.
+- Checks: 135 unit tests passed. e2e PASS at 1280 px and 390 px (19 screens).

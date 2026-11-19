@@ -271,7 +271,7 @@ async function run(vp) {
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
-  await new Promise((r) => setTimeout(r, 1500));
+  await new Promise((r) => setTimeout(r, 3000));
   let failed = false;
   try {
     for (const vp of VIEWPORTS) {
