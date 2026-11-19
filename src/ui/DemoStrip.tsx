@@ -5,6 +5,7 @@ import { employeesForPicker, reviewersForPicker, teamName } from '../domain/sele
 import { useStore, type Role } from '../state/store';
 import { go } from '../state/router';
 import { Dialog } from './components';
+import { tips } from './coach/tips';
 
 export const HOME: Record<Role, string> = { hr: '/hr', manager: '/manager', employee: '/me' };
 
@@ -100,6 +101,7 @@ export function DemoStrip({ who }: { who: string }) {
             {view.introHidden && (
               <button type="button" className="btn btn-sm" onClick={() => { setView({ introHidden: false }); setOpen(false); window.scrollTo(0, 0); }}>Show the guide</button>
             )}
+            <button type="button" className="btn btn-sm" onClick={() => { tips.showAgain(); setOpen(false); notify('Tips are on again for every guide'); }}>Show tips again</button>
             <button type="button" className="btn btn-sm" onClick={() => { setConfirmReset(true); setOpen(false); }}>Reset demo</button>
             <button type="button" className="btn btn-sm" onClick={() => go('/')} title="Back to the start page">Exit demo</button>
           </div>
