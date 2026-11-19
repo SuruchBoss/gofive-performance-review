@@ -21,6 +21,7 @@ export function EmployeeSelfReview({ userId }: { userId: string }) {
 
   return (
     <div className="narrow">
+      <a className="btn btn-sm back-btn" href="#/me">← Back to home</a>
       <PageHead
         title="Self-review"
         sub={`Due ${formatDate(state.cycle.selfReviewDeadline)}. ${manager.name} reads this alongside your goal results.`}

@@ -9,7 +9,7 @@ const REPO = 'https://github.com/SuruchBoss/gofive-performance-review';
 const TRY: { role: Role; label: string; sub: string; view: Partial<ViewState>; path: string }[] = [
   { role: 'hr', label: 'HR', sub: 'Run the review cycle and catch ratings that do not match results', view: {}, path: '/hr' },
   { role: 'manager', label: 'Manager', sub: 'Review your team as Tom Wattana, Operations Manager', view: { managerId: 'm-ops' }, path: '/manager' },
-  { role: 'employee', label: 'Employee', sub: 'Write your self-review and see your result as Ying Chen', view: { employeeId: 'e12' }, path: '/me/self-review' },
+  { role: 'employee', label: 'Employee', sub: 'Write your self-review and see your result as Ying Chen', view: { employeeId: 'e12' }, path: '/me' },
 ];
 
 /** First screen: calm, no demo data, one main action. */

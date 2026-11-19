@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Role } from '../state/store';
 import type { NavItem } from './Shell';
-import { IconCycle, IconLog, IconMap, IconPeople, IconPen, IconResult, IconScale, IconTarget } from './icons';
+import { IconCycle, IconLog, IconMap, IconPeople, IconResult, IconScale, IconTarget } from './icons';
 import { PageHead } from './components';
 import { HrProgress } from './pages/hr/Progress';
 import { HrConsistency } from './pages/hr/Consistency';
@@ -42,8 +42,7 @@ export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] 
     return items;
   }
   return [
-    { href: '#/me', label: 'My goals', icon: <IconTarget /> },
-    { href: '#/me/self-review', label: 'Self-review', icon: <IconPen />, count: ['open', 'open_late'].includes(selfReviewWindow(store.state, userId)) ? 1 : 0, alert: true },
+    { href: '#/me', label: 'Home', icon: <IconTarget />, count: ['open', 'open_late'].includes(selfReviewWindow(store.state, userId)) && !store.state.participants.find((p) => p.personId === userId)?.removed ? 1 : 0, alert: true },
     { href: '#/me/result', label: 'My result', icon: <IconResult /> },
   ];
 }
@@ -69,6 +68,6 @@ export function routeFor(path: string, role: Role, userId: string): { navKey: st
   }
   const key = ['/me/self-review', '/me/result'].find((k) => path.startsWith(k)) ?? '/me';
   if (key === '/me/result') return { navKey: key, element: <EmployeeResult userId={userId} /> };
-  if (key === '/me/self-review') return { navKey: key, element: <EmployeeSelfReview userId={userId} /> };
+  if (key === '/me/self-review') return { navKey: '/me', element: <EmployeeSelfReview userId={userId} /> };
   return { navKey: key, element: <EmployeeGoals userId={userId} /> };
 }
