@@ -52,7 +52,7 @@ function Frame() {
   return (
     <>
       <Shell
-        demoStrip={<DemoStrip />}
+        demoStrip={<DemoStrip who={user.name} />}
         user={{ name: user.name, role: user.title }}
         navTitle={role === 'hr' ? 'HR' : role === 'manager' ? 'Manager' : 'My review'}
         nav={nav}
@@ -61,7 +61,7 @@ function Frame() {
         <Intro />
         {role !== 'hr' && (
           <p className="viewing-as">
-            Viewing as <strong>{user.name}</strong>, {user.title}. To be someone else, pick a name in the list at the top.
+            Viewing as <strong>{user.name}</strong>, {user.title}. To be someone else, open Demo ▾ at the top.
           </p>
         )}
         {route.element}

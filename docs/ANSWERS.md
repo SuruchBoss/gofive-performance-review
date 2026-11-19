@@ -10,10 +10,10 @@ Status: Q1 and Q2 are **drafts**, written by the developer from `docs/DESIGN.md`
 - One annual cycle, with HR, manager and employee views in one place.
 - Fairness built into the moment of rating:
   - written anchors for every level;
-  - a suggested rating from measured goal results;
+  - a suggested rating from measured goal results only, on purpose, so it stays independent of the manager's own ratings (behaviour ratings are the manager's judgement; mixing them in would let a manager move the suggestion they are checked against);
   - a required reason when a rating is far from that suggestion;
   - evidence for an overall rating of 1, 2 or 5.
-- An HR consistency check that compares each manager only with their own team's results.
+- An HR consistency check that compares each manager only with their own team's results. HR can return a review to its manager with a question, then accept the answer or ask again; release waits for HR to accept.
 - A results map of results against behaviour, where every score links to its source.
 - The "not to plan" cases:
   - a late or missing self-review;
@@ -36,8 +36,11 @@ Status: Q1 and Q2 are **drafts**, written by the developer from `docs/DESIGN.md`
 - **Evidence when rating someone down.** Requiring a specific example for a rating 1.0 or more below results, not only for an overall 1, 2 or 5. It protects underrated people, but it adds manager effort, so it needs testing with managers first.
 - **Behaviour vs overall mismatch.** A warning when the overall rating is far from the behaviour ratings. It makes sense, but a second "far from" rule on the same form risks reason fatigue. One rule should prove itself first.
 - **A live team gap for managers.** Showing managers their team's gap against the flag line before they submit. It could lead managers to rate towards the line instead of the person, so it needs a careful design.
+- **Flag under-rating when the self-rating is higher.** A rating below the suggestion would be flagged if the employee rated themselves higher. It would catch quiet under-rating, but it gives the self-rating weight it does not have today, so the effect on self-ratings needs testing first.
+- **Show employees their suggested rating during the cycle.** Today the formula and suggestion appear with the result. Showing them earlier is more transparent, but it can anchor the self-review and turn the review into a debate about the number.
+- **Pro-rated targets for people who join mid-year.** Annual targets are not scaled to the start date. It needs a rule agreed with whoever owns targets, and good start-date data.
 
-**Is this the right slice for a real customer next week?** Mostly yes. It is the smallest set that lets a company run a cycle from start to release with an audit trail. Before shipping it would need four things: SSO and permissions; real notifications; importing goal results from their systems, which is the riskiest assumption; and a fuller correction path than HR's "Return to manager" (for example, a manager asking to reopen their own review).
+**Is this the right slice for a real customer next week?** Mostly yes. It is the smallest set that lets a company run a cycle from start to release with an audit trail. Before shipping it would need four things: SSO and permissions; real notifications; importing goal results from their systems, which is the riskiest assumption; and a fuller correction path than HR's "Return to manager" with accept or ask again (for example, a manager asking to reopen their own review).
 
 ## 2. The requirement change: calibration before release
 

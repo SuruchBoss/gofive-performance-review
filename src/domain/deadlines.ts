@@ -8,6 +8,27 @@ export function openReturn(review: Pick<ManagerReview, 'returns'>) {
   return last && !last.answeredOn ? last : undefined;
 }
 
+/**
+ * Flags that are waiting on HR's decision about a manager's answer: the flag that
+ * started the return, and the person's own far-from-results flag. They are handled
+ * by "Accept answer" / "Ask again", so they are not listed as separate open flags.
+ */
+export function flagsAwaitingAnswerDecision(state: DemoState): { keys: Set<string>; personIds: Set<string> } {
+  const keys = new Set<string>();
+  const personIds = new Set<string>();
+  for (const r of state.managerReviews) {
+    const a = answerAwaitingHr(r);
+    if (a && r.status === 'submitted') { keys.add(a.flagKey); personIds.add(r.personId); }
+  }
+  return { keys, personIds };
+}
+
+/** The manager has answered HR's question and HR has not yet accepted it or asked again. */
+export function answerAwaitingHr(review: Pick<ManagerReview, 'returns'>) {
+  const last = review.returns?.at(-1);
+  return last && last.answeredOn && !last.hrDecision ? last : undefined;
+}
+
 export function effectiveDeadline(state: DemoState, p: Participant): IsoDate {
   return p.extension?.until ?? state.cycle.managerDeadline;
 }

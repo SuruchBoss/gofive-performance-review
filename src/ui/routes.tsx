@@ -11,7 +11,7 @@ import { HrCycle } from './pages/hr/Cycle';
 import { HrCalibration } from './pages/hr/Calibration';
 import { unresolvedItems } from '../domain/calibration';
 import { MapPage } from './pages/hr/MapPage';
-import { openFlagCount } from '../domain/flags';
+import { releaseBlockers } from '../domain/release';
 import type { DemoState } from '../domain/types';
 import { ManagerTeam } from './pages/manager/Team';
 import { ManagerReviewPage } from './pages/manager/Review';
@@ -23,15 +23,16 @@ import { selfReviewWindow } from '../domain/selfReview';
 type StoreLike = { state: DemoState };
 
 export function navFor(role: Role, store: StoreLike, userId: string): NavItem[] {
-  const flags = openFlagCount(store.state) + store.state.managerReviews.filter((r) => r.returns?.some((x) => !x.answeredOn)).length;
+  // Everything HR still has to do on Consistency: open flags, answers to accept, and reviews waiting for a manager's answer.
+  const flags = releaseBlockers(store.state).filter((b) => b.kind === 'flag').length + store.state.managerReviews.filter((r) => r.returns?.some((x) => !x.answeredOn)).length;
   if (role === 'hr') {
     return [
-      { href: '#/hr', label: 'Cycle overview', short: 'Overview', icon: <IconCycle /> },
+      { href: '#/hr', label: 'Overview', icon: <IconCycle /> },
       { href: '#/hr/progress', label: 'Progress', icon: <IconPeople /> },
       { href: '#/hr/consistency', label: 'Consistency', icon: <IconScale />, count: flags, alert: true },
-      { href: '#/hr/calibration', label: 'Calibration', short: 'Calibrate', icon: <IconScale />, count: store.state.calibration.status === 'in_session' ? unresolvedItems(store.state).length : 0, alert: true },
-      { href: '#/hr/map', label: 'Results map', short: 'Map', icon: <IconMap /> },
-      { href: '#/hr/activity', label: 'Activity log', short: 'Log', icon: <IconLog /> },
+      { href: '#/hr/calibration', label: 'Calibration', icon: <IconScale />, count: store.state.calibration.status === 'in_session' ? unresolvedItems(store.state).length : 0, alert: true },
+      { href: '#/hr/map', label: 'Map', icon: <IconMap /> },
+      { href: '#/hr/activity', label: 'Activity', icon: <IconLog /> },
     ];
   }
   if (role === 'manager') {

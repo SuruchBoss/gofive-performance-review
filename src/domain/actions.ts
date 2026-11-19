@@ -5,7 +5,8 @@ import { person } from './selectors';
 import { reviewProblems, suggestionFor } from './rating';
 import { daysLate, selfReviewWindow } from './selfReview';
 import type { IsoDate, Rating } from './types';
-import { applyEscalations, effectiveDeadline, openReturn } from './deadlines';
+import { answerAwaitingHr, applyEscalations, effectiveDeadline, openReturn } from './deadlines';
+import { farFlags } from './flags';
 import { formatDate } from './dates';
 import { canRelease } from './release';
 import { buildAgenda, canLockCalibration, canStartCalibration, finalRating } from './calibration';
@@ -23,6 +24,8 @@ export type Action =
   | { type: 'save_review'; personId: string; patch: ReviewPatch }
   | { type: 'submit_review'; personId: string; actorId: string; answer?: string }
   | { type: 'return_to_manager'; personId: string; flagKey: string; question: string; actorId: string }
+  | { type: 'accept_answer'; personId: string; actorId: string }
+  | { type: 'demo_note'; detail: string }
   | { type: 'save_self_review'; personId: string; text?: string; selfRating?: Rating }
   | { type: 'submit_self_review'; personId: string }
   | { type: 'remind'; personId: string; actorId: string }
@@ -204,18 +207,49 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
       const question = action.question.trim();
       // Once calibration has started, ratings change in the session instead.
       if (state.cycle.status !== 'open' || state.calibration.status !== 'not_started' || !review || review.status !== 'submitted' || review.overall === undefined || !question) return state;
+      // Asking again closes HR's decision on the previous answer.
+      const again = answerAwaitingHr(review);
       const next = updateReview(state, action.personId, (r) => ({
         ...r,
         status: 'draft',
-        returns: [...(r.returns ?? []), { question, flagKey: action.flagKey, on: state.today, by: action.actorId, ratingBefore: r.overall! }],
+        returns: [
+          ...(r.returns ?? []).map((x) => (x === again ? { ...x, hrDecision: 'asked_again' as const, decidedOn: state.today, decidedBy: action.actorId } : x)),
+          { question, flagKey: action.flagKey, on: state.today, by: action.actorId, ratingBefore: r.overall! },
+        ],
       }));
       return withLog(next, {
         actorId: action.actorId,
         type: 'returned_to_manager',
         targetId: action.personId,
-        detail: `Returned ${person(state, action.personId).name}'s review to ${person(state, review.reviewerId).name}. Question: ${question}`,
+        detail: `${again ? 'Asked again about' : 'Returned'} ${person(state, action.personId).name}'s review ${again ? 'with' : 'to'} ${person(state, review.reviewerId).name}. Question: ${question}`,
       });
     }
+    case 'accept_answer': {
+      const review = state.managerReviews.find((r) => r.personId === action.personId);
+      const pending = review && answerAwaitingHr(review);
+      if (state.cycle.status !== 'open' || !review || !pending) return state;
+      let next = updateReview(state, action.personId, (r) => ({
+        ...r,
+        returns: r.returns!.map((x) => (x === pending ? { ...x, hrDecision: 'accepted' as const, decidedOn: state.today, decidedBy: action.actorId } : x)),
+      }));
+      // Accepting closes the flag that started the return, and the person's current
+      // far-from-results flag if the manager's new rating is still far (HR has just read why).
+      const keys = [pending.flagKey, ...farFlags(next).filter((f) => f.personId === action.personId).map((f) => f.key)];
+      const note = `Returned to manager. Answer accepted: ${pending.answer}`;
+      for (const flagKey of new Set(keys)) {
+        if (!next.flagReviews.some((f) => f.flagKey === flagKey)) {
+          next = { ...next, flagReviews: [...next.flagReviews, { flagKey, note, by: action.actorId, on: state.today }] };
+        }
+      }
+      return withLog(next, {
+        actorId: action.actorId,
+        type: 'return_accepted',
+        targetId: action.personId,
+        detail: `Accepted ${person(state, review.reviewerId).name}'s answer on ${person(state, action.personId).name}'s review. Answer: ${pending.answer}`,
+      });
+    }
+    case 'demo_note':
+      return withLog(state, { actorId: 'demo', type: 'demo_shortcut', detail: action.detail });
     case 'review_flag': {
       const note = action.note.trim();
       if (!note || state.flagReviews.some((f) => f.flagKey === action.flagKey)) return state;
@@ -258,10 +292,7 @@ function reduceRaw(state: DemoState, action: Action): DemoState {
           targetId: action.personId,
           detail: `${person(state, action.actorId).name} answered HR on ${person(state, action.personId).name}'s review and ${outcome}. Answer: ${answer}`,
         });
-        // The manager's answer closes the flag that started the return.
-        if (!next.flagReviews.some((f) => f.flagKey === pending.flagKey)) {
-          next = { ...next, flagReviews: [...next.flagReviews, { flagKey: pending.flagKey, note: `Returned to manager. Answer: ${answer}`, by: action.actorId, on: state.today }] };
-        }
+        // HR now accepts the answer or asks again; release waits for that.
         return next;
       }
       return withLog(next, {

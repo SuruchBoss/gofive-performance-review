@@ -1148,3 +1148,41 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
   .brand-tags { max-width: 100%; }
   .variant-tag { white-space: normal; max-width: 100%; }
 }
+/* Demo-only controls inside a screen: dashed, so they never read as product UI. */
+.demo-box { border: 1.5px dashed var(--line-strong); border-radius: var(--r-md); padding: var(--s3) var(--s4); background: var(--canvas); display: flex; flex-direction: column; align-items: flex-start; gap: var(--s2); margin-top: var(--s4); }
+.demo-box.compact { margin-top: var(--s2); padding: var(--s2) var(--s3); }
+.demo-box-tag { font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+/* ---------- Demo bar: one line, every prototype control behind "Demo ▾" ---------- */
+.demo-strip-inner { position: relative; flex-wrap: nowrap; }
+.demo-bar { display: flex; align-items: center; gap: var(--s3); width: 100%; min-width: 0; }
+.demo-summary { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: var(--s3); white-space: nowrap; overflow: hidden; }
+.demo-who { color: #fff; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.demo-summary .demo-date { color: var(--chrome-text); font-weight: 400; flex: none; }
+.demo-menu-btn { font-weight: 600; flex: none; }
+.demo-menu {
+  position: absolute; right: var(--s5); top: calc(100% + 6px); z-index: 60;
+  width: min(340px, calc(100vw - 32px));
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: 0 10px 28px rgba(16, 32, 28, 0.2);
+  padding: var(--s4); display: flex; flex-direction: column; gap: var(--s4);
+}
+.demo-menu-sec { display: flex; flex-direction: column; gap: var(--s2); }
+.demo-menu-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.demo-menu .seg { border-color: var(--line-strong); align-self: flex-start; }
+.demo-menu .seg button { color: var(--ink); min-height: 40px; padding: 4px 14px; }
+.demo-menu .seg button + button { border-left-color: var(--line-strong); }
+.demo-menu .seg button[aria-pressed='true'] { background: var(--mint-700); color: #fff; }
+.demo-menu .select { width: 100%; }
+.demo-menu-actions { flex-direction: row; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: var(--s3); }
+@media (max-width: 860px) {
+  .demo-menu { right: var(--s4); }
+  .demo-summary { gap: var(--s2); }
+}
+@media (max-width: 380px) {
+  .demo-summary .demo-date { display: none; }
+}
+.demo-strip .demo-menu select { background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong); min-height: 44px; padding: 6px 10px; }
+/* Narrow phones: tighter tabs so the five HR tabs fit from about 350 px; below that they scroll with an edge fade. */
+@media (max-width: 389px) {
+  .nav a { padding: 12px 5px; }
+}

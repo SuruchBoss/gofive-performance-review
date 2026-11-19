@@ -107,6 +107,10 @@ export interface ReturnRequest {
   answer?: string;
   answeredOn?: IsoDate;
   outcome?: 'changed' | 'confirmed';
+  /** HR's decision on the answer. Release waits until HR accepts it. */
+  hrDecision?: 'accepted' | 'asked_again';
+  decidedOn?: IsoDate;
+  decidedBy?: string;
 }
 
 /** HR's review of a derived flag. Flags themselves are never stored. */
@@ -128,6 +132,8 @@ export type LogType =
   | 'flag_reviewed'
   | 'returned_to_manager'
   | 'return_answered'
+  | 'return_accepted'
+  | 'demo_shortcut'
   | 'deadline_change'
   | 'calibration_started'
   | 'calibration_change'

@@ -248,7 +248,7 @@ export function HrCalibration() {
           {cal.status === 'locked' ? (
             <>
               <Notice tone="success" title={`Locked ${formatDate(cal.lockedOn!)} · ${cal.changes.length} rating change${cal.changes.length === 1 ? '' : 's'}`}>
-                Ratings can no longer change. Results can now be released from the Cycle overview.
+                Ratings can no longer change. Results can now be released from the Overview.
               </Notice>
               {cal.changes.length > 0 && (
                 <Panel title="Changes agreed" bodyClass="">

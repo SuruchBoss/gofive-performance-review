@@ -11,7 +11,7 @@ import { Dialog } from '../components';
  * flag HR picks which person's review to send back (the one furthest from results
  * is preselected). Release stays blocked until the manager answers.
  */
-export function ReturnDialog({ flagKey, personIds, onClose }: { flagKey: string; personIds: string[]; onClose: () => void }) {
+export function ReturnDialog({ flagKey, personIds, onClose, again }: { flagKey: string; personIds: string[]; onClose: () => void; again?: boolean }) {
   const { state, dispatch, notify } = useStore();
   const reviews = personIds.map((id) => state.managerReviews.find((r) => r.personId === id)!).filter((r) => r.status === 'submitted');
   const furthest = [...reviews].sort((a, b) => Math.abs(b.overall! - suggestedFor(state, b)) - Math.abs(a.overall! - suggestedFor(state, a)))[0];
@@ -23,8 +23,8 @@ export function ReturnDialog({ flagKey, personIds, onClose }: { flagKey: string;
 
   return (
     <Dialog
-      title="Return to manager"
-      sub={manager ? `The review reopens for ${manager.name}. Release stays blocked until they answer, and every step is logged.` : 'No submitted review to return.'}
+      title={again ? 'Ask again' : 'Return to manager'}
+      sub={manager ? `The review reopens for ${manager.name}${again ? ' with your new question' : ''}. Release stays blocked until they answer and you accept, and every step is logged.` : 'No submitted review to return.'}
       onClose={onClose}
       footer={
         <>
@@ -36,11 +36,11 @@ export function ReturnDialog({ flagKey, personIds, onClose }: { flagKey: string;
             disabled={!ready}
             onClick={() => {
               dispatch({ type: 'return_to_manager', personId, flagKey, question, actorId: 'hr' });
-              notify(`Returned to ${manager!.name} with your question`);
+              notify(again ? `Asked ${manager!.name} again` : `Returned to ${manager!.name} with your question`);
               onClose();
             }}
           >
-            Send back with question
+            {again ? 'Send new question' : 'Send back with question'}
           </button>
         </>
       }

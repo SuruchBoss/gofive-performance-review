@@ -62,8 +62,7 @@ export function Shell({ demoStrip, user, navTitle, nav, current, aside, children
           </div>
           <div className="spacer" />
           <button type="button" className="link-btn about-link" onClick={() => setAbout(true)} aria-label="About this prototype">
-            <span className="about-long">About this prototype</span>
-            <span className="about-short" aria-hidden="true">About</span>
+            About
           </button>
           <div className="who">
             <div className="who-text" style={{ textAlign: 'right' }}>

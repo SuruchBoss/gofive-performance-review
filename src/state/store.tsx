@@ -1,6 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from 'react';
 import { createSeed, SEED_VERSION } from '../data/seed';
 import { reduce, type Action } from '../domain/actions';
+import { skipToRelease } from '../domain/demoShortcut';
+
+/** Store actions: the product's actions plus the demo shortcut, which only replays product actions. */
+export type StoreAction = Action | { type: 'demo_skip_to_release' };
+const storeReduce = (s: DemoState, a: StoreAction): DemoState => (a.type === 'demo_skip_to_release' ? skipToRelease(s) : reduce(s, a));
 import type { DemoState } from '../domain/types';
 
 // The calibration build lives on the same site as the main build, so it keeps
@@ -46,7 +51,7 @@ function loadState(): DemoState {
 
 interface Store {
   state: DemoState;
-  dispatch: (a: Action) => void;
+  dispatch: (a: StoreAction) => void;
   view: ViewState;
   setView: (v: Partial<ViewState>) => void;
   toast: string | undefined;
@@ -56,7 +61,7 @@ interface Store {
 const Ctx = createContext<Store | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reduce, undefined, loadState);
+  const [state, dispatch] = useReducer(storeReduce, undefined, loadState);
   const [view, setViewRaw] = useState<ViewState>(() => ({ ...DEFAULT_VIEW, ...read<ViewState>(VIEW_KEY) }));
   const [toast, setToast] = useState<string>();
 

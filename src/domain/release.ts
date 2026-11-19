@@ -1,5 +1,6 @@
 import { farFlags, managerConsistency } from './flags';
 import { nameWithRole } from './selectors';
+import { answerAwaitingHr, flagsAwaitingAnswerDecision } from './deadlines';
 import { eligibilityHint } from './eligibility';
 import type { DemoState } from './types';
 
@@ -37,6 +38,14 @@ export function releaseBlockers(state: DemoState): Blocker[] {
       action: `Open as ${first(p.reviewerId)}`,
       };
     });
+  // Answers from managers wait for HR to accept them or ask again (same rule as main).
+  const answers: Blocker[] = state.participants
+    .filter((p) => !p.removed)
+    .flatMap((p) => {
+      const r = state.managerReviews.find((x) => x.personId === p.personId);
+      if (!r || r.status !== 'submitted' || !answerAwaitingHr(r)) return [];
+      return [{ kind: 'flag' as const, key: `answer:${p.personId}`, text: `${name(p.reviewerId)} answered HR on ${name(p.personId)}'s review: accept the answer or ask again`, href: '#/hr/consistency', action: 'Check in Consistency' }];
+    });
   // With calibration, the flags are dealt with in the calibration session (they are its
   // agenda), so the release gate asks for a locked calibration instead of HR flag notes.
   const cal: Blocker[] =
@@ -49,17 +58,18 @@ export function releaseBlockers(state: DemoState): Blocker[] {
           href: '#/hr/calibration',
           action: 'Open Calibration',
         }];
-  return [...open, ...cal];
+  return [...open, ...answers, ...cal];
 }
 
 /** Flags still waiting for an HR note (informational in the calibration build). */
 export function unreviewedFlags(state: DemoState): Blocker[] {
   const name = (id: string) => state.people.find((p) => p.id === id)?.name ?? id;
+  const waiting = flagsAwaitingAnswerDecision(state);
   const gaps: Blocker[] = managerConsistency(state)
-    .filter((m) => m.flagged && !m.review)
+    .filter((m) => m.flagged && !m.review && !waiting.keys.has(m.key))
     .map((m) => ({ kind: 'flag', key: m.key, text: `${name(m.reviewerId)}'s ratings: ${m.status} results`, href: '#/hr/consistency', action: 'Check in Consistency' }));
   const far: Blocker[] = farFlags(state)
-    .filter((f) => !f.review)
+    .filter((f) => !f.review && !waiting.keys.has(f.key) && !waiting.personIds.has(f.personId))
     .map((f) => ({ kind: 'flag', key: f.key, text: `${name(f.personId)}'s rating: ${f.direction} results`, href: '#/hr/consistency', action: 'Check in Consistency' }));
   return [...gaps, ...far];
 }

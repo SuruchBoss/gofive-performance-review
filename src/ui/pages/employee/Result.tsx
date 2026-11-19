@@ -6,6 +6,7 @@ import { useStore } from '../../../state/store';
 import { Notice, PageHead, Panel } from '../../components';
 import { IconLock } from '../../icons';
 import { ReviewSummary } from '../../shared/ReviewSummary';
+import { DemoShortcut } from '../../shared/DemoShortcut';
 
 export function EmployeeResult({ userId }: { userId: string }) {
   const { state } = useStore();
@@ -43,12 +44,13 @@ export function EmployeeResult({ userId }: { userId: string }) {
                 {['open', 'open_late'].includes(selfReviewWindow(state, userId)) ? (
                   <a href="#/me/self-review">Submit your self-review while you still can →</a>
                 ) : (
-                  <>Nothing to do now. In this demo, the guide's last step lets you play HR and release results.</>
+                  'Nothing to do now.'
                 )}
               </p>
             </div>
           </div>
         </Panel>
+        <DemoShortcut />
       </>
     );
   }
