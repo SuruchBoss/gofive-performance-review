@@ -1301,3 +1301,8 @@ table.data.compact th, table.data.compact td { padding: 8px var(--s3); }
 .mgr-finding strong { color: var(--amber); }
 .mgr-finding.checked strong { color: inherit; }
 .quiet-line { margin: var(--s3) 0 0; }
+/* Touch screens: a tap must not leave a hover tint behind. */
+@media (hover: none) {
+  .task-row:hover { background: transparent; }
+  .scale button:not([aria-checked='true']):hover { background: var(--surface); }
+}

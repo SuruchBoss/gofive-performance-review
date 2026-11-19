@@ -95,20 +95,13 @@ export function ManagerReviewPage({ personId, userId }: { personId: string; user
       <a className="btn btn-sm back-btn" href="#/manager">← Back to {person(state, userId).kind === 'head' ? 'my reviews' : 'my team'}</a>
       <PageHead
         title={<span className="row" style={{ gap: 12 }}>{who.name} <ReviewBadge r={review} /></span>}
-        sub={`${who.title} · ${teamName(state, who.teamId)} · ${state.cycle.name}`}
+        sub={`${who.title} · ${teamName(state, who.teamId)}${c.status === 'overdue' ? ` · due ${formatDate(c.deadline, true)}, ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} late${boss ? ` · goes to ${person(state, boss).name.split(' ')[0]} on ${formatDate(c.escalatesOn!, true)}` : ''}` : ''}`}
       />
       {pending && (
         <div className="banner">
           <Notice tone="warning" title={`HR returned this review on ${formatDate(pending.on)}`}>
             <p className="quote small" style={{ margin: '4px 0' }}>“{pending.question}”</p>
             Change the rating if you agree, or keep it and explain. Your answer goes to HR and is logged. Release waits for it.
-          </Notice>
-        </div>
-      )}
-      {c.status === 'overdue' && (
-        <div className="banner">
-          <Notice tone="warning" title={`Due ${formatDate(c.deadline)} · ${c.daysOverdue} day${c.daysOverdue === 1 ? '' : 's'} overdue`}>
-            {boss ? `If not submitted, it moves to ${person(state, boss).name} on ${formatDate(c.escalatesOn!)}.` : 'Please submit as soon as you can.'}
           </Notice>
         </div>
       )}

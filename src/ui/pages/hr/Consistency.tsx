@@ -132,7 +132,7 @@ export function HrConsistency() {
               <div className="stack-sm">
                 {/* The finding and the decision first; the detail is one tap away. */}
                 <p className={`mgr-finding${openCase ? '' : ' checked'}`}>
-                  {firstName(mgr)} rates <strong className="num">{Math.abs(m.gap).toFixed(2)}</strong> {m.status === 'above' ? 'above' : 'below'} the team's results.
+                  {firstName(mgr)} rates <strong className="num">{Math.abs(m.gap).toFixed(2)}</strong> points {m.status === 'above' ? 'above' : 'below'} the team's results.
                 </p>
                 {m.review ? <Reviewed state={state} r={m.review} /> : isCovered(m.key) ? answeredNote : (
                   <div className="row">

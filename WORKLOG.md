@@ -1099,3 +1099,10 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Full-page length at 375 px, before → after:** HR home 1,516 → 1,133 px; Fairness 2,726 → 1,619 px; review page 2,125 → 1,853 px. Words on the page: 203 → 118, 332 → 207, 246 → 179.
 - **Tests:** the click-through now also checks the single reminder button, the "Suggested" label, that the reason box is absent until needed, the finding line, the folded chart and the quiet line. 125 unit tests passed. e2e PASS at 1280 px and 390 px.
 - **What went wrong:** the "Suggested" label was first clipped by the rating scale's rounded frame; the frame no longer clips when a label is present.
+
+## PLAN-6: scan pass and what it removed (on `main`)
+
+- **Scan pass:** one new agent on a 375 px phone listed, per screen, what it read before the main action. Table in `docs/blind-test-2.md`. Nothing was cut off. Fairness was still the noisiest screen.
+- **Removed after it:** the "7 things left" count (it counted items, not the three groups shown); the second filled button on HR home; "Tap a name to open the review"; the overdue box on the review page (now part of the line under the name); hover tints that stuck after a tap. The finding now reads "0.90 points above".
+- **What went wrong:** one edit left an unused variable, so the type check failed and the build was skipped; the click-through then ran against the old build and timed out. Fixed and rerun.
+- **Checks:** 125 unit tests passed. e2e PASS at 1280 px and 390 px.
