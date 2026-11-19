@@ -985,3 +985,26 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Done:** wrote `docs/PLAN-3.md`, a short plan for on-screen coachmarks on top of the existing guide. It covers the marks for all 11 steps, the placement and keyboard rules, the fallback, storage, 5 commits, and 6 questions with recommendations.
 - **Who decided:** the PO set the goal, the decisions 1–5 and the scope. The developer proposed the mechanism, the targets per step and the questions.
 - **Stopped here:** waiting for PO approval of the plan, per working rule 4 (stop at the plan).
+
+## PLAN-3 built: coachmarks (on `main`)
+
+- **PO decision:** plan approved, with the developer's recommendation on all six questions (Next walks 1–3 marks; off the step's screen the mark points at the guide link; tips per guide; the dim is visual only; the existing e2e runs with tips off; the README line goes under "What to try first").
+- **Time (commit timestamps, 19 Nov 2026, UTC+7):** plan 19:22; approval in chat (not in git); build started about 21:30; engine 21:4x; targets and marks, then "Show tips again" and README, then the e2e, by about 22:3x. Exact times are in `git log`.
+- **Commit 1, engine** (`src/ui/coach/`):
+  - `placement.ts` (pure): the card goes below the target, or above if there is no room or the mark prefers it; clamped to a 16 px side gutter and below the prototype top bar; centred when there is no target.
+  - `tips.ts`: tips on or off per guide in `localStorage` (`pr-demo:tips`, `pr-cal:tips` on the calibration build), wrapped in try/catch, with an in-memory copy so it works without storage.
+  - `Coachmarks.tsx`: the dim is clipped to start below the top bar, with a rounded cut-out and a card ("Step 2 of 5 · tip 1 of 3", Next / Done, Skip). It follows the target on scroll, resize and page changes, and steps aside while a dialog or the Demo menu is open. Esc closes; focus moves to the card unless the reviewer is typing in a field, and returns to where it was (or to the page) on close. Animation only without `prefers-reduced-motion`.
+  - 10 unit tests (placement at 320 / 375 / 412 / 1366; storage missing, throwing or corrupt).
+- **Commit 2, targets and marks:** `data-tour` names on existing controls, and `marks.ts` with the marks per step. 5 unit tests, including "every step has a mark on the screen its guide link opens" and "every note is one or two sentences".
+- **Commit 3:** "Show tips again" in Demo ▾; one README line under "What to try first".
+- **Commit 4, e2e** (`e2e/coachmarks.cjs`, `npm run e2e:tips`): the full HR guide with tips on, then the Manager and Employee guides, at 320, 375, 412 and 1366 px. At each of 45 tips per width it checks that the highlight matches the target's box, the note is inside the 16 px gutters and fully on screen below the top bar, the dim does not cover the top bar, and the note does not cover its target. It also checks Tab → Skip → Next, Esc, focus return, Skip remembered after reload, "Show tips again", tips hidden while a dialog is open, and the centred fallback.
+- **Developer choices within the plan** (for the PO to see):
+  - Employee step 2 ("See why your result is locked") ticks itself off the moment My result opens. Its mark on the locked panel is therefore shown as tip 1 of 2 of step 3, followed by the demo shortcut.
+  - HR step 5 follows the work across screens: the first open checklist line on Overview, then the right control on Progress, Consistency or the review form, then "Release results".
+  - A tip closed with Esc or Done stays closed for that visit to the screen and returns on a later visit if the step is still open.
+  - The note on the Self-review text box sits below the box, because above it covered the question.
+  - "Skip" and "Show tips again" do not change the step guide itself.
+- **What went wrong:**
+  - First version: using a highlighted link closed that tip for the whole session, so the "back to Overview" tip never came back during step 5. The new e2e caught it. Fixed: using the target never closes a tip, and closing is per visit.
+  - One e2e expectation was wrong, not the app: after "Submit review" the manager lands on My team, which is already the screen for Manager step 2.
+- **Checks:** 135 unit tests passed. `e2e:tips` PASS at 320, 375, 412 and 1366 px. Existing e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.

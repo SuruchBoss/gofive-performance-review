@@ -85,6 +85,7 @@ npm run dev        # http://localhost:5173
 npm test           # unit tests for the rating, flag, deadline, return and release rules
 npm run build
 npm run e2e        # browser click-through at 1280px and 390px (needs Playwright + Chromium)
+npm run e2e:tips   # the three guides with on-screen tips at 320, 375, 412 and 1366px
 ```
 
 Stack: React 18, TypeScript, Vite and Vitest, with plain CSS. Each push to `main` runs the tests and deploys to GitHub Pages ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).

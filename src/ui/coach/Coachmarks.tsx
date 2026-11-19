@@ -50,14 +50,19 @@ export function Coachmarks({ role, userId, path }: { role: Role; userId: string;
       optional = true;
     }
   }
+  // A tip closed with Esc or Done stays closed for this visit to the screen, and comes
+  // back if the reviewer returns later with the step still open.
+  const visit = useRef({ path, n: 0 });
+  if (visit.current.path !== path) visit.current = { path, n: visit.current.n + 1 };
   const key = scene ? `${guide}:${step}:${scene.id}` : '';
+  const closeKey = `${key}@${visit.current.n}`;
   const [index, setIndex] = useState(0);
   const [shownKey, setShownKey] = useState('');
   const [geo, setGeo] = useState<Geometry>();
   const [blocked, setBlocked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const active = !!scene && !tips.isOff(guide) && !tips.isClosed(key);
+  const active = !!scene && !tips.isOff(guide) && !tips.isClosed(closeKey);
   const i = shownKey === key ? Math.min(index, (scene?.marks.length ?? 1) - 1) : 0;
   const mark = active ? scene!.marks[i] : undefined;
   const markId = mark ? `${key}:${i}` : '';
@@ -122,23 +127,24 @@ export function Coachmarks({ role, userId, path }: { role: Role; userId: string;
   const finish = useCallback((how: 'close' | 'skip') => {
     const card = cardRef.current;
     const hadFocus = !!card && card.contains(document.activeElement);
-    if (how === 'skip') tips.skip(guide); else tips.close(key);
+    if (how === 'skip') tips.skip(guide); else tips.close(closeKey);
     if (hadFocus) {
       const back = returnFocus.current && document.contains(returnFocus.current) ? returnFocus.current : document.getElementById('main');
       back?.focus({ preventScroll: true });
     }
-  }, [guide, key]);
+  }, [guide, closeKey]);
   const advance = useCallback(() => { if (last) finish('close'); else setIndex(i + 1); }, [last, finish, i]);
 
-  // Using the highlighted button or link itself moves the tip on.
+  // Using the highlighted button or link itself moves on to the next tip. On the last
+  // tip nothing closes: the step itself moves on when the action is done.
   useEffect(() => {
-    if (!visible || !mark) return;
+    if (!visible || !mark || last) return;
     const el = findTarget(mark.target);
     if (!el || !el.matches('button, a')) return;
-    const on = () => advance();
+    const on = () => setIndex(i + 1);
     el.addEventListener('click', on);
     return () => el.removeEventListener('click', on);
-  }, [visible, mark, advance, geo]);
+  }, [visible, mark, last, i, geo]);
 
   // Esc closes the tip.
   useEffect(() => {

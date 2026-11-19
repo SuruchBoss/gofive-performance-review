@@ -1,6 +1,6 @@
 # PLAN-3 — On-screen coachmarks for the demo
 
-**Status:** draft, waiting for PO approval. Nothing is built yet.
+**Status:** approved by the PO on 19 Nov 2026, with the recommended answer on all six questions. Built; see `WORKLOG.md`.
 **Scope (PO):** coachmarks layered on top of the existing guide. `main` first, then `calibration`. Step text, demo data, rules, `docs/ANSWERS.md` and the start page do not change.
 
 ## How it works
