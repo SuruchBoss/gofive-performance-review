@@ -832,3 +832,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
 - **What went wrong:** the first e2e run after these edits failed at its first step ("landing: Try as HR missing"), before the app had loaded. A rerun passed at both widths without any change, so it was preview-server start-up timing, not the app.
 - **Checks:** 117 unit tests passed. e2e PASS at 1280 px and 390 px. No sideways scroll on 12 screens from 320 to 500 px. No header overlap from 320 to 900 px.
 - **Testing stops here**, as the PO asked.
+- **Live check (main 85fc629, calibration 7ded2e1):**
+  - At 412 px and 1366 px on both builds: the landing link, the demo shortcut and the new My result work, with no sideways scroll and no page errors.
+  - The full click-through passed live at 1280 px and 390 px (main 16 screens, calibration 18).
+  - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
+  - Testing stopped.
