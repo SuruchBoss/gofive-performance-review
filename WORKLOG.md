@@ -995,3 +995,8 @@ Working notes for the Product Owner. Newest entry at the bottom.
 
 - Merged `main` (85fc629). The demo shortcut dialog conflict kept the plain wording, adjusted for this build: "…runs calibration without changing any rating, with notes saying it was the demo, and publishes everyone's results."
 - Checks: 127 unit tests passed. e2e PASS at 1280 px and 390 px (18 screens). No sideways scroll on 13 screens from 320 to 500 px. No header overlap from 320 to 900 px.
+- **Live check (main 85fc629, calibration 7ded2e1):**
+  - At 412 px and 1366 px on both builds: the landing link, the demo shortcut and the new My result work, with no sideways scroll and no page errors.
+  - The full click-through passed live at 1280 px and 390 px (main 16 screens, calibration 18).
+  - No sideways scroll from 320 to 500 px and no header overlap from 320 to 900 px on either build.
+  - Testing stopped.
