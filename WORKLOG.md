@@ -1113,3 +1113,11 @@ Build time from branch to last commit: about 8 minutes, for 4 commits. From writ
 - **Full-page length on the live main build at 375 px, before → after:** HR home 1,516 → 1,133 px; Fairness 2,726 → 1,661 px; review page 2,125 → 1,771 px. Content starts 215 px down; it was 279 px. Words on the page: 203 → 116, 332 → 209, 246 → 169.
 - The calibration build measures within 45 px of these (its header keeps the build tag on a second line).
 - Full-page screenshots of the three screens were sent to the PO.
+
+## Plainer answers: the PO's rewrite of `docs/ANSWERS.md` (on `main`)
+
+- **PO request:** replace `docs/ANSWERS.md` with the PO's own rewrite, after checking every sentence against the code and this log.
+- **Check, before any change:** one sentence was not true. "The map, activity log and person pages worked without changes": the calibration build changed each by a few lines (map 2, activity log 5, person page 5; diff `8f1a96f..167d994`). The earlier version of the file made the same claim ("worked unchanged"), and the developer's earlier sentence-by-sentence check missed it. Two more lines were questioned as inexact, not false.
+- **PO decision:** three exact wordings. "…needed only a few lines each."; "Late reviews, missing self-reviews and people who are too new to review are all handled and recorded."; "The AI told me the prototype was ready because its checks passed."
+- **Done:** the file is the PO's text with those three changes and nothing else. The same file goes into `calibration`.
+- **Still holds:** 4 of 97 tests; about an hour (22:36 to 23:44); the three calibration stages; the guide removed and replaced by the to-do homes. The marketing-agency example is the PO's own and cannot be checked here.
